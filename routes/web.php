@@ -27,7 +27,7 @@ Route::get('/', function () {
 // Route::get('/sendmail', function (Request $request) {
 //     $ip = $request->ip();
 //     Mail::raw('Hi user, a new login into your account from the IP Address: ' . $ip, function ($message) {
-//         $message->from(env('MAIL_FROM_ADDRESS'), env('MAIL_FROM_NAME'));
-//         $message->to('juancamilo.soto@outlook.com', 'User Name');
+//         $message->from('lanea07@gmail.com', 'Juan Soto');
+//         $message->to('juan.soto@flamingo.com', 'User Name');
 //     });
 // });

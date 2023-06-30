@@ -5,6 +5,11 @@ namespace App\Providers;
 // use Illuminate\Support\Facades\Gate;
 
 use App\Models\User;
+use App\Policies\BenefitDetailPolicy;
+use App\Policies\BenefitPolicy;
+use App\Policies\BenefitUserPolicy;
+use App\Policies\PositionPolicy;
+use App\Policies\RolePolicy;
 use App\Policies\UserPolicy;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 

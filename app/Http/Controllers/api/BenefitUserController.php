@@ -4,10 +4,12 @@ namespace App\Http\Controllers\api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\CreateBenefitUserRequest;
+use App\Mail\BenefitUserCreated;
 use App\Models\BenefitUser;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
 
 class BenefitUserController extends Controller
 {
@@ -35,7 +37,9 @@ class BenefitUserController extends Controller
     public function store(CreateBenefitUserRequest $request)
     {
         $newBenefitUser = $request->validated();
-        $newBenefitUser = BenefitUser::create($newBenefitUser);
+        // $newBenefitUser = BenefitUser::create($newBenefitUser);
+        Mail::to('juan.soto@flamingo.com.co')
+            ->send(new BenefitUserCreated($newBenefitUser));
         return response($newBenefitUser, 201);
     }
 
