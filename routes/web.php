@@ -24,10 +24,10 @@ Route::get('/', function () {
 //     return phpinfo();
 // });
 
-// Route::get('/sendmail', function (Request $request) {
-//     $ip = $request->ip();
-//     Mail::raw('Hi user, a new login into your account from the IP Address: ' . $ip, function ($message) {
-//         $message->from('lanea07@gmail.com', 'Juan Soto');
-//         $message->to('juan.soto@flamingo.com', 'User Name');
-//     });
-// });
+Route::get('/sendmail', function (Request $request) {
+    $ip = $request->ip();
+    Mail::raw('Hi user, a new login into your account from the IP Address: ' . $ip, function ($message) {
+        $message->from('lanea07@gmail.com', 'Juan Soto');
+        $message->to('juan.soto@flamingo.com', 'User Name');
+    });
+});
