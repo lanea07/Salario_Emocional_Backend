@@ -42,8 +42,8 @@ class BenefitUserController extends Controller
         $newBenefitUser = BenefitUser::with(['user', 'benefits', 'benefit_detail'])->find(1709);
         // Mail::to('juan.soto@flamingo.com.co')
         //     ->send(new BenefitUserCreated($newBenefitUser));
-        Mail::to('juancamilo.soto@outlook.com')
-            ->send(new BenefitUserCreated($newBenefitUser));
+        // Mail::to('juancamilo.soto@outlook.com')
+        //    ->send(new BenefitUserCreated($newBenefitUser));
         return response($newBenefitUser, 201);
     }
 
