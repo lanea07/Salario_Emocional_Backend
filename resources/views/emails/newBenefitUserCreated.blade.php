@@ -7,51 +7,48 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Nuevo Beneficio Registrado</title>
     <style>
-        .container {
-            border: 1px solid red;
-            width: 100%;
-            display: flex;
-            justify-content: center;
+        th,
+        td {
+            text-align: left;
+            border: 1px solid lightcyan;
         }
     </style>
 </head>
 
 <body>
 
-    <div class="container">
-        <table class="table table-success table-striped-columns table-hover">
+    <div style="text-align: center;">
+
+        <table style="width: 600px;">
             <thead>
                 <tr>
-                    <th scope="col">#</th>
-                    <th scope="col">First</th>
-                    <th scope="col">Last</th>
-                    <th scope="col">Handle</th>
+                    <th colspan="4">Nuevo Beneficio Registrado</th>
                 </tr>
             </thead>
             <tbody>
                 <tr>
-                    <th scope="row">1</th>
-                    <td>Mark</td>
-                    <td>Otto</td>
-                    <td>@mdo</td>
+                    <th>Colaborador</th>
+                    <td colspan="3">{{ $user->user->name }}</td>
                 </tr>
                 <tr>
-                    <th scope="row">2</th>
-                    <td>Jacob</td>
-                    <td>Thornton</td>
-                    <td>@fat</td>
+                    <th>Beneficio</th>
+                    <td colspan="3">{{ $user->benefits->name }}</td>
                 </tr>
                 <tr>
-                    <th scope="row">3</th>
-                    <td colspan="2">Larry the Bird</td>
-                    <td>
-                        @twitter
-                    </td>
+                    <th>Detalle</th>
+                    <td colspan="3">{{ $user->benefit_detail->name }}</td>
+                </tr>
+                <tr>
+                    <th style="width: 20%;">Inicio</th>
+                    <td style="width: 40%;">{{ $user->benefit_begin_time }}</td>
+                    <th style="width: 20%;">Fin</th>
+                    <td style="width: 40%;">{{ $user->benefit_end_time }}</td>
                 </tr>
             </tbody>
         </table>
+
     </div>
-    {{ json_encode($user) }}
+
 </body>
 
 </html>
