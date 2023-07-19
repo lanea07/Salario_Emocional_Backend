@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AngularController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Route;
@@ -31,3 +32,5 @@ Route::get('/sendmail', function (Request $request) {
         $message->to('juan.soto@flamingo.com', 'User Name');
     });
 });
+
+Route::any('/{any}', [AngularController::class, 'index'])->where('any', '^(?!api).*$');
