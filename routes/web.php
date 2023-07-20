@@ -16,21 +16,21 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
+Route::get('/', [AngularController::class, 'index'])->where('any', '^(?!api).*$');
+
+Route::get('/{any}', function () {
     // return view('welcome');
     abort(404);
-});
+})->where('any', '^(?!api).*$');;
 
 // Route::get('/phpinfo', function () {
 //     return phpinfo();
 // });
 
-Route::get('/sendmail', function (Request $request) {
-    $ip = $request->ip();
-    Mail::raw('Hi user, a new login into your account from the IP Address: ' . $ip, function ($message) {
-        $message->from('lanea07@gmail.com', 'Juan Soto');
-        $message->to('juan.soto@flamingo.com', 'User Name');
-    });
-});
-
-Route::any('/{any}', [AngularController::class, 'index'])->where('any', '^(?!api).*$');
+// Route::get('/sendmail', function (Request $request) {
+//     $ip = $request->ip();
+//     Mail::raw('Hi user, a new login into your account from the IP Address: ' . $ip, function ($message) {
+//         $message->from('lanea07@gmail.com', 'Juan Soto');
+//         $message->to('juan.soto@flamingo.com', 'User Name');
+//     });
+// });
