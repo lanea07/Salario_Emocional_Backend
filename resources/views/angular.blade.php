@@ -3,8 +3,6 @@
 
 <head>
     <meta charset="utf-8">
-    <meta name="csrf-token" content="{{ csrf_token() }}">
-
     <title>Salario Emocional</title>
     <base href="/assets/angular/">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -281,7 +279,7 @@
 
 <body class="mat-typography bg-light">
     <app-root></app-root>
-    <script src="runtime.0951ba06e39618de.js" type="module"></script>
+    <script src="runtime.d5482aa6286203b6.js" type="module"></script>
     <script src="polyfills.c06e5487760266d8.js" type="module"></script>
     <script src="main.56b6125fbd4705ac.js" type="module"></script>
 
