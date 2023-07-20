@@ -16,12 +16,7 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', [AngularController::class, 'index'])->where('any', '^(?!api).*$');
-
-Route::get('/{any}', function () {
-    // return view('welcome');
-    abort(404);
-})->where('any', '^(?!api).*$');;
+Route::get('{any}', [AngularController::class, 'index'])->where('any', '^(?!api).*$');
 
 // Route::get('/phpinfo', function () {
 //     return phpinfo();
