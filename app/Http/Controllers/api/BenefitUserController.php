@@ -37,9 +37,9 @@ class BenefitUserController extends Controller
     public function store(CreateBenefitUserRequest $request)
     {
         $newBenefitUser = $request->validated();
-        // $newBenefitUser = BenefitUser::create($newBenefitUser);
-        // $newBenefitUser = BenefitUser::with(['user', 'benefits', 'benefit_detail'])->find($newBenefitUser->id);
-        $newBenefitUser = BenefitUser::with(['user', 'benefits', 'benefit_detail'])->find(1709);
+        $newBenefitUser = BenefitUser::create($newBenefitUser);
+        $newBenefitUser = BenefitUser::with(['user', 'benefits', 'benefit_detail'])->find($newBenefitUser->id);
+        // $newBenefitUser = BenefitUser::with(['user', 'benefits', 'benefit_detail'])->find(1709);
         // Mail::to('juan.soto@flamingo.com.co')
         //     ->send(new BenefitUserCreated($newBenefitUser));
         // Mail::to('juancamilo.soto@outlook.com')
