@@ -83,7 +83,7 @@ class UserController extends Controller
         if ($validated['subordinates']) {
             $newSubordinates = $validated['subordinates'];
             $user->update($validated);
-            User::whereIn('leader', $user)->update(['leader' => null]);
+            User::whereIn('leader', $user->id)->update(['leader' => null]);
             User::whereIn('id', $newSubordinates)->update(['leader' => $user->id]);
         } else {
             User::where('leader', '=', $user->id)->update(['leader' => null]);
