@@ -8,7 +8,6 @@ use App\Mail\BenefitUserCreated;
 use App\Models\BenefitUser;
 use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 
 class BenefitUserController extends Controller
@@ -23,6 +22,12 @@ class BenefitUserController extends Controller
     {
         $userId = $request->userId;
         $year = $request->year;
+
+        if (auth()->user()->isAdmin()) {
+            return User::with(['benefit_user' => function ($q) use ($year) {
+                $q->whereYear('benefit_begin_time', $year);
+            }, 'benefit_user.benefits', 'benefit_user.benefit_detail'])->get();
+        }
         return User::with(['benefit_user' => function ($q) use ($year) {
             $q->whereYear('benefit_begin_time', $year);
         }, 'benefit_user.benefits', 'benefit_user.benefit_detail'])
@@ -48,19 +53,14 @@ class BenefitUserController extends Controller
     }
 
 
-    public function show(User $benefituser, Request $request)
+    public function show(BenefitUser $benefituser)
     {
-        $year = $request->year;
-        // User::with(['benefit_user.benefits', 'benefit_user.benefit_detail'])
-        //     ->wherehas('benefit_user', function ($q) use ($year) {
-        //         $q->whereYear('benefit_begin_time', $year);
-        //     })
-        //     ->where('id', $benefituser->id)
-        //     ->get();
-        return User::with(['benefit_user' => function ($q) use ($year) {
-            $q->whereYear('benefit_begin_time', $year);
+        return User::with(['benefit_user' => function ($q) use ($benefituser) {
+            $q->where('id', $benefituser->id);
         }, 'benefit_user.benefits', 'benefit_user.benefit_detail'])
-            ->where('id', $benefituser->id)
+            ->wherehas('benefit_user', function ($q) use ($benefituser) {
+                $q->where('id', '=', $benefituser->id);
+            })
             ->get();
     }
 
@@ -79,7 +79,7 @@ class BenefitUserController extends Controller
         try {
             $this->authorize('destroy', $benefituser);
             $benefituser->delete();
-            return response(['msg' => 'Beneficio del empleado eliminado'], 200);
+            return response(['message' => 'Beneficio del empleado eliminado'], 200);
         } catch (\Throwable $th) {
             return response($th, 500);
         }

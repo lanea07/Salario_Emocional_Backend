@@ -18,7 +18,12 @@ class AuthController extends Controller
             'device_name' => 'required'
         ]);
 
-        $user = User::where('email', request()->email)->first();
+        try {
+            $user = User::where('email', request()->email)->first();
+        } catch (\Throwable $th) {
+            return response()->json(['message' => 'Ha ocurrido un error interno, contacte con el administrador'], 500);
+        }
+
 
         if (!$user || !Hash::check(request()->password, $user->password)) {
             throw ValidationException::withMessages([
