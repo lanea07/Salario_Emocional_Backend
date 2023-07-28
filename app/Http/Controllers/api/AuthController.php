@@ -4,7 +4,7 @@ namespace App\Http\Controllers\api;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
-use Illuminate\Http\Client\Request;
+use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
@@ -66,8 +66,22 @@ class AuthController extends Controller
         return response()->json(auth()->user()->requirePassChange());
     }
 
-    public function passwordChange(): JsonResponse
+    public function passwordChange(Request $request): JsonResponse
     {
-        return response()->json(['message' => request()]);
+        if (!Hash::check($request->currentPassword, auth()->user()->password)) {
+            throw ValidationException::withMessages([
+                'message' => 'La contraseña actual es incorrecta'
+            ]);
+        }
+        if ($request->password !== $request->retypePassword) {
+            throw ValidationException::withMessages([
+                'message' => 'Las contraseñas no coinciden'
+            ]);
+        }
+        $user = auth()->user();
+        $user->password = $request->password;
+        $user->requirePassChange = false;
+        $user->save();
+        return response()->json(['message' => 'success']);
     }
 }
