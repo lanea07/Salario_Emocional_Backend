@@ -39,6 +39,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::post('/validate-roles', [AuthController::class, 'validateAdmin']);
     Route::post('/validate-token', [AuthController::class, 'validateToken']);
+    Route::post('/validate-requirePassChange', [AuthController::class, 'validateRequirePassChange']);
+    Route::post('/passwordChange', [AuthController::class, 'passwordChange']);
     // Route::get('/user', function (Request $request) {
     //     return $request->user();
     // });

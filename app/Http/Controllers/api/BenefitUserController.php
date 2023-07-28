@@ -4,11 +4,9 @@ namespace App\Http\Controllers\api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\CreateBenefitUserRequest;
-use App\Mail\BenefitUserCreated;
 use App\Models\BenefitUser;
 use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Mail;
 
 class BenefitUserController extends Controller
 {
@@ -41,15 +39,29 @@ class BenefitUserController extends Controller
 
     public function store(CreateBenefitUserRequest $request)
     {
-        $newBenefitUser = $request->validated();
-        $newBenefitUser = BenefitUser::create($newBenefitUser);
-        $newBenefitUser = BenefitUser::with(['user', 'benefits', 'benefit_detail'])->find($newBenefitUser->id);
-        // $newBenefitUser = BenefitUser::with(['user', 'benefits', 'benefit_detail'])->find(1709);
-        // Mail::to('juan.soto@flamingo.com.co')
-        //     ->send(new BenefitUserCreated($newBenefitUser));
-        // Mail::to('juancamilo.soto@outlook.com')
-        //    ->send(new BenefitUserCreated($newBenefitUser));
-        return response($newBenefitUser, 201);
+        try {
+            $newBenefitUser = $request->validated();
+            $newBenefitUser = BenefitUser::create($newBenefitUser);
+            $newBenefitUser = BenefitUser::with(['user', 'benefits', 'benefit_detail'])->find($newBenefitUser->id);
+            // $newBenefitUser = BenefitUser::with(['user', 'benefits', 'benefit_detail'])->find(1709);
+            // Mail::to('juan.soto@flamingo.com.co')
+            //     ->send(new BenefitUserCreated($newBenefitUser));
+            // Mail::to('juancamilo.soto@outlook.com')
+            //    ->send(new BenefitUserCreated($newBenefitUser));
+            return response($newBenefitUser, 201);
+        } catch (\Throwable $th) {
+            switch ($th->errorInfo[1]) {
+                case 1062:
+                    return response()->json(['message' => 'No se puede guardar el beneficio porque ya existe un beneficio igual registrado.'], 400);
+                    break;
+                case 4025:
+                    return response()->json(['message' => $th->errorInfo[2]], 400);
+                    break;
+                default:
+                    return response()->json(['message' => 'Ha ocurrido un error interno, contacte con el administrador'], 400);
+                    break;
+            }
+        }
     }
 
 

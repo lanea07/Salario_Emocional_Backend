@@ -4,6 +4,7 @@ namespace App\Http\Controllers\api;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use Illuminate\Http\Client\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
@@ -58,5 +59,15 @@ class AuthController extends Controller
     public function validateAdmin(): JsonResponse
     {
         return response()->json(['admin' => auth('sanctum')->user()->isAdmin()]);
+    }
+
+    public function validateRequirePassChange(): JsonResponse
+    {
+        return response()->json(auth()->user()->requirePassChange());
+    }
+
+    public function passwordChange(): JsonResponse
+    {
+        return response()->json(['message' => request()]);
     }
 }

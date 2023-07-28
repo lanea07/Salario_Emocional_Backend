@@ -22,7 +22,8 @@ class User extends Model //Authenticatable
         'email',
         'password',
         'position_id',
-        'leader'
+        'leader',
+        'requirePassChange'
     ];
 
     /**
@@ -43,6 +44,7 @@ class User extends Model //Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
+        'requirePassChange' => 'boolean'
     ];
 
     public function benefit_user()
@@ -83,5 +85,10 @@ class User extends Model //Authenticatable
     public function isAdmin()
     {
         return $this->hasRoles(['Admin']);
+    }
+
+    public function requirePassChange()
+    {
+        return $this->requirePassChange;
     }
 }
