@@ -4,9 +4,11 @@ namespace App\Http\Controllers\api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\CreateBenefitUserRequest;
+use App\Mail\BenefitUserCreated;
 use App\Models\BenefitUser;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
 
 class BenefitUserController extends Controller
 {
@@ -24,10 +26,12 @@ class BenefitUserController extends Controller
         if (auth()->user()->isAdmin()) {
             return User::with(['benefit_user' => function ($q) use ($year) {
                 $q->whereYear('benefit_begin_time', $year);
+                $q->orderBy('benefit_begin_time');
             }, 'benefit_user.benefits', 'benefit_user.benefit_detail'])->get();
         }
         return User::with(['benefit_user' => function ($q) use ($year) {
             $q->whereYear('benefit_begin_time', $year);
+            $q->orderBy('benefit_begin_time');
         }, 'benefit_user.benefits', 'benefit_user.benefit_detail'])
             ->where(function ($q) use ($userId) {
                 $q->where('leader', $userId)
@@ -43,11 +47,8 @@ class BenefitUserController extends Controller
             $newBenefitUser = $request->validated();
             $newBenefitUser = BenefitUser::create($newBenefitUser);
             $newBenefitUser = BenefitUser::with(['user', 'benefits', 'benefit_detail'])->find($newBenefitUser->id);
-            // $newBenefitUser = BenefitUser::with(['user', 'benefits', 'benefit_detail'])->find(1709);
-            // Mail::to('juan.soto@flamingo.com.co')
-            //     ->send(new BenefitUserCreated($newBenefitUser));
-            // Mail::to('juancamilo.soto@outlook.com')
-            //    ->send(new BenefitUserCreated($newBenefitUser));
+            // $newBenefitUser = BenefitUser::with(['user', 'benefits', 'benefit_detail'])->find(5);
+            Mail::to('juancamilo.soto@outlook.com')->queue(new BenefitUserCreated($newBenefitUser));
             return response($newBenefitUser, 201);
         } catch (\Throwable $th) {
             switch ($th->errorInfo[1]) {
@@ -69,9 +70,11 @@ class BenefitUserController extends Controller
     {
         return User::with(['benefit_user' => function ($q) use ($benefituser) {
             $q->where('id', $benefituser->id);
+            $q->orderBy('benefit_begin_time');
         }, 'benefit_user.benefits', 'benefit_user.benefit_detail'])
             ->wherehas('benefit_user', function ($q) use ($benefituser) {
                 $q->where('id', '=', $benefituser->id);
+                $q->orderBy('benefit_begin_time');
             })
             ->get();
     }

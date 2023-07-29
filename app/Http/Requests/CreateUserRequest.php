@@ -24,12 +24,12 @@ class CreateUserRequest extends FormRequest
         return [
             'name' => 'required',
             'email' => 'required|email:rfc,dns',
-            'password' => 'required|min:5',
+            'password' => 'sometimes',
             'leader' => 'required_unless:leader,null',
             'rolesFormGroup' => 'required',
             'position_id' => 'required',
             'subordinates' => 'sometimes|nullable',
-            'requirePassChange' => 'required'
+            'requirePassChange' => 'required_unless:requirePassChange,null'
         ];
     }
 }

@@ -1717,7 +1717,7 @@
         body,
         html,
         .body {
-            background: #f3f3f3 !important;
+            background: #dddddd !important;
         }
     </style>
 </head>
@@ -1753,13 +1753,9 @@
                                                     <table>
                                                         <tr>
                                                             <th>
-                                                                <h1>Thanks for your order.</h1>
-                                                                <p>Thanks for shopping with us! Lorem ipsum dolor sit
-                                                                    amet, consectetur adipisicing elit. Ad earum
-                                                                    ducimus, non, eveniet neque dolores voluptas
-                                                                    architecto sed, voluptatibus aut dolorem odio.
-                                                                    Cupiditate a recusandae, illum
-                                                                    cum voluptatum modi nostrum.</p>
+                                                                <h1>{{ $newBenefitUser->user->name }}</h1>
+                                                                <p>Tu nuevo beneficio fue registrado. A continuación
+                                                                    detallamos tu nuevo registro:</p>
                                                                 <table class="spacer">
                                                                     <tbody>
                                                                         <tr>
@@ -1780,17 +1776,13 @@
                                                                                             <table>
                                                                                                 <tr>
                                                                                                     <th>
-                                                                                                        <p> <strong>Payment
-                                                                                                                Method</strong><br>
-                                                                                                            Dubloons
+                                                                                                        <p> <strong>Beneficio</strong><br>
+                                                                                                            {{ $newBenefitUser->benefits->name }}
                                                                                                         </p>
-                                                                                                        <p> <strong>Email
-                                                                                                                Address</strong><br>
-                                                                                                            thecapn@pirates.org
-                                                                                                        </p>
-                                                                                                        <p> <strong>Order
-                                                                                                                ID</strong><br>
-                                                                                                            239235983749636
+                                                                                                        <p> <strong>Fecha
+                                                                                                                de
+                                                                                                                Redención</strong><br>
+                                                                                                            {{ \Carbon\Carbon::parse($newBenefitUser->benefit_begin_time)->format('d/m/Y') }}
                                                                                                         </p>
                                                                                                     </th>
                                                                                                 </tr>
@@ -1801,19 +1793,13 @@
                                                                                             <table>
                                                                                                 <tr>
                                                                                                     <th>
-                                                                                                        <p> <strong>Shipping
-                                                                                                                Method</strong><br>
-                                                                                                            Boat
-                                                                                                            (1&ndash;2
-                                                                                                            weeks)<br>
-                                                                                                            <strong>Shipping
-                                                                                                                Address</strong><br>
-                                                                                                            Captain
-                                                                                                            Price<br>
-                                                                                                            123 Maple
-                                                                                                            Rd<br>
-                                                                                                            Campbell, CA
-                                                                                                            95112 </p>
+                                                                                                        <p> <strong>Detalle</strong><br>
+                                                                                                            {{ $newBenefitUser->benefit_detail->name }}<br>
+                                                                                                            <strong>Fecha
+                                                                                                                de
+                                                                                                                Registro</strong><br>
+                                                                                                            {{ \Carbon\Carbon::parse($newBenefitUser->created_at)->format('d/m/Y') }}
+                                                                                                        </p>
                                                                                                     </th>
                                                                                                 </tr>
                                                                                             </table>
@@ -1825,42 +1811,6 @@
                                                                         <th class="expander"></th>
                                                                     </tr>
                                                                 </table>
-                                                                <h4>Order Details</h4>
-                                                                <table>
-                                                                    <tr>
-                                                                        <th>Item</th>
-                                                                        <th>#</th>
-                                                                        <th>Price</th>
-                                                                    </tr>
-                                                                    <tr>
-                                                                        <td>Ship's Cannon</td>
-                                                                        <td>2</td>
-                                                                        <td>$100</td>
-                                                                    </tr>
-                                                                    <tr>
-                                                                        <td>Ship's Cannon</td>
-                                                                        <td>2</td>
-                                                                        <td>$100</td>
-                                                                    </tr>
-                                                                    <tr>
-                                                                        <td>Ship's Cannon</td>
-                                                                        <td>2</td>
-                                                                        <td>$100</td>
-                                                                    </tr>
-                                                                    <tr>
-                                                                        <td colspan="2"><b>Subtotal:</b></td>
-                                                                        <td>$600</td>
-                                                                    </tr>
-                                                                </table>
-                                                                <hr>
-                                                                <h4>What's Next?</h4>
-                                                                <p>Our carrier raven will prepare your order for
-                                                                    delivery. Lorem ipsum dolor sit amet, consectetur
-                                                                    adipisicing elit. Modi necessitatibus itaque debitis
-                                                                    laudantium doloribus quasi nostrum distinctio
-                                                                    suscipit, magni soluta
-                                                                    eius animi voluptatem qui velit eligendi quam
-                                                                    praesentium provident culpa?</p>
                                                             </th>
                                                         </tr>
                                                     </table>
@@ -1874,7 +1824,9 @@
                                                 <th class="small-12 large-3 columns first">
                                                     <table>
                                                         <tr>
-                                                            <th> <img src="http://placehold.it/170x30" alt="">
+                                                            <th> <img
+                                                                    src={{ $message->embed(realpath(public_path() . '/images/logo_no_slogan.png')) }}
+                                                                    width="170 px;" alt="logo">
                                                             </th>
                                                         </tr>
                                                     </table>
@@ -1883,17 +1835,9 @@
                                                     <table>
                                                         <tr>
                                                             <th>
-                                                                <p> Call us at 800.555.1923<br> Email us at
-                                                                    support@discount.boat </p>
-                                                            </th>
-                                                        </tr>
-                                                    </table>
-                                                </th>
-                                                <th class="small-12 large-3 columns last">
-                                                    <table>
-                                                        <tr>
-                                                            <th>
-                                                                <p> 123 Maple Rd<br> Campbell, CA 95112 </p>
+                                                                <p><a href="mailto:juan.soto@flamingo.com.co"
+                                                                        style="color: #C8102E;">juan.soto@flamingo.com.co</a><br>
+                                                                    Reportar Novedad</p>
                                                             </th>
                                                         </tr>
                                                     </table>

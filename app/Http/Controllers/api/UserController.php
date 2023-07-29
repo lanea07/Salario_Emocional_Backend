@@ -7,6 +7,8 @@ use App\Http\Requests\CreateUserRequest;
 use App\Models\Position;
 use App\Models\Role;
 use App\Models\User;
+use Illuminate\Support\Str;
+
 
 class UserController extends Controller
 {
@@ -17,7 +19,7 @@ class UserController extends Controller
 
     public function index()
     {
-        return User::with(['leader', 'subordinates', 'positions', 'roles'])->get();
+        return User::with(['leader', 'subordinates', 'positions', 'roles'])->orderBy('name')->get();
     }
 
 
@@ -31,11 +33,18 @@ class UserController extends Controller
     {
         $validated = $request->validated();
 
+        if (!$validated['password']) {
+            $password = Str::password(10);
+            $validated['password'] = $password;
+        }
+
         $rolesToAsign = array_filter($validated['rolesFormGroup'], function ($role) {
             return $role === true;
         });
         $rolesToAsign = array_keys($rolesToAsign);
         $rolesToAsign = Role::whereIn('name', $rolesToAsign)->get();
+
+        $validated['requirePassChange'] = true;
 
         if ($validated['subordinates']) {
             $newSubordinates = $validated['subordinates'];
@@ -67,18 +76,17 @@ class UserController extends Controller
         $this->authorize('update', $user);
         $validated = $request->validated();
 
+        if (!$validated['password']) {
+            $validated['password'] = $user->password;
+        }
+
         $rolesToAsign = array_filter($validated['rolesFormGroup'], function ($role) {
             return $role === true;
         });
         $rolesToAsign = array_keys($rolesToAsign);
         $rolesToAsign = Role::whereIn('name', $rolesToAsign)->get();
 
-        // $positionsToAsign = array_filter($validated['position_id'], function ($role) {
-        //     return $role === true;
-        // });
-        // $positionsToAsign = array_keys($positionsToAsign);
         $positionsToAsign = Position::where('id', $validated['position_id'])->first();
-
 
         if ($validated['subordinates']) {
             $newSubordinates = $validated['subordinates'];
@@ -92,7 +100,6 @@ class UserController extends Controller
 
         $user->roles()->sync($rolesToAsign);
         $user->update(['position_id' => $positionsToAsign->id]);
-        // $user->update($request->validated());
         // broadcast(new DirectorioUpdate($user));
         return response($user, 200);
     }
