@@ -48,7 +48,7 @@ class BenefitUserController extends Controller
             $newBenefitUser = BenefitUser::create($newBenefitUser);
             $newBenefitUser = BenefitUser::with(['user', 'benefits', 'benefit_detail'])->find($newBenefitUser->id);
             // $newBenefitUser = BenefitUser::with(['user', 'benefits', 'benefit_detail'])->find(5);
-            Mail::to('juancamilo.soto@outlook.com')->queue(new BenefitUserCreated($newBenefitUser));
+            Mail::to($newBenefitUser->user->email)->queue(new BenefitUserCreated($newBenefitUser));
             return response($newBenefitUser, 201);
         } catch (\Throwable $th) {
             switch ($th->errorInfo[1]) {
