@@ -1826,7 +1826,7 @@
                                                         <tr>
                                                             <th> <img
                                                                     src={{ $message->embed(realpath(public_path() . '/images/logo_no_slogan.png')) }}
-                                                                    width="170 px;" alt="logo">
+                                                                    width="170;" alt="logo">
                                                             </th>
                                                         </tr>
                                                     </table>
