@@ -1776,7 +1776,8 @@
                                                                                             <table>
                                                                                                 <tr>
                                                                                                     <th>
-                                                                                                        <p> <strong>Beneficio</strong><br>
+                                                                                                        <p>
+                                                                                                            <strong>Beneficio</strong><br>
                                                                                                             {{ $newBenefitUser->benefits->name }}
                                                                                                         </p>
                                                                                                         <p> <strong>Fecha
@@ -1793,8 +1794,11 @@
                                                                                             <table>
                                                                                                 <tr>
                                                                                                     <th>
-                                                                                                        <p> <strong>Detalle</strong><br>
-                                                                                                            {{ $newBenefitUser->benefit_detail->name }}<br>
+                                                                                                        <p>
+                                                                                                            <strong>Detalle</strong><br>
+                                                                                                            {{ $newBenefitUser->benefit_detail->name }}
+                                                                                                        </p>
+                                                                                                        <p>
                                                                                                             <strong>Fecha
                                                                                                                 de
                                                                                                                 Registro</strong><br>
@@ -1824,9 +1828,9 @@
                                                 <th class="small-12 large-3 columns first">
                                                     <table>
                                                         <tr>
-                                                            <th> <img
-                                                                    src={{ $message->embed(realpath(public_path() . '/images/logo_no_slogan.png')) }}
-                                                                    width="170;" alt="logo">
+                                                            <th>
+                                                                <img src={{ $message->embed(realpath(public_path() . '/images/logo_no_slogan.png')) }}
+                                                                    alt="logo">
                                                             </th>
                                                         </tr>
                                                     </table>
