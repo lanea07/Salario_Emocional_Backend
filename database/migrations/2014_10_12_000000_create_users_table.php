@@ -25,7 +25,7 @@ return new class extends Migration
         });
 
         Schema::table('users', function (Blueprint $table) {
-            $table->foreign('leader')->references('id')->on('users');
+            $table->foreign('leader')->references('id')->on('users')->nullOnDelete();
         });
     }
 

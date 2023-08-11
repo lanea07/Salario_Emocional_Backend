@@ -2,56 +2,89 @@
 
 namespace App\Http\Controllers\api;
 
+use App\Http\Controllers\api\Services\PositionService;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\CreatePositionRequest;
 use App\Models\Position;
+use Illuminate\Http\JsonResponse;
 
 class PositionController extends Controller
 {
 
-    public function __construct()
+    private PositionService $positionService;
+
+    public function __construct(PositionService $positionService)
     {
+        $this->positionService = $positionService;
         $this->middleware('checkroles:Admin');
     }
 
-    public function index()
+    public function index(): JsonResponse
     {
         $this->authorize('index', auth()->user());
-        return Position::all();
+        return response()->json($this->positionService->getAllPositions(), 200);
     }
 
-
-    public function store(CreatePositionRequest $request)
+    public function store(CreatePositionRequest $request): JsonResponse
     {
-        $newPosition = $request->validated();
-        $newPosition = Position::create($newPosition);
-        return response($newPosition, 201);
+        try {
+            $this->authorize('store', Position::class);
+            return response()->json($this->positionService->savePosition($request->validated()), 201);
+        } catch (\Illuminate\Database\QueryException $th) {
+            switch ($th->errorInfo[1]) {
+                case 1062:
+                    return response()->json(['message' => 'No se puede guardar el cargo porque ya existe un cargo con el mismo nombre registrado.'], 400);
+                    break;
+                case 4025:
+                    return response()->json(['message' => $th->errorInfo[2]], 400);
+                    break;
+                case 1:
+                    return response()->json(['message' => $th->errorInfo[2]], 400);
+                    break;
+                default:
+                    return response()->json(['message' => 'Ha ocurrido un error interno, contacte con el administrador'], 400);
+                    break;
+            }
+        }
     }
 
-
-    public function show(Position $position)
+    public function show(Position $position): JsonResponse
     {
-        return $position;
+        return response()->json($this->positionService->getPositionByID($position));
     }
 
-
-    public function update(Position $position, CreatePositionRequest $request)
+    public function update(CreatePositionRequest $request, Position $position): JsonResponse
     {
-        $this->authorize('update', $position);
-        $position->update($request->validated());
+        try {
+            $this->authorize('update', $position);
+            return response()->json($this->positionService->updatePosition($request->validated(), $position), 200);
+        } catch (\Illuminate\Database\QueryException $th) {
+            switch ($th->errorInfo[1]) {
+                case 1062:
+                    return response()->json(['message' => 'No se puede actualizar el cargo porque ya existe un cargo con el mismo nombre registrado.'], 400);
+                    break;
+                case 4025:
+                    return response()->json(['message' => $th->errorInfo[2]], 400);
+                    break;
+                case 1:
+                    return response()->json(['message' => $th->errorInfo[2]], 400);
+                    break;
+                default:
+                    return response()->json(['message' => 'Ha ocurrido un error interno, contacte con el administrador'], 400);
+                    break;
+            }
+        }
         // broadcast(new DirectorioUpdate($position));
-        return response($position, 200);
     }
 
-
-    public function destroy(Position $position)
+    public function destroy(Position $position): JsonResponse
     {
         try {
             $this->authorize('destroy', $position);
-            $position->delete();
-            return response(['msg' => 'Posición eliminada'], 200);
+            $this->positionService->deletePosition($position);
+            return response()->json(['msg' => 'Posición eliminada'], 200);
         } catch (\Throwable $th) {
-            return response($th, 500);
+            return response()->json($th, 500);
         }
     }
 }

@@ -2,61 +2,57 @@
 
 namespace App\Http\Controllers\api;
 
+use App\Http\Controllers\api\Services\BenefitUserService;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\CreateBenefitUserRequest;
-use App\Mail\BenefitUserCreated;
 use App\Models\BenefitUser;
-use App\Models\User;
+use Exception;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Mail;
+
 
 class BenefitUserController extends Controller
 {
 
-    public function __construct()
+    private BenefitUserService $benefitUserService;
+
+    public function __construct(BenefitUserService $benefitUserService)
     {
+        $this->benefitUserService = $benefitUserService;
         $this->middleware('checkroles:Admin', ['only' => ['destroy']]);
     }
 
-    public function index(Request $request)
+    public function index(Request $request): JsonResponse
     {
         $userId = $request->userId;
         $year = $request->year;
-
-        if (auth()->user()->isAdmin()) {
-            return User::with(['benefit_user' => function ($q) use ($year) {
-                $q->whereYear('benefit_begin_time', $year);
-                $q->orderBy('benefit_begin_time');
-            }, 'benefit_user.benefits', 'benefit_user.benefit_detail'])->get();
-        }
-        return User::with(['benefit_user' => function ($q) use ($year) {
-            $q->whereYear('benefit_begin_time', $year);
-            $q->orderBy('benefit_begin_time');
-        }, 'benefit_user.benefits', 'benefit_user.benefit_detail'])
-            ->where(function ($q) use ($userId) {
-                $q->where('leader', $userId)
-                    ->orWhere('id', $userId);
-            })
-            ->get();
+        return response()->json($this->benefitUserService->getAllBenefitUser($userId, $year), 200);
     }
 
-
-    public function store(CreateBenefitUserRequest $request)
+    public function store(CreateBenefitUserRequest $request): JsonResponse
     {
         try {
-            $newBenefitUser = $request->validated();
-            $newBenefitUser = BenefitUser::create($newBenefitUser);
-            $newBenefitUser = BenefitUser::with(['user', 'benefits', 'benefit_detail'])->find($newBenefitUser->id);
-            // $newBenefitUser = BenefitUser::with(['user', 'benefits', 'benefit_detail'])->find(5);
-            Mail::to($newBenefitUser->user->email)->queue(new BenefitUserCreated($newBenefitUser));
-            return response($newBenefitUser, 201);
-        } catch (\Throwable $th) {
+            $this->authorize('store', BenefitUser::class);
+            return response()->json($this->benefitUserService->saveBenefitUser($request->validated()));
+        } catch (\Illuminate\Database\QueryException $th) {
             switch ($th->errorInfo[1]) {
                 case 1062:
                     return response()->json(['message' => 'No se puede guardar el beneficio porque ya existe un beneficio igual registrado.'], 400);
                     break;
                 case 4025:
                     return response()->json(['message' => $th->errorInfo[2]], 400);
+                    break;
+                case 1:
+                    return response()->json(['message' => $th->errorInfo[2]], 400);
+                    break;
+                default:
+                    return response()->json(['message' => 'Ha ocurrido un error interno, contacte con el administrador'], 400);
+                    break;
+            }
+        } catch (Exception $e) {
+            switch ($e->getCode()) {
+                case 1:
+                    return response()->json(['message' => $e->getMessage()], 400);
                     break;
                 default:
                     return response()->json(['message' => 'Ha ocurrido un error interno, contacte con el administrador'], 400);
@@ -65,38 +61,39 @@ class BenefitUserController extends Controller
         }
     }
 
-
-    public function show(BenefitUser $benefituser)
+    public function show(BenefitUser $benefituser): JsonResponse
     {
-        return User::with(['benefit_user' => function ($q) use ($benefituser) {
-            $q->where('id', $benefituser->id);
-            $q->orderBy('benefit_begin_time');
-        }, 'benefit_user.benefits', 'benefit_user.benefit_detail'])
-            ->wherehas('benefit_user', function ($q) use ($benefituser) {
-                $q->where('id', '=', $benefituser->id);
-                $q->orderBy('benefit_begin_time');
-            })
-            ->get();
+        return response()->json($this->benefitUserService->getBenefitUserByID($benefituser), 200);
     }
 
-
-    public function update(BenefitUser $benefituser, CreateBenefitUserRequest $request)
+    public function update(CreateBenefitUserRequest $request, BenefitUser $benefituser): JsonResponse
     {
-        $this->authorize('update', $benefituser);
-        $benefituser->update($request->validated());
-        // broadcast(new DirectorioUpdate($benefituser));
-        return response($benefituser, 200);
+        try {
+            $this->authorize('update', $benefituser);
+            return response()->json($this->benefitUserService->updateBenefitUser($request->validated(), $benefituser), 200);
+            // broadcast(new DirectorioUpdate($benefituser));
+        } catch (\Illuminate\Database\QueryException $th) {
+            return response()->json(['message' => 'Ha ocurrido un error interno, contacte con el administrador'], 400);
+        } catch (Exception $e) {
+            switch ($e->getCode()) {
+                case 1:
+                    return response()->json(['message' => $e->getMessage()], 400);
+                    break;
+                default:
+                    return response()->json(['message' => 'Ha ocurrido un error interno, contacte con el administrador'], 400);
+                    break;
+            }
+        }
     }
 
-
-    public function destroy(BenefitUser $benefituser)
+    public function destroy(BenefitUser $benefituser): JsonResponse
     {
         try {
             $this->authorize('destroy', $benefituser);
-            $benefituser->delete();
-            return response(['message' => 'Beneficio del empleado eliminado'], 200);
-        } catch (\Throwable $th) {
-            return response($th, 500);
+            $this->benefitUserService->deleteBenefitUser($benefituser);
+            return response()->json(['message' => 'Beneficio del empleado eliminado'], 200);
+        } catch (\Illuminate\Database\QueryException $th) {
+            return response()->json($th, 500);
         }
     }
 }

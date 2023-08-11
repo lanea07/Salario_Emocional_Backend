@@ -2,56 +2,92 @@
 
 namespace App\Http\Controllers\api;
 
+use App\Http\Controllers\api\Services\BenefitDetailService;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\CreateBenefitDetailRequest;
 use App\Models\BenefitDetail;
+use Exception;
+use Illuminate\Http\JsonResponse;
 
 class BenefitDetailController extends Controller
 {
 
-    public function __construct()
+    private BenefitDetailService $benefitDetailService;
+
+    public function __construct(BenefitDetailService $benefitDetailService)
     {
+        $this->benefitDetailService = $benefitDetailService;
         $this->middleware('checkroles:Admin');
     }
 
-    public function index()
+    public function index(): JsonResponse
     {
         $this->authorize('index', auth()->user());
-        return BenefitDetail::with(['benefit'])->get();
+        return response()->json($this->benefitDetailService->getAllBenefitDetail(), 200);
+    }
+
+    public function store(CreateBenefitDetailRequest $request): JsonResponse
+    {
+        try {
+            $this->authorize('store', BenefitDetail::class);
+            return response()->json($this->benefitDetailService->saveBenefitDetail($request->validated()), 200);
+        } catch (\Illuminate\Database\QueryException $th) {
+            switch ($th->errorInfo[1]) {
+                case 1062:
+                    return response()->json(['message' => 'No se puede guardar el detalle porque ya existe un detalle con el mismo nombre registrado.'], 400);
+                    break;
+                case 4025:
+                    return response()->json(['message' => $th->errorInfo[2]], 400);
+                    break;
+                case 1:
+                    return response()->json(['message' => $th->errorInfo[2]], 400);
+                    break;
+                default:
+                    return response()->json(['message' => 'Ha ocurrido un error interno, contacte con el administrador'], 400);
+                    break;
+            }
+        }
+    }
+
+    public function show(BenefitDetail $benefitdetail): JsonResponse
+    {
+        return response()->json($this->benefitDetailService->getBenefitDetailByID($benefitdetail), 200);
     }
 
 
-    public function store(CreateBenefitDetailRequest $request)
+    public function update(CreateBenefitDetailRequest $request, BenefitDetail $benefitdetail): JsonResponse
     {
-        $newBenefitDetail = $request->validated();
-        $newBenefitDetail = BenefitDetail::create($newBenefitDetail);
-        return response($newBenefitDetail, 201);
-    }
-
-
-    public function show(BenefitDetail $benefitdetail)
-    {
-        return $benefitdetail->with(['benefit'])->where('id', $benefitdetail->id)->get();
-    }
-
-
-    public function update(BenefitDetail $benefitdetail, CreateBenefitDetailRequest $request)
-    {
-        $this->authorize('update', $benefitdetail);
-        $benefitdetail->update($request->validated());
+        try {
+            $this->authorize('update', $benefitdetail);
+            return response()->json($this->benefitDetailService->updateBenefitDetail($request->validated(), $benefitdetail), 200);
+        } catch (\Illuminate\Database\QueryException $th) {
+            switch ($th->errorInfo[1]) {
+                case 1062:
+                    return response()->json(['message' => 'No se puede actualizar el detalle porque ya existe un detalle con el mismo nombre registrado.'], 400);
+                    break;
+                case 4025:
+                    return response()->json(['message' => $th->errorInfo[2]], 400);
+                    break;
+                case 1:
+                    return response()->json(['message' => $th->errorInfo[2]], 400);
+                    break;
+                default:
+                    return response()->json(['message' => 'Ha ocurrido un error interno, contacte con el administrador'], 400);
+                    break;
+            }
+        }
         // broadcast(new DirectorioUpdate($benefitdetail));
-        return response($benefitdetail, 200);
     }
 
 
-    public function destroy(BenefitDetail $benefitdetail)
+    public function destroy(BenefitDetail $benefitdetail): JsonResponse
     {
         try {
             $this->authorize('destroy', $benefitdetail);
-            $benefitdetail->delete();
-            return response(['msg' => 'Detalle de Beneficio eliminado'], 200);
+            $this->benefitDetailService->deleteBenefitDetail($benefitdetail);
+            return response()->json(['msg' => 'Detalle de Beneficio eliminado'], 200);
         } catch (\Throwable $th) {
-            return response($th, 500);
+            return response()->json($th, 500);
         }
     }
 }

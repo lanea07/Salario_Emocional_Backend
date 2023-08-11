@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\api;
 
+use App\Http\Controllers\api\Services\AuthService;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -11,6 +12,14 @@ use Illuminate\Validation\ValidationException;
 
 class AuthController extends Controller
 {
+
+    private AuthService $authService;
+
+    public function __construct(AuthService $authService)
+    {
+        $this->authService = $authService;
+    }
+
     public function login(): JsonResponse
     {
         request()->validate([
@@ -19,46 +28,33 @@ class AuthController extends Controller
             'device_name' => 'required'
         ]);
 
-        try {
-            $user = User::where('email', request()->email)->first();
-        } catch (\Throwable $th) {
-            return response()->json(['message' => 'Ha ocurrido un error interno, contacte con el administrador'], 500);
-        }
+        $user = $this->authService->validateUserLogin(request()->email, request()->password);
 
-
-        if (!$user || !Hash::check(request()->password, $user->password)) {
-            throw ValidationException::withMessages([
-                'email' => 'The provided credentials are incorrect.'
-            ]);
-        }
-
-        return response()->json([
-            'token' => $user->createToken(request()->device_name)->plainTextToken,
-            'can' => $user->roles,
-            'id' => $user->id,
-            'user' => $user
-        ]);
+        return response()->json(
+            [
+                'token' => $user->createToken(request()->device_name)->plainTextToken,
+                'can' => $user->roles,
+                'id' => $user->id,
+                'user' => $user
+            ],
+            200
+        );
     }
 
     public function logout(): JsonResponse
     {
-        auth()->user()->tokens()->delete();
-
-        return response()->json([
-            'message' => 'Logged out'
-        ]);
+        $this->authService->logoutUser();
+        return response()->json(['message' => 'Logged out'], 200);
     }
 
     public function validateToken(): JsonResponse
     {
-        return response()->json(
-            ['valid' => auth('sanctum')->check()]
-        );
+        return response()->json(['valid' => auth('sanctum')->check()], 200);
     }
 
     public function validateAdmin(): JsonResponse
     {
-        return response()->json(['admin' => auth('sanctum')->user()->isAdmin()]);
+        return response()->json(['admin' => auth('sanctum')->user()->isAdmin()], 200);
     }
 
     public function validateRequirePassChange(): JsonResponse
@@ -68,20 +64,7 @@ class AuthController extends Controller
 
     public function passwordChange(Request $request): JsonResponse
     {
-        if (!Hash::check($request->currentPassword, auth()->user()->password)) {
-            throw ValidationException::withMessages([
-                'message' => 'La contraseña actual es incorrecta'
-            ]);
-        }
-        if ($request->password !== $request->retypePassword) {
-            throw ValidationException::withMessages([
-                'message' => 'Las contraseñas no coinciden'
-            ]);
-        }
-        $user = auth()->user();
-        $user->password = $request->password;
-        $user->requirePassChange = false;
-        $user->save();
-        return response()->json(['message' => 'success']);
+        $this->authService->validatePasswordChange($request);
+        return response()->json(['message' => 'success'], 200);
     }
 }

@@ -2,73 +2,90 @@
 
 namespace App\Http\Controllers\api;
 
+use App\Http\Controllers\api\Services\BenefitService;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\CreateBenefitRequest;
 use App\Models\Benefit;
 use App\Models\BenefitDetail;
+use Illuminate\Http\JsonResponse;
 
 class BenefitController extends Controller
 {
 
-    public function __construct()
+    private BenefitService $benefitService;
+
+    public function __construct(BenefitService $benefitService)
     {
+        $this->benefitService = $benefitService;
         $this->middleware('checkroles:Admin', ['except' => ['index', 'show']]);
     }
 
-    public function index()
+    public function index(): JsonResponse
     {
-        return Benefit::with(['benefit_detail'])->get();
+        return response()->json($this->benefitService->getAllBenefits(), 200);
+    }
+
+    public function store(CreateBenefitRequest $request): JsonResponse
+    {
+        try {
+            $this->authorize('store', Benefit::class);
+            return response()->json($this->benefitService->saveBenefit($request->validated()), 201);
+        } catch (\Illuminate\Database\QueryException $th) {
+            switch ($th->errorInfo[1]) {
+                case 1062:
+                    return response()->json(['message' => 'No se puede guardar el beneficio porque ya existe un beneficio con el mismo nombre registrado.'], 400);
+                    break;
+                case 4025:
+                    return response()->json(['message' => $th->errorInfo[2]], 400);
+                    break;
+                case 1:
+                    return response()->json(['message' => $th->errorInfo[2]], 400);
+                    break;
+                default:
+                    return response()->json(['message' => 'Ha ocurrido un error interno, contacte con el administrador'], 400);
+                    break;
+            }
+        }
     }
 
 
-    public function store(CreateBenefitRequest $request)
+    public function show(Benefit $benefit): JsonResponse
     {
-        $newBenefit = $request->validated();
-
-        $benefitsToAsign = array_filter($newBenefit['benefitDetailFormGroup'], function ($benefit) {
-            return $benefit === true;
-        });
-        $benefitsToAsign = array_keys($benefitsToAsign);
-        $benefitsToAsign = BenefitDetail::whereIn('id', $benefitsToAsign)->get();
-
-
-        $newBenefit = Benefit::create($newBenefit);
-        $newBenefit->benefitDetail()->attach($benefitsToAsign);
-        return response($newBenefit, 201);
+        return response()->json($this->benefitService->getBenefitByID($benefit), 200);
     }
 
-
-    public function show(Benefit $benefit)
+    public function update(CreateBenefitRequest $request, Benefit $benefit): JsonResponse
     {
-        return $benefit->with(['benefit_detail'])->where('id', $benefit->id)->get();
-    }
-
-
-    public function update(Benefit $benefit, CreateBenefitRequest $request)
-    {
-        $this->authorize('update', $benefit);
-        $validated = $request->validated();
-        $benefitsToAsign = array_filter($validated['benefitDetailFormGroup'], function ($benefit) {
-            return $benefit === true;
-        });
-        $benefitsToAsign = array_keys($benefitsToAsign);
-        $benefitsToAsign = Benefit::whereIn('id', $benefitsToAsign)->get();
-
-        $benefit->update($validated);
-        $benefit->benefitDetail()->sync($benefitsToAsign);
+        try {
+            $this->authorize('update', $benefit);
+            return response()->json($this->benefitService->updateBenefit($request->validated(), $benefit), 200);
+        } catch (\Illuminate\Database\QueryException $th) {
+            switch ($th->errorInfo[1]) {
+                case 1062:
+                    return response()->json(['message' => 'No se puede actualizar el beneficio porque ya existe un beneficio con el mismo nombre registrado.'], 400);
+                    break;
+                case 4025:
+                    return response()->json(['message' => $th->errorInfo[2]], 400);
+                    break;
+                case 1:
+                    return response()->json(['message' => $th->errorInfo[2]], 400);
+                    break;
+                default:
+                    return response()->json(['message' => 'Ha ocurrido un error interno, contacte con el administrador'], 400);
+                    break;
+            }
+        }
         // broadcast(new DirectorioUpdate($benefit));
-        return response($benefit, 200);
     }
 
-
-    public function destroy(Benefit $benefit)
+    public function destroy(Benefit $benefit): JsonResponse
     {
         try {
             $this->authorize('destroy', $benefit);
-            $benefit->delete();
-            return response(['msg' => 'Beneficio eliminado'], 200);
+            $this->benefitService->deleteBenefit($benefit);
+            return response()->json(['msg' => 'Beneficio eliminado'], 200);
         } catch (\Throwable $th) {
-            return response($th, 500);
+            return response()->json($th, 500);
         }
     }
 }

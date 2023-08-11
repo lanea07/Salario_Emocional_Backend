@@ -1,4 +1,4 @@
-## <span style="color:#C8102E">Salario Emocional</span>
+## <span style="color:#C8102E">Salario Emocional Backend</span>
 
 API REST para seguimiento de los beneficios de salario emocional
 <br>

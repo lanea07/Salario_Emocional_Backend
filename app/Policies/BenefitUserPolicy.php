@@ -9,12 +9,17 @@ use Illuminate\Auth\Access\Response;
 class BenefitUserPolicy
 {
 
-    public function update(User $user, BenefitUser $benefitEmployee)
+    public function store(User $user, BenefitUser $benefitUser)
     {
         return $user->isAdmin() && auth('sanctum')->check();
     }
 
-    public function destroy(User $user, BenefitUser $benefitEmployee)
+    public function update(User $user, BenefitUser $benefitUser)
+    {
+        return $user->isAdmin() && auth('sanctum')->check();
+    }
+
+    public function destroy(User $user, BenefitUser $benefitUser)
     {
         return $user->isAdmin() && auth('sanctum')->check();
     }

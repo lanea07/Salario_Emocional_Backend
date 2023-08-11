@@ -2,117 +2,89 @@
 
 namespace App\Http\Controllers\api;
 
+use App\Http\Controllers\api\Services\UserService;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\CreateUserRequest;
-use App\Models\Position;
-use App\Models\Role;
 use App\Models\User;
-use Illuminate\Support\Str;
+use Illuminate\Http\JsonResponse;
 
 
 class UserController extends Controller
 {
-    public function __construct()
+
+    private UserService $userService;
+
+    public function __construct(UserService $userService)
     {
+        $this->userService = $userService;
         $this->middleware('checkroles:Admin', ['except' => ['index', 'show']]);
     }
 
-    public function index()
+    public function index(): JsonResponse
     {
-        return User::with(['leader', 'subordinates', 'positions', 'roles'])->orderBy('name')->get();
+        return response()->json($this->userService->getAllUsers(), 200);
     }
 
-
-    public function create()
+    public function store(CreateUserRequest $request): JsonResponse
     {
-        // Not used vía API
-    }
-
-
-    public function store(CreateUserRequest $request)
-    {
-        $validated = $request->validated();
-
-        if (!$validated['password']) {
-            $password = Str::password(10);
-            $validated['password'] = $password;
+        try {
+            $this->authorize('store', User::class);
+            return response()->json($this->userService->saveUser($request->validated()), 201);
+        } catch (\Illuminate\Database\QueryException $th) {
+            switch ($th->errorInfo[1]) {
+                case 1062:
+                    return response()->json(['message' => 'No se puede guardar el usuario porque ya existe un usuario con el mismo correo registrado.'], 400);
+                    break;
+                case 4025:
+                    return response()->json(['message' => $th->errorInfo[2]], 400);
+                    break;
+                case 1:
+                    return response()->json(['message' => $th->errorInfo[2]], 400);
+                    break;
+                default:
+                    return response()->json(['message' => 'Ha ocurrido un error interno, contacte con el administrador'], 400);
+                    break;
+            }
         }
-
-        $rolesToAsign = array_filter($validated['rolesFormGroup'], function ($role) {
-            return $role === true;
-        });
-        $rolesToAsign = array_keys($rolesToAsign);
-        $rolesToAsign = Role::whereIn('name', $rolesToAsign)->get();
-
-        $validated['requirePassChange'] = true;
-
-        if ($validated['subordinates']) {
-            $newSubordinates = $validated['subordinates'];
-            $user = User::create($validated);
-            User::whereIn('id', $newSubordinates)->update(['leader' => $user->id]);
-        } else {
-            $user = User::create($validated);
-        }
-
-        $user->roles()->sync($rolesToAsign);
-        return response($user, 201);
     }
 
-
-    public function show(User $user)
+    public function show(User $user): JsonResponse
     {
-        return $user->with(['leader', 'subordinates', 'positions', 'roles'])->where('id', $user->id)->get();
+        return response()->json($this->userService->getUserById($user), 200);
     }
 
-
-    public function edit(User $user)
+    public function update(CreateUserRequest $request, User $user): JsonResponse
     {
-        // Not used vía API
-    }
-
-
-    public function update(CreateUserRequest $request, User $user)
-    {
-        $this->authorize('update', $user);
-        $validated = $request->validated();
-
-        if (!$validated['password']) {
-            $validated['password'] = $user->password;
+        try {
+            $this->authorize('update', $user);
+            return response()->json($this->userService->updateUser($request->validated(), $user), 200);
+        } catch (\Illuminate\Database\QueryException $th) {
+            switch ($th->errorInfo[1]) {
+                case 1062:
+                    return response()->json(['message' => 'No se puede actualizar el usuario porque ya existe un usuario con el mismo correo registrado.'], 400);
+                    break;
+                case 4025:
+                    return response()->json(['message' => $th->errorInfo[2]], 400);
+                    break;
+                case 1:
+                    return response()->json(['message' => $th->errorInfo[2]], 400);
+                    break;
+                default:
+                    return response()->json(['message' => 'Ha ocurrido un error interno, contacte con el administrador'], 400);
+                    break;
+            }
         }
-
-        $rolesToAsign = array_filter($validated['rolesFormGroup'], function ($role) {
-            return $role === true;
-        });
-        $rolesToAsign = array_keys($rolesToAsign);
-        $rolesToAsign = Role::whereIn('name', $rolesToAsign)->get();
-
-        $positionsToAsign = Position::where('id', $validated['position_id'])->first();
-
-        if ($validated['subordinates']) {
-            $newSubordinates = $validated['subordinates'];
-            $user->update($validated);
-            User::where('leader', $user->id)->update(['leader' => null]);
-            User::whereIn('id', $newSubordinates)->update(['leader' => $user->id]);
-        } else {
-            User::where('leader', '=', $user->id)->update(['leader' => null]);
-            $user->update($validated);
-        }
-
-        $user->roles()->sync($rolesToAsign);
-        $user->update(['position_id' => $positionsToAsign->id]);
         // broadcast(new DirectorioUpdate($user));
-        return response($user, 200);
     }
 
-
-    public function destroy(User $user)
+    public function destroy(User $user): JsonResponse
     {
         try {
             $this->authorize('destroy', $user);
-            $user->delete();
-            return response(['msg' => 'Usuario eliminado'], 200);
+            $this->userService->deleteUser($user);
+            return response()->json(['msg' => 'Usuario eliminado'], 200);
         } catch (\Throwable $th) {
-            return response($th, 500);
+            return response()->json($th, 500);
         }
     }
 }

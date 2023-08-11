@@ -14,6 +14,11 @@ class RolePolicy
         return $user->isAdmin() && auth('sanctum')->check();
     }
 
+    public function store(User $user)
+    {
+        return $user->isAdmin() && auth('sanctum')->check();
+    }
+
     public function update(User $user, Role $role)
     {
         return $user->isAdmin() && auth('sanctum')->check();
