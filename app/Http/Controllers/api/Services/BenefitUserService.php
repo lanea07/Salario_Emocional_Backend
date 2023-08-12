@@ -7,6 +7,7 @@ use App\Models\Benefit;
 use App\Models\BenefitDetail;
 use App\Models\BenefitUser;
 use App\Models\User;
+use Carbon\Carbon;
 use Exception;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\App;
@@ -46,22 +47,24 @@ class BenefitUserService
 
     public function saveBenefitUser(array $benefitUserData): BenefitUser
     {
-        // Validate if specific benefit Mi Banco de Horas is lower than 16
         $requestedBenefit = Benefit::find($benefitUserData['benefit_id']);
-        if ($requestedBenefit->name === 'Mi Banco de Horas') {
-            $requestedTime = BenefitDetail::find($benefitUserData['benefit_detail_id'])->time_hours;
-            $total_time_hours = BenefitUser::with(['benefit_detail'])
-                ->where(function ($q) use ($benefitUserData, $requestedBenefit) {
-                    $q->where('user_id', $benefitUserData['user_id']);
-                    $q->where('benefit_id', $requestedBenefit->id);
-                })
-                ->get()->pluck('benefit_detail.time_hours')->sum();
-            if ($total_time_hours >= 16) {
-                throw new Exception("El beneficio que estás intentando registrar ya tiene utilizado todas las horas disponibles.", 1);
-            }
-            if ($total_time_hours + $requestedTime > 16) {
-                throw new Exception("El beneficio que estás intentando registrar supera las horas autorizadas.", 1);
-            }
+
+        switch ($requestedBenefit->name) {
+            case 'Mi Cumpleaños':
+                $this->canSaveMiCumpleanos($benefitUserData);
+                break;
+
+            case 'Mi Banco de Horas':
+                $this->canSaveBancoHoras($benefitUserData, $requestedBenefit);
+                break;
+
+            case 'Mi Horario Flexible':
+                $this->canSaveHorarioFlexible($benefitUserData);
+                break;
+
+            case 'Mi Viernes':
+                $this->canSaveMiViernes($benefitUserData);
+                break;
         }
 
         $benefitUserData = BenefitUser::create($benefitUserData);
@@ -92,21 +95,26 @@ class BenefitUserService
 
     public function updateBenefitUser(array $benefitUserData, BenefitUser $benefitUser): BenefitUser
     {
-        // Validate if specific benefit Mi Banco de Horas is lower than 16
         $requestedBenefit = Benefit::find($benefitUserData['benefit_id']);
-        if ($requestedBenefit->name === 'Mi Banco de Horas') {
-            $actualTime = BenefitDetail::find($benefitUser['benefit_detail_id'])->time_hours;
-            $requestedTime = BenefitDetail::find($benefitUserData['benefit_detail_id'])->time_hours;
-            $total_time_hours = BenefitUser::with(['benefit_detail'])
-                ->where(function ($q) use ($benefitUserData, $requestedBenefit) {
-                    $q->where('user_id', $benefitUserData['user_id']);
-                    $q->where('benefit_id', $requestedBenefit->id);
-                })
-                ->get()->pluck('benefit_detail.time_hours')->sum();
-            if ($total_time_hours - $actualTime + $requestedTime > 16) {
-                throw new Exception("El beneficio que estás intentando registrar ya tiene utilizado todas las horas disponibles.", 1);
-            }
+
+        switch ($requestedBenefit->name) {
+            case 'Mi Cumpleaños':
+                $this->canUpdateMiCumpleanos($benefitUserData);
+                break;
+
+            case 'Mi Banco de Horas':
+                $this->canUpdateBancoHoras($benefitUserData, $benefitUser, $requestedBenefit);
+                break;
+
+            case 'Mi Horario Flexible':
+                $this->canUpdateHorarioFlexible($benefitUserData, $benefitUser);
+                break;
+
+            case 'Mi Viernes':
+                $this->canUpdateMiViernes($benefitUserData, $benefitUser);
+                break;
         }
+
         $benefitUser->update($benefitUserData);
         return $benefitUser;
     }
@@ -114,5 +122,161 @@ class BenefitUserService
     public function deleteBenefitUser(BenefitUser $benefitUser): void
     {
         $benefitUser->delete();
+    }
+
+
+
+    // Methods for validating specific benefits
+
+    /**
+     * @param array $benefitData Array of values to be saved as new User Benefit
+     */
+    private function canSaveMiCumpleanos(array $benefitData): void
+    {
+        $isBirthdayClaimed = BenefitUser::where(function ($q) use ($benefitData) {
+            $q->where('benefit_id', $benefitData['benefit_id']);
+            $q->whereYear('benefit_begin_time', date("Y", strtotime($benefitData['benefit_begin_time'])));
+        })->get();
+        if (!$isBirthdayClaimed->isEmpty()) {
+            throw new Exception("El beneficio que está intentando registrar ya fue utilizado este año. No se puede usar más de una vez.", 1);
+        }
+    }
+
+    /**
+     * @param array $benefitData Array of values to be saved as new User Benefit
+     */
+    private function canUpdateMiCumpleanos(array $benefitData): void
+    {
+        $isBirthdayClaimed = BenefitUser::where(function ($q) use ($benefitData) {
+            $q->where('benefit_id', $benefitData['benefit_id']);
+            $q->whereYear('benefit_begin_time', date("Y", strtotime($benefitData['benefit_begin_time'])));
+        })->get();
+        if (!$isBirthdayClaimed->isEmpty()) {
+            throw new Exception("El beneficio que está intentando actualizar ya fue utilizado este año. No se puede usar más de una vez.", 1);
+        }
+    }
+
+    /**
+     * @param array $benefitData Array of values to be saved as new User Benefit
+     * @param Benefit $benefit Instance of the benefit used to validate if $benefitData can be saved
+     */
+    private function canSaveBancoHoras(array $benefitData, Benefit $benefit): void
+    {
+        $requestedTime = BenefitDetail::find($benefitData['benefit_detail_id'])->time_hours;
+        $total_time_hours = BenefitUser::with(['benefit_detail'])
+            ->where(function ($q) use ($benefitData, $benefit) {
+                $q->where('user_id', $benefitData['user_id']);
+                $q->where('benefit_id', $benefit->id);
+            })
+            ->get()->pluck('benefit_detail.time_hours')->sum();
+        if ($total_time_hours >= 16) {
+            throw new Exception("El beneficio que estás intentando registrar ya tiene utilizado todas las horas disponibles.", 1);
+        }
+        if ($total_time_hours + $requestedTime > 16) {
+            throw new Exception("El beneficio que estás intentando registrar supera las horas autorizadas.", 1);
+        }
+    }
+
+    /**
+     * @param array $benefitData Array of values to be saved as new User Benefit
+     * @param BenefitUser $benefitUser Instance of the benefit used to validate if $benefitData can be saved
+     * @param Benefit $requestedBenefit Instance of the benefit requested to update
+     */
+    private function canUpdateBancoHoras(array $benefitData, BenefitUser $benefitUser, Benefit $requestedBenefit): void
+    {
+        $actualTime = BenefitDetail::find($benefitUser['benefit_detail_id'])->time_hours;
+        $requestedTime = BenefitDetail::find($benefitData['benefit_detail_id'])->time_hours;
+        $total_time_hours = BenefitUser::with(['benefit_detail'])
+            ->where(function ($q) use ($benefitData, $requestedBenefit) {
+                $q->where('user_id', $benefitData['user_id']);
+                $q->where('benefit_id', $requestedBenefit->id);
+            })
+            ->get()->pluck('benefit_detail.time_hours')->sum();
+        if (($total_time_hours - $actualTime) + $requestedTime > 16) {
+            throw new Exception("El beneficio que estás intentando actualizar supera las horas disponibles.", 1);
+        }
+    }
+
+    /**
+     * @param array $benefitData Array of values to be saved as new User Benefit
+     */
+    private function canSaveHorarioFlexible(array $benefitData): void
+    {
+        $claimedSchedule = BenefitUser::where(function ($q) use ($benefitData) {
+            $q->where('benefit_id', $benefitData['benefit_id']);
+            $q->whereYear('benefit_begin_time', date("Y", strtotime($benefitData['benefit_begin_time'])));
+        })->get();
+        if (!$claimedSchedule->isEmpty()) {
+            $claimedSchedule->each(function ($item, $key) use ($benefitData) {
+                if ($this->date_quarter($benefitData['benefit_begin_time']) === $this->date_quarter($item->benefit_begin_time)) {
+                    throw new Exception("Este beneficio ya está activo para este trimestre.", 1);
+                }
+            });
+        }
+    }
+
+    /**
+     * @param array $benefitData Array of values to be saved as new User Benefit
+     */
+    private function canUpdateHorarioFlexible(array $benefitData, BenefitUser $benefitUser): void
+    {
+        $claimedSchedule = BenefitUser::where(function ($q) use ($benefitData, $benefitUser) {
+            $q->where('benefit_id', $benefitData['benefit_id']);
+            $q->whereYear('benefit_begin_time', date("Y", strtotime($benefitData['benefit_begin_time'])));
+            $q->where('id', '<>', $benefitUser->id);
+        })->get();
+        if (!$claimedSchedule->isEmpty()) {
+            $claimedSchedule->each(function ($item, $key) use ($benefitData) {
+                if ($this->date_quarter($benefitData['benefit_begin_time']) === $this->date_quarter($item->benefit_begin_time)) {
+                    throw new Exception("Este beneficio ya está activo para este trimestre.", 1);
+                }
+            });
+        }
+    }
+
+    /**
+     * @param array $benefitData Array of values to be saved as new User Benefit
+     */
+    private function canSaveMiViernes(array $benefitData): void
+    {
+        $claimedFriday = BenefitUser::where(function ($q) use ($benefitData) {
+            $q->where('benefit_id', $benefitData['benefit_id']);
+            $q->whereYear('benefit_begin_time', date("Y", strtotime($benefitData['benefit_begin_time'])));
+            $q->whereMonth('benefit_begin_time', date("n", strtotime($benefitData['benefit_begin_time'])));
+        })->get();
+        if (!$claimedFriday->isEmpty()) {
+            throw new Exception("El beneficio que está intentando registrar ya fue utilizado en este mes.", 1);
+        }
+    }
+
+    /**
+     * @param array $benefitData Array of values to be saved as new User Benefit
+     */
+    private function canUpdateMiViernes(array $benefitData): void
+    {
+        $claimedFriday = BenefitUser::where(function ($q) use ($benefitData) {
+            $q->where('benefit_id', $benefitData['benefit_id']);
+            $q->whereYear('benefit_begin_time', date("Y", strtotime($benefitData['benefit_begin_time'])));
+            $q->whereMonth('benefit_begin_time', date("n", strtotime($benefitData['benefit_begin_time'])));
+        })->get();
+        if (!$claimedFriday->isEmpty()) {
+            throw new Exception("El beneficio que está intentando actualizar ya fue utilizado en este mes.", 1);
+        }
+    }
+
+    /**
+     * Returns the quarter of the year for the input date
+     * 
+     * @param string $date
+     * @return int 
+     */
+    function date_quarter(string $date): int
+    {
+        $month = date('n', strtotime($date));
+
+        if ($month <= 3) return 1;
+        if ($month <= 6) return 2;
+        if ($month <= 9) return 3;
+        return 4;
     }
 }

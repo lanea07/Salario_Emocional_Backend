@@ -60,16 +60,20 @@ class Benefits extends Seeder
             'time_hours' => 8
         ]);
         $franja1 = BenefitDetail::create([
-            'name' => 'De 6:30 a.m. a 16:30 p.m.'
+            'name' => 'De 6:30 a.m. a 16:30 p.m.',
+            'time_hours' => 1
         ]);
         $franja2 = BenefitDetail::create([
-            'name' => 'De 7:00 a.m. a 17:00 p.m.'
+            'name' => 'De 7:00 a.m. a 17:00 p.m.',
+            'time_hours' => 1
         ]);
         $franja3 = BenefitDetail::create([
-            'name' => 'De 7:30 a.m. a 17:30 p.m.'
+            'name' => 'De 7:30 a.m. a 17:30 p.m.',
+            'time_hours' => 1
         ]);
         $franja4 = BenefitDetail::create([
-            'name' => 'De 8:00 a.m. a 18:00 p.m.'
+            'name' => 'De 8:00 a.m. a 18:00 p.m.',
+            'time_hours' => 1
         ]);
         $personalizado = BenefitDetail::create([
             'name' => 'Personalizado'

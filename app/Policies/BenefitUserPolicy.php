@@ -9,7 +9,7 @@ use Illuminate\Auth\Access\Response;
 class BenefitUserPolicy
 {
 
-    public function store(User $user, BenefitUser $benefitUser)
+    public function store(User $user)
     {
         return $user->isAdmin() && auth('sanctum')->check();
     }
