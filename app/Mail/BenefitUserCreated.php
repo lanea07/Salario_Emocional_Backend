@@ -4,7 +4,7 @@ namespace App\Mail;
 
 use App\Models\BenefitUser;
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
@@ -14,13 +14,19 @@ class BenefitUserCreated extends Mailable
 {
     use Queueable, SerializesModels;
 
+    public BenefitUser $newBenefitUser;
+    public Collection | null $bancoHoras;
+    public Collection | null $miViernes;
+
     /**
      * Create a new message instance.
      */
     public function __construct(
-        public $newBenefitUser
+        protected $data
     ) {
-        //
+        $this->newBenefitUser = $data[0];
+        $this->bancoHoras = $data[1];
+        $this->miViernes = $data[2];
     }
 
     /**
@@ -41,6 +47,11 @@ class BenefitUserCreated extends Mailable
     {
         return new Content(
             view: 'emails.newBenefitUserCreated',
+            with: [
+                'newBenefitUser' => $this->newBenefitUser,
+                'bancoHoras' => $this->bancoHoras,
+                'miViernes' => $this->miViernes
+            ]
         );
     }
 

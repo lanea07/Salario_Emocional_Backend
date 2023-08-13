@@ -1,3 +1,3 @@
 TODO: Laravel Job cumpleaños?
 TODO: Implementar lógica de jefatura de áreas y de gerencias en forma jerárquica
-TODO: On New BenefitUser, email specific benefit detail and remaining hours if apply
+TODO: Add benefit image logo (same as frontend) to email depending of the benefit used
