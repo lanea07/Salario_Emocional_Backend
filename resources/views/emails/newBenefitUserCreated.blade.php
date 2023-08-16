@@ -1717,7 +1717,7 @@
         body,
         html,
         .body {
-            background: #dddddd !important;
+            background: #FFFFFF !important;
         }
     </style>
 </head>
@@ -1746,6 +1746,38 @@
                                             </tr>
                                         </tbody>
                                     </table>
+
+                                    <table class="row">
+                                        <tbody>
+                                            <tr>
+                                                <td height="16px" style="font-size:16px;line-height:16px;">
+                                                    @switch($newBenefitUser->benefits->name)
+                                                        @case("Mi Cumpleaños")
+                                                            <img height="150" src={{ $message->embed(realpath(public_path() . '/images/cumpleaños.svg')) }} alt="Benefit_Logo">
+                                                            @break 
+                                                        
+                                                        @case("Mi Banco de Horas")
+                                                            <img height="150" src={{ $message->embed(realpath(public_path() . '/images/banco_horas.svg')) }} al="Benefit_Logo">
+
+                                                            @break 
+                                                        @case("Mi Horario Flexible")
+                                                            <img height="150" src={{ $message->embed(realpath(public_path() . '/images/horario_flexible.svg')) }} alt  ="Benefit_Logo">
+                                                            @break 
+
+                                                        @case("Mi Viernes")
+                                                            <img height="150" src={{ $message->embed(realpath(public_path() . '/images/mi_viernes.svg')) }} alt="Benefit_Logo">
+                                                            @break 
+
+                                                        @case("Tiempo para el Viajero")
+                                                            <img height="150" src={{ $message->embed(realpath(public_path() . '/images/tiempo_viajero.svg')) }} alt="Benefit_Logo">
+                                                            @break 
+
+                                                    @endswitch
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+
                                     <table class="row">
                                         <tbody>
                                             <tr>
@@ -1771,8 +1803,7 @@
                                                                             <table class="row">
                                                                                 <tbody>
                                                                                     <tr>
-                                                                                        <th
-                                                                                            class="small-12 large-6 columns first">
+                                                                                        <th class="small-12 large-6 columns first">
                                                                                             <table>
                                                                                                 <tr>
                                                                                                     <th>
@@ -1789,8 +1820,7 @@
                                                                                                 </tr>
                                                                                             </table>
                                                                                         </th>
-                                                                                        <th
-                                                                                            class="small-12 large-6 columns last">
+                                                                                        <th class="small-12 large-6 columns last">
                                                                                             <table>
                                                                                                 <tr>
                                                                                                     <th>
@@ -1809,11 +1839,67 @@
                                                                                             </table>
                                                                                         </th>
                                                                                     </tr>
+
+                                                                                    @if (!$bancoHoras->isEmpty())
+                                                                                        <tr>
+                                                                                            <th class="small-12 large-6 columns first">
+                                                                                                <table>
+                                                                                                    <tr>
+                                                                                                        <th>
+                                                                                                            <p>
+                                                                                                                <strong>Registros adicionales de este beneficio</strong><br>
+                                                                                                            </p>
+                                                                                                        </th>
+                                                                                                    </tr>
+                                                                                                    @foreach ($bancoHoras as $bancoHora)
+                                                                                                    <tr>
+                                                                                                        <td>
+                                                                                                            {{ \Carbon\Carbon::parse($bancoHora->benefit_begin_time)->format('d/m/Y') }}: {{ $bancoHora->benefit_detail->time_hours }} horas
+                                                                                                        </td>
+                                                                                                    </tr>
+                                                                                                @endforeach
+                                                                                                </table>
+                                                                                            </th>
+                                                                                        </tr>
+                                                                                    @endif
+
+                                                                                    @if (!$miViernes->isEmpty())
+                                                                                    <tr>
+                                                                                        <th class="small-12 large-6 columns first">
+                                                                                            <table>
+                                                                                                <tr>
+                                                                                                    <th>
+                                                                                                        <p>
+                                                                                                            <strong>Registros adicionales de este beneficio</strong><br>
+                                                                                                        </p>
+                                                                                                    </th>
+                                                                                                </tr>
+                                                                                                @foreach ($miViernes as $viernes)
+                                                                                                <tr>
+                                                                                                    <td>
+                                                                                                        {{ \Carbon\Carbon::parse($viernes->benefit_begin_time)->format('d/m/Y') }}
+                                                                                                    </td>
+                                                                                                </tr>
+                                                                                            @endforeach
+                                                                                            </table>
+                                                                                        </th>
+                                                                                    </tr>
+                                                                                    @endif
+
                                                                                 </tbody>
                                                                             </table>
                                                                         </th>
                                                                         <th class="expander"></th>
                                                                     </tr>
+                                                                </table>
+                                                                <table class="spacer">
+                                                                    <tbody>
+                                                                        <tr>
+                                                                            <td height="16px"
+                                                                                style="font-size:16px;line-height:16px;">
+                                                                                &#xA0;</td>
+                                                                        </tr>
+                                                                    </tbody>
                                                                 </table>
                                                             </th>
                                                         </tr>

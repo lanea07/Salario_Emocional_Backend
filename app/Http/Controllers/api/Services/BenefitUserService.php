@@ -7,10 +7,8 @@ use App\Models\Benefit;
 use App\Models\BenefitDetail;
 use App\Models\BenefitUser;
 use App\Models\User;
-use Carbon\Carbon;
 use Exception;
 use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Mail;
 
 class BenefitUserService
@@ -48,6 +46,8 @@ class BenefitUserService
     public function saveBenefitUser(array $benefitUserData): BenefitUser
     {
         $requestedBenefit = Benefit::find($benefitUserData['benefit_id']);
+        $bancoHoras = new Collection();
+        $miViernes = new Collection();
 
         switch ($requestedBenefit->name) {
             case 'Mi Cumpleaños':
@@ -69,10 +69,32 @@ class BenefitUserService
 
         $benefitUserData = BenefitUser::create($benefitUserData);
         $benefitUserData = BenefitUser::with(['user', 'benefits', 'benefit_detail'])->find($benefitUserData->id);
-        // $benefitUserData = BenefitUser::with(['user', 'benefits', 'benefit_detail'])->find(5);
-        if (App::environment('production')) {
-            Mail::to($benefitUserData->user->email)->queue(new BenefitUserCreated($benefitUserData));
+
+        if ($requestedBenefit->name === 'Mi Banco de Horas') {
+            $bancoHoras = BenefitUser::with(['benefit_detail'])->where(function ($q) use ($benefitUserData) {
+                $q->where('user_id', $benefitUserData->user_id);
+                $q->where('benefit_id', $benefitUserData->benefit_id);
+                $q->where('id', '<>', $benefitUserData->id);
+                $q->whereYear('benefit_begin_time', date("Y", strtotime($benefitUserData['benefit_begin_time'])));
+            })->orderBy('benefit_begin_time')->get();
         }
+        if ($requestedBenefit->name === 'Mi Viernes') {
+            $miViernes = BenefitUser::where(function ($q) use ($benefitUserData) {
+                $q->where('user_id', $benefitUserData->user_id);
+                $q->where('benefit_id', $benefitUserData->benefit_id);
+                $q->where('id', '<>', $benefitUserData->id);
+                $q->whereYear('benefit_begin_time', date("Y", strtotime($benefitUserData['benefit_begin_time'])));
+            })->orderBy('benefit_begin_time')->get();
+        }
+
+        $data = [
+            $benefitUserData,
+            $bancoHoras,
+            $miViernes
+        ];
+
+        // $benefitUserData = BenefitUser::with(['user', 'benefits', 'benefit_detail'])->find(5);
+        Mail::to($benefitUserData->user->email)->queue(new BenefitUserCreated($data));
         return $benefitUserData;
     }
 
