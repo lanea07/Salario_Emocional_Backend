@@ -108,6 +108,6 @@ class BenefitUserController extends Controller
         $year = $request->years;
         $user_id = $request->users;
         $data = ['year' => $year, 'user_id' => $user_id, 'isAuthenticatedUserAdmin' => auth()->user()->isAdmin()];
-        Mail::to('juan.soto@flamingo.com.co')->queue(new BenefitUserExcelExport($data));
+        Mail::to(auth()->user()->email)->queue(new BenefitUserExcelExport($data));
     }
 }
