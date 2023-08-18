@@ -3,6 +3,8 @@
 namespace App\Exports;
 
 use App\Models\User;
+use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\Auth;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithMapping;
@@ -12,11 +14,13 @@ class BenefitUserExport implements FromCollection, WithMapping, WithHeadings
 
     protected $year;
     protected $user_id;
+    protected $isAuthenticatedUserAdmin;
 
     public function __construct(array $data)
     {
         $this->year = $data['year'];
         $this->user_id = $data['user_id'];
+        $this->isAuthenticatedUserAdmin = $data['isAuthenticatedUserAdmin'];
     }
 
     public function headings(): array
@@ -35,8 +39,7 @@ class BenefitUserExport implements FromCollection, WithMapping, WithHeadings
      */
     public function collection()
     {
-        $user = User::find($this->user_id);
-        if ($user->isAdmin()) {
+        if ($this->isAuthenticatedUserAdmin) {
             $user =  User::with(
                 [
                     'benefit_user' => function ($q) {
@@ -64,13 +67,18 @@ class BenefitUserExport implements FromCollection, WithMapping, WithHeadings
 
     public function map($user): array
     {
-        $data = [
-            $user->name,
-            empty($user->benefit_user[0]->benefits) ? null :  $user->benefit_user[0]->benefits->name,
-            empty($user->benefit_user[0]->benefit_detail) ? null : $user->benefit_user[0]->benefit_detail->name,
-            empty($user->benefit_user[0]->benefit_begin_time) ? null : \Carbon\Carbon::parse($user->benefit_user[0]->benefit_begin_time)->format('d/m/Y'),
-            empty($user->benefit_user[0]->benefit_end_time) ? null : \Carbon\Carbon::parse($user->benefit_user[0]->benefit_end_time)->format('d/m/Y')
-        ];
+        $data = [];
+        $flatten = Arr::flatten($user->benefit_user, 2);
+        foreach ($flatten as $benefit_user) {
+            $array = [
+                $user->name,
+                empty($benefit_user->benefits) ? null :  $benefit_user->benefits->name,
+                empty($benefit_user->benefit_detail) ? null : $benefit_user->benefit_detail->name,
+                empty($benefit_user->benefit_begin_time) ? null : \Carbon\Carbon::parse($benefit_user->benefit_begin_time)->format('d/m/Y'),
+                empty($benefit_user->benefit_end_time) ? null : \Carbon\Carbon::parse($benefit_user->benefit_end_time)->format('d/m/Y')
+            ];
+            array_push($data, $array);
+        }
         return $data;
     }
 }
