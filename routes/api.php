@@ -45,10 +45,36 @@ Route::middleware('auth:sanctum')->group(function () {
     //     return $request->user();
     // });
     // Route::resource('/user', UserController::class)->middleware('auth:sanctum');
-    Route::resource('/benefit', BenefitController::class);
-    Route::resource('/benefitdetail', BenefitDetailController::class);
-    Route::resource('/benefituser', BenefitUserController::class);
-    Route::resource('/position', PositionController::class);
-    Route::resource('/role', RoleController::class);
-    Route::resource('/user', UserController::class);
+    Route::resource('/benefit', BenefitController::class)->missing(
+        function () {
+            throw new Exception('Recurso no Encontrado');
+        }
+    );
+    Route::resource('/benefitdetail', BenefitDetailController::class)->missing(
+        function () {
+            throw new Exception('Recurso no Encontrado');
+        }
+    );
+    Route::resource('/benefituser', BenefitUserController::class)->missing(
+        function () {
+            throw new Exception('Recurso no Encontrado');
+        }
+    );
+    Route::resource('/position', PositionController::class)->missing(
+        function () {
+            throw new Exception('Recurso no Encontrado');
+        }
+    );
+    Route::resource('/role', RoleController::class)->missing(
+        function () {
+            throw new Exception('Recurso no Encontrado');
+        }
+    );
+    Route::resource('/user', UserController::class)->missing(
+        function () {
+            throw new Exception('Recurso no Encontrado');
+        }
+    );
+
+    Route::post('/exportbenefits', [BenefitUserController::class, 'exportDetail']);
 });

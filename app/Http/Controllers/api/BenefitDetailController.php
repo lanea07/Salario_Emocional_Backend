@@ -6,7 +6,6 @@ use App\Http\Controllers\api\Services\BenefitDetailService;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\CreateBenefitDetailRequest;
 use App\Models\BenefitDetail;
-use Exception;
 use Illuminate\Http\JsonResponse;
 
 class BenefitDetailController extends Controller

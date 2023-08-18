@@ -4,10 +4,14 @@ namespace App\Policies;
 
 use App\Models\BenefitUser;
 use App\Models\User;
-use Illuminate\Auth\Access\Response;
 
 class BenefitUserPolicy
 {
+
+    public function show(User $user, BenefitUser $benefitUser)
+    {
+        return $user->isAdmin() || $user->id === $benefitUser->user->leader || $user->id === $benefitUser->user->id;
+    }
 
     public function store(User $user)
     {

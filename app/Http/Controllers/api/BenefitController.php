@@ -6,7 +6,6 @@ use App\Http\Controllers\api\Services\BenefitService;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\CreateBenefitRequest;
 use App\Models\Benefit;
-use App\Models\BenefitDetail;
 use Illuminate\Http\JsonResponse;
 
 class BenefitController extends Controller

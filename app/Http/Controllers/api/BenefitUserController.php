@@ -9,7 +9,8 @@ use App\Models\BenefitUser;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-
+use App\Mail\BenefitUserExcelExport;
+use Illuminate\Support\Facades\Mail;
 
 class BenefitUserController extends Controller
 {
@@ -63,7 +64,12 @@ class BenefitUserController extends Controller
 
     public function show(BenefitUser $benefituser): JsonResponse
     {
-        return response()->json($this->benefitUserService->getBenefitUserByID($benefituser), 200);
+        try {
+            $this->authorize('show', $benefituser);
+            return response()->json($this->benefitUserService->getBenefitUserByID($benefituser), 200);
+        } catch (\Throwable $th) {
+            return response()->json(['message', 'El beneficio solicitado no se puede mostrar porque no está asociado al usuario actual'], 403);
+        }
     }
 
     public function update(CreateBenefitUserRequest $request, BenefitUser $benefituser): JsonResponse
@@ -95,5 +101,13 @@ class BenefitUserController extends Controller
         } catch (\Illuminate\Database\QueryException $th) {
             return response()->json($th, 500);
         }
+    }
+
+    public function exportDetail(Request $request)
+    {
+        $year = $request->years;
+        $user_id = $request->users;
+        $data = ['year' => $year, 'user_id' => $user_id];
+        Mail::to('juan.soto@flamingo.com.co')->queue(new BenefitUserExcelExport($data));
     }
 }

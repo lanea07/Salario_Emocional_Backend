@@ -157,6 +157,7 @@ class BenefitUserService
     {
         $isBirthdayClaimed = BenefitUser::where(function ($q) use ($benefitData) {
             $q->where('benefit_id', $benefitData['benefit_id']);
+            $q->where('user_id', '<>', $benefitData['user_id']);
             $q->whereYear('benefit_begin_time', date("Y", strtotime($benefitData['benefit_begin_time'])));
         })->get();
         if (!$isBirthdayClaimed->isEmpty()) {
@@ -171,6 +172,7 @@ class BenefitUserService
     {
         $isBirthdayClaimed = BenefitUser::where(function ($q) use ($benefitData) {
             $q->where('benefit_id', $benefitData['benefit_id']);
+            $q->where('user_id', '<>', $benefitData['user_id']);
             $q->whereYear('benefit_begin_time', date("Y", strtotime($benefitData['benefit_begin_time'])));
         })->get();
         if (!$isBirthdayClaimed->isEmpty()) {
@@ -226,6 +228,7 @@ class BenefitUserService
     {
         $claimedSchedule = BenefitUser::where(function ($q) use ($benefitData) {
             $q->where('benefit_id', $benefitData['benefit_id']);
+            $q->where('user_id', '<>', $benefitData['user_id']);
             $q->whereYear('benefit_begin_time', date("Y", strtotime($benefitData['benefit_begin_time'])));
         })->get();
         if (!$claimedSchedule->isEmpty()) {
@@ -243,9 +246,10 @@ class BenefitUserService
     private function canUpdateHorarioFlexible(array $benefitData, BenefitUser $benefitUser): void
     {
         $claimedSchedule = BenefitUser::where(function ($q) use ($benefitData, $benefitUser) {
+            $q->where('id', '<>', $benefitUser->id);
+            $q->where('user_id', '<>', $benefitData['user_id']);
             $q->where('benefit_id', $benefitData['benefit_id']);
             $q->whereYear('benefit_begin_time', date("Y", strtotime($benefitData['benefit_begin_time'])));
-            $q->where('id', '<>', $benefitUser->id);
         })->get();
         if (!$claimedSchedule->isEmpty()) {
             $claimedSchedule->each(function ($item, $key) use ($benefitData) {
@@ -263,6 +267,7 @@ class BenefitUserService
     {
         $claimedFriday = BenefitUser::where(function ($q) use ($benefitData) {
             $q->where('benefit_id', $benefitData['benefit_id']);
+            $q->where('user_id', $benefitData['user_id']);
             $q->whereYear('benefit_begin_time', date("Y", strtotime($benefitData['benefit_begin_time'])));
             $q->whereMonth('benefit_begin_time', date("n", strtotime($benefitData['benefit_begin_time'])));
         })->get();
@@ -278,6 +283,7 @@ class BenefitUserService
     {
         $claimedFriday = BenefitUser::where(function ($q) use ($benefitData) {
             $q->where('benefit_id', $benefitData['benefit_id']);
+            $q->where('user_id', $benefitData['user_id']);
             $q->whereYear('benefit_begin_time', date("Y", strtotime($benefitData['benefit_begin_time'])));
             $q->whereMonth('benefit_begin_time', date("n", strtotime($benefitData['benefit_begin_time'])));
         })->get();

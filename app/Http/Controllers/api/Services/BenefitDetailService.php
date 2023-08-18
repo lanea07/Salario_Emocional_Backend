@@ -10,7 +10,7 @@ class BenefitDetailService
 
     public function getAllBenefitDetail(): Collection
     {
-        return BenefitDetail::all();
+        return BenefitDetail::with(['benefit'])->get();
     }
 
     public function saveBenefitDetail(array $benefitDetailData): BenefitDetail

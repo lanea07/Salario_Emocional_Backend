@@ -7,7 +7,6 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\CreateRoleRequest;
 use App\Models\Role;
 use Illuminate\Http\JsonResponse;
-use PhpParser\Node\Stmt\TryCatch;
 
 class RoleController extends Controller
 {

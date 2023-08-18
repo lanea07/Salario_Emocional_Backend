@@ -1,10 +1,6 @@
 <?php
 
 use App\Http\Controllers\AngularController;
-use App\Mail\BenefitUserCreated;
-use App\Models\User;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Route;
 
 /*

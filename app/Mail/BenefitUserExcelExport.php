@@ -2,23 +2,28 @@
 
 namespace App\Mail;
 
+use App\Exports\BenefitUserExport;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
+use Illuminate\Mail\Mailables\Attachment;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
+use Maatwebsite\Excel\Facades\Excel;
 
-class NewUserCreated extends Mailable
+class BenefitUserExcelExport extends Mailable implements ShouldQueue
 {
     use Queueable, SerializesModels;
+
+    protected array $data;
 
     /**
      * Create a new message instance.
      */
-    public function __construct()
+    public function __construct(array $data)
     {
-        //
+        $this->data = $data;
     }
 
     /**
@@ -27,7 +32,8 @@ class NewUserCreated extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'New User Created',
+            subject: 'Resumen de Beneficios',
+            replyTo: 'juan.soto@flamingo.com.co'
         );
     }
 
@@ -37,7 +43,7 @@ class NewUserCreated extends Mailable
     public function content(): Content
     {
         return new Content(
-            view: 'view.name',
+            view: 'emails.excelExportMail',
         );
     }
 
@@ -48,6 +54,13 @@ class NewUserCreated extends Mailable
      */
     public function attachments(): array
     {
-        return [];
+        return [
+            Attachment::fromData(
+                fn () =>
+                Excel::raw(new BenefitUserExport($this->data), \Maatwebsite\Excel\Excel::XLSX),
+                'Beneficios.xlsx'
+            )->withMime('application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+
+        ];
     }
 }
