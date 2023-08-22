@@ -189,8 +189,8 @@ class BenefitUserService
         $requestedTime = BenefitDetail::find($benefitData['benefit_detail_id'])->time_hours;
         $total_time_hours = BenefitUser::with(['benefit_detail'])
             ->where(function ($q) use ($benefitData, $benefit) {
-                $q->where('user_id', $benefitData['user_id']);
-                $q->where('benefit_id', $benefit->id);
+            $q->where('user_id', '=', $benefitData['user_id']);
+            $q->where('benefit_id', '=', $benefit->id);
             })
             ->get()->pluck('benefit_detail.time_hours')->sum();
         if ($total_time_hours >= 16) {
