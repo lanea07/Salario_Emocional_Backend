@@ -191,8 +191,8 @@ class BenefitUserService
             ->where(function ($q) use ($benefitData, $benefit) {
             $q->where('user_id', '=', $benefitData['user_id']);
             $q->where('benefit_id', '=', $benefit->id);
-            })
-            ->get()->pluck('benefit_detail.time_hours')->sum();
+            $q->whereYear('benefit_begin_time', date("Y", strtotime($benefitData['benefit_begin_time'])));
+        })->get()->pluck('benefit_detail.time_hours')->sum();
         if ($total_time_hours >= 16) {
             throw new Exception("El beneficio que estás intentando registrar ya tiene utilizado todas las horas disponibles.", 1);
         }
