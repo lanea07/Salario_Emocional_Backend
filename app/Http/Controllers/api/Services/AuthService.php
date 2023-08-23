@@ -3,25 +3,16 @@
 namespace App\Http\Controllers\api\Services;
 
 use App\Models\User;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Validation\ValidationException;
 
 class AuthService
 {
 
-    public function validateUserLogin(string $email, string $password): User
+    public function validateUserLogin(string $email, string $password): User | JsonResponse
     {
-        try {
-            $user = User::where('email', $email)->first();
-        } catch (\Throwable $th) {
-            return response()->json(['message' => 'Ha ocurrido un error interno, contacte con el administrador'], 500);
-        }
-        if (!$user || !Hash::check($password, $user->password)) {
-            throw ValidationException::withMessages([
-                'email' => 'The provided credentials are incorrect.'
-            ]);
-        }
+        $user = User::where('email', $email)->first();
         return $user;
     }
 

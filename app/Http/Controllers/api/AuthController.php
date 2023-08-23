@@ -6,6 +6,8 @@ use App\Http\Controllers\api\Services\AuthService;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\ValidationException;
 
 class AuthController extends Controller
 {
@@ -25,7 +27,17 @@ class AuthController extends Controller
             'device_name' => 'required'
         ]);
 
-        $user = $this->authService->validateUserLogin(request()->email, request()->password);
+        try {
+            $user = $this->authService->validateUserLogin(request()->email, request()->password);
+        } catch (\Throwable $th) {
+            return response()->json(['message' => 'Ha ocurrido un error interno, contacte con el administrador'], 500);
+        }
+
+        if (!$user || !Hash::check(request()->password, $user->password)) {
+            throw ValidationException::withMessages([
+                'email' => 'The provided credentials are incorrect.'
+            ]);
+        }
 
         return response()->json(
             [
