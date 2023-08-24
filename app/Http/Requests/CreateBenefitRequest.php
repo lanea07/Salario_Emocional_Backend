@@ -23,7 +23,8 @@ class CreateBenefitRequest extends FormRequest
     {
         return [
             'name' => 'required',
-            'benefitDetailFormGroup' => 'required'
+            'benefitDetailFormGroup' => 'required',
+            'filePoliticas' => 'required_unless:filePoliticas,null'
         ];
     }
 }

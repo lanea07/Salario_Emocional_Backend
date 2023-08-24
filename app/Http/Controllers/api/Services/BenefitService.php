@@ -5,6 +5,7 @@ namespace App\Http\Controllers\api\Services;
 use App\Models\Benefit;
 use App\Models\BenefitDetail;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Facades\Storage;
 
 class BenefitService
 {
@@ -14,14 +15,25 @@ class BenefitService
         return Benefit::with('benefit_detail')->get();
     }
 
-    public function saveBenefit(array $benefitData): Benefit
+    public function saveBenefit(array $benefitData)//: Benefit
     {
+        // Convert BenefitDetailFormGroup to array
+        $benefitData['benefitDetailFormGroup'] = json_decode($benefitData['benefitDetailFormGroup'], true);
         $benefitsToAsign = array_filter($benefitData['benefitDetailFormGroup'], function ($benefit) {
             return $benefit === true;
         });
         $benefitsToAsign = array_keys($benefitsToAsign);
+
+        // Save request File
+        if (request()->file('filePoliticas')) {
+            $path = request()->file('filePoliticas')->store('politics');
+            $benefitData['politicas_path'] = $path;
+        }
         $benefitsToAsign = BenefitDetail::whereIn('id', $benefitsToAsign)->get();
-        $benefit = Benefit::create($benefitData);
+        $benefit = Benefit::create([
+            'name' => $benefitData['name'],
+            'politicas_path' => $benefitData['politicas_path']
+        ]);
         $benefit->benefit_detail()->attach($benefitsToAsign);
         return $benefit;
     }
@@ -33,12 +45,20 @@ class BenefitService
 
     public function updateBenefit(array $benefitData, Benefit $benefit): Benefit
     {
+        // Convert BenefitDetailFormGroup to array
+        $benefitData['benefitDetailFormGroup'] = json_decode($benefitData['benefitDetailFormGroup'], true);
         $benefitsToAsign = array_filter($benefitData['benefitDetailFormGroup'], function ($benefit) {
             return $benefit === true;
         });
         $benefitsToAsign = array_keys($benefitsToAsign);
         $benefitsToAsign = BenefitDetail::whereIn('id', $benefitsToAsign)->get();
 
+        // Save request File
+        if (request()->file('filePoliticas')) {
+            Storage::delete($benefit->politicas_path);
+            $path = request()->file('filePoliticas')->store('politics');
+            $benefitData['politicas_path'] = $path;
+        }
         $benefit->update($benefitData);
         $benefit->benefit_detail()->sync($benefitsToAsign);
         return $benefit;

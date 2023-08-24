@@ -10,7 +10,8 @@ class Benefit extends Model
     use HasFactory;
 
     protected $fillable = [
-        'name'
+        'name',
+        'politicas_path'
     ];
 
     public function benefit_detail()

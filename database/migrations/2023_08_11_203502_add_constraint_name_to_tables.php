@@ -23,6 +23,9 @@ return new class extends Migration
         Schema::table('roles', function (Blueprint $table) {
             $table->unique('name');
         });
+        Schema::table('benefits', function (Blueprint $table) {
+            $table->text('politicas_path');
+        });
     }
 
     /**
@@ -31,16 +34,19 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('benefits', function (Blueprint $table) {
-            $table->dropUnique('name');
+            $table->dropUnique('benefits_name_unique');
         });
         Schema::table('benefit_details', function (Blueprint $table) {
-            $table->dropUnique('name');
+            $table->dropUnique('benefit_details_name_unique');
         });
         Schema::table('positions', function (Blueprint $table) {
-            $table->dropUnique('name');
+            $table->dropUnique('positions_name_unique');
         });
         Schema::table('roles', function (Blueprint $table) {
-            $table->dropUnique('name');
+            $table->dropUnique('roles_name_unique');
+        });
+        Schema::table('benefits', function (Blueprint $table) {
+            $table->dropColumn('politicas_path');
         });
     }
 };
