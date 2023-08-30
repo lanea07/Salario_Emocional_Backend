@@ -26,7 +26,7 @@ class BenefitService
 
         // Save request File
         if (request()->file('filePoliticas')) {
-            $path = request()->file('filePoliticas')->store('politics');
+            $path = request()->file('filePoliticas')->store('politics', 'google');
             $benefitData['politicas_path'] = $path;
         }
         $benefitsToAsign = BenefitDetail::whereIn('id', $benefitsToAsign)->get();
@@ -55,8 +55,10 @@ class BenefitService
 
         // Save request File
         if (request()->file('filePoliticas')) {
-            Storage::delete($benefit->politicas_path);
-            $path = request()->file('filePoliticas')->store('politics');
+            if ($benefit->politicas_path) {
+                $deleted = Storage::disk('google')->delete($benefit->getAttributes()['politicas_path']);
+            }
+            $path = request()->file('filePoliticas')->store('politics', 'google');
             $benefitData['politicas_path'] = $path;
         }
         $benefit->update($benefitData);
