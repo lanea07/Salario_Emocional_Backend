@@ -29,7 +29,8 @@ class CreateUserRequest extends FormRequest
             'rolesFormGroup' => 'required',
             'position_id' => 'required',
             'subordinates' => 'sometimes|nullable',
-            'requirePassChange' => 'required_unless:requirePassChange,null'
+            'requirePassChange' => 'required_unless:requirePassChange,null',
+            'valid_id' => 'required'
         ];
     }
 }

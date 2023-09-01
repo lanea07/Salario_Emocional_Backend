@@ -24,7 +24,8 @@ class User extends Model //Authenticatable
         'password',
         'position_id',
         'leader',
-        'requirePassChange'
+        'requirePassChange',
+        'valid_id'
     ];
 
     /**
