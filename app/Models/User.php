@@ -11,6 +11,7 @@ use Laravel\Sanctum\HasApiTokens;
 class User extends Model //Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable;
+    use \Staudenmeir\LaravelAdjacencyList\Eloquent\HasRecursiveRelationships;
 
     /**
      * The attributes that are mass assignable.
@@ -23,7 +24,8 @@ class User extends Model //Authenticatable
         'password',
         'position_id',
         'leader',
-        'requirePassChange'
+        'requirePassChange',
+        'valid_id'
     ];
 
     /**
@@ -44,7 +46,8 @@ class User extends Model //Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
-        'requirePassChange' => 'boolean'
+        'requirePassChange' => 'boolean',
+        'valid_id' => 'boolean'
     ];
 
     public function benefit_user()
@@ -90,5 +93,10 @@ class User extends Model //Authenticatable
     public function requirePassChange()
     {
         return $this->requirePassChange;
+    }
+
+    public function getParentKeyName()
+    {
+        return 'leader';
     }
 }
