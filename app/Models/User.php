@@ -46,7 +46,8 @@ class User extends Model //Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
-        'requirePassChange' => 'boolean'
+        'requirePassChange' => 'boolean',
+        'valid_id' => 'boolean'
     ];
 
     public function benefit_user()
