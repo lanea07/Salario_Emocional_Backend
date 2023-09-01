@@ -50,7 +50,8 @@ class UserController extends Controller
 
     public function show(User $user): JsonResponse
     {
-        return response()->json($this->userService->getUserById($user), 200);
+        return response()->json($user->with(['positions', 'roles'])->tree()->get()->toTree(), 200);
+        //return response()->json($this->userService->getUserById($user), 200);
     }
 
     public function update(CreateUserRequest $request, User $user): JsonResponse

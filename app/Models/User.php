@@ -11,6 +11,7 @@ use Laravel\Sanctum\HasApiTokens;
 class User extends Model //Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable;
+    use \Staudenmeir\LaravelAdjacencyList\Eloquent\HasRecursiveRelationships;
 
     /**
      * The attributes that are mass assignable.
@@ -90,5 +91,10 @@ class User extends Model //Authenticatable
     public function requirePassChange()
     {
         return $this->requirePassChange;
+    }
+
+    public function getParentKeyName()
+    {
+        return 'leader';
     }
 }
