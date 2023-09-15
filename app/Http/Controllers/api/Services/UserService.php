@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers\api\Services;
 
+use App\Mail\NewUserCreated;
 use App\Models\Position;
 use App\Models\Role;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 
 class UserService
@@ -40,6 +42,13 @@ class UserService
         }
 
         $user->roles()->sync($rolesToAsign);
+
+        $data = [
+            $user,
+            $password
+        ];
+        Mail::to($user->email)->queue(new NewUserCreated($data));
+
         return $user;
     }
 
