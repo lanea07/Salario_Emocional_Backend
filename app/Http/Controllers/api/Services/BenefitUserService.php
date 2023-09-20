@@ -7,9 +7,15 @@ use App\Models\Benefit;
 use App\Models\BenefitDetail;
 use App\Models\BenefitUser;
 use App\Models\User;
+use Carbon\Carbon;
+use DateTime;
+use DateTimeZone;
 use Exception;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Mail;
+use Spatie\IcalendarGenerator\Components\Calendar;
+use Spatie\IcalendarGenerator\Components\Event;
+use Spatie\IcalendarGenerator\Properties\TextProperty;
 
 class BenefitUserService
 {
@@ -306,5 +312,27 @@ class BenefitUserService
         if ($month <= 6) return 2;
         if ($month <= 9) return 3;
         return 4;
+    }
+
+    /**
+     * Returns an *.ics file to be attached to the new benefit
+     * 
+     * @param BenefitUser $benefitUser
+     * 
+     * @return object
+     */
+    static function generateICS(BenefitUser $benefitUser)
+    {
+        $event = Calendar::create($benefitUser->user->email)->event([
+            Event::create()
+                ->name($benefitUser->benefits->name)
+                ->createdAt(new DateTime(Carbon::now()))
+                ->startsAt(new DateTime($benefitUser->benefit_begin_time, new DateTimeZone('America/Bogota')))
+                ->endsAt(new DateTime($benefitUser->benefit_end_time, new DateTimeZone('America/Bogota')))
+                ->appendProperty(
+                    TextProperty::create('X-MICROSOFT-CDO-BUSYSTATUS', 'OOF')
+                )
+        ]);
+        return $event->get();
     }
 }

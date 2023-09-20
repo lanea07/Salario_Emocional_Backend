@@ -1924,7 +1924,8 @@
                     <tbody>
                       <tr>
                         <th class="small-12 large-12 columns first last">
-                          <small>Recuerda que esta herramienta es para el seguimiento de tus beneficios. También debes registrarlo en el formulario que la compañía ha dispuesto para ello.</small>
+                          <small>* Adjunto te enviamos también tu cita para que la <b>importes</b> en tu calendario</small><br>
+                          <small>** Recuerda que esta herramienta es para el seguimiento de tus beneficios. También debes registrarlo en el formulario que la compañía ha dispuesto para ello.</small>
                         </th>
                       </tr>
                     </tbody>
