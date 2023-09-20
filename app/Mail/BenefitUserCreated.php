@@ -2,11 +2,13 @@
 
 namespace App\Mail;
 
+use App\Http\Controllers\api\Services\BenefitUserService;
 use App\Models\BenefitUser;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Mail\Mailable;
+use Illuminate\Mail\Mailables\Attachment;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
@@ -63,6 +65,12 @@ class BenefitUserCreated extends Mailable implements ShouldQueue
      */
     public function attachments(): array
     {
-        return [];
+        return [
+            Attachment::fromData(
+                fn () =>
+                BenefitUserService::generateICS($this->newBenefitUser),
+                'invite.ics'
+            )
+        ];
     }
 }
