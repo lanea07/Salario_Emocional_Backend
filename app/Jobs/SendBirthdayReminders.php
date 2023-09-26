@@ -1,0 +1,41 @@
+<?php
+
+namespace App\Jobs;
+
+use App\Mail\SendBirthdayReminder;
+use App\Models\User;
+use Carbon\Carbon;
+use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Queue\ShouldBeUnique;
+use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Foundation\Bus\Dispatchable;
+use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
+
+class SendBirthdayReminders implements ShouldQueue
+{
+    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+
+    /**
+     * Create a new job instance.
+     */
+    public function __construct()
+    {
+        //
+    }
+
+    /**
+     * Execute the job.
+     */
+    public function handle(): void
+    {
+        $users  = User::whereMonth('birthdate', Carbon::now()->addMonth()->month)->get();
+        foreach ($users as $user) {
+            $message = (new SendBirthdayReminder($user))
+                ->onQueue('emails');
+            Mail::to($user->email)->queue($message);
+        }
+    }
+}

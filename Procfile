@@ -1,2 +1,3 @@
 web: vendor/bin/heroku-php-apache2 public/
-emails: php artisan queue:work
+defaul_queue: php artisan queue:work
+emails_queue: php artisan queue:work --queue=emails
