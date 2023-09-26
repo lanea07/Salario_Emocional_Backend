@@ -28,9 +28,10 @@ class CreateUserRequest extends FormRequest
             'leader' => 'required_unless:leader,null',
             'rolesFormGroup' => 'required',
             'position_id' => 'required',
-            'subordinates' => 'sometimes|nullable',
+            'subordinates' => 'nullable',
             'requirePassChange' => 'required_unless:requirePassChange,null',
-            'valid_id' => 'required'
+            'valid_id' => 'required',
+            'birthdate' => 'nullable'
         ];
     }
 }
