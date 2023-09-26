@@ -40,7 +40,7 @@ class Cron extends Model
         if ($cron && $cron->next_run > $now->timestamp) {
             return false;
         }
-        if ($beginDate) {
+        if (!$cron && $beginDate) {
             $futureRun = new Carbon($beginDate . ' ' . $nextTimeRun);
             Cron::updateOrCreate(
                 ['command'  => $command],
