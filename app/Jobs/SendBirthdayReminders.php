@@ -31,7 +31,7 @@ class SendBirthdayReminders implements ShouldQueue
      */
     public function handle(): void
     {
-        $users  = User::whereMonth('birthdate', Carbon::now()->addMonth()->month)->get();
+        $users  = User::whereMonth('birthdate', Carbon::now()->month)->get();
         foreach ($users as $user) {
             $message = (new SendBirthdayReminder($user))
                 ->onQueue('emails');
