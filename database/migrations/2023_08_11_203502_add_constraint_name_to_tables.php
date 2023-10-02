@@ -24,7 +24,7 @@ return new class extends Migration
             $table->unique('name');
         });
         Schema::table('benefits', function (Blueprint $table) {
-            $table->text('politicas_path');
+            $table->text('politicas_path')->nullable();
         });
     }
 

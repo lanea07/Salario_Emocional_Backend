@@ -163,7 +163,7 @@ class BenefitUserService
     {
         $isBirthdayClaimed = BenefitUser::where(function ($q) use ($benefitData) {
             $q->where('benefit_id', $benefitData['benefit_id']);
-            $q->where('user_id', '<>', $benefitData['user_id']);
+            $q->where('user_id', '=', $benefitData['user_id']);
             $q->whereYear('benefit_begin_time', date("Y", strtotime($benefitData['benefit_begin_time'])));
         })->get();
         if (!$isBirthdayClaimed->isEmpty()) {
