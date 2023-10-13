@@ -293,8 +293,8 @@ class BenefitUserService
             $q->whereYear('benefit_begin_time', date("Y", strtotime($benefitData['benefit_begin_time'])));
             $q->whereMonth('benefit_begin_time', date("n", strtotime($benefitData['benefit_begin_time'])));
         })->get();
-        if (!$claimedFriday->isEmpty()) {
-            throw new Exception("El beneficio que está intentando actualizar ya fue utilizado en este mes.", 1);
+        if ($claimedFriday->isEmpty()) {
+            throw new Exception("No se pudo encontrar el beneficio solicitado para actualizar.", 1);
         }
     }
 
