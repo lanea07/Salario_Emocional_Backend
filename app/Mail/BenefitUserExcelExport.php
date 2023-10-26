@@ -10,6 +10,7 @@ use Illuminate\Mail\Mailables\Attachment;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Log;
 use Maatwebsite\Excel\Facades\Excel;
 
 class BenefitUserExcelExport extends Mailable implements ShouldQueue
@@ -62,5 +63,10 @@ class BenefitUserExcelExport extends Mailable implements ShouldQueue
             )->withMime('application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
 
         ];
+    }
+
+    public function failed($error)
+    {
+        Log::error($error);
     }
 }

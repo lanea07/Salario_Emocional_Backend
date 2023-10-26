@@ -9,8 +9,9 @@ use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Log;
 
-class NewUserCreated extends Mailable
+class NewUserCreated extends Mailable implements ShouldQueue
 {
     use Queueable, SerializesModels;
 
@@ -61,5 +62,10 @@ class NewUserCreated extends Mailable
     public function attachments(): array
     {
         return [];
+    }
+
+    public function failed($error)
+    {
+        Log::error($error);
     }
 }

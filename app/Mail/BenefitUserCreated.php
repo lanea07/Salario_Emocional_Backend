@@ -12,6 +12,7 @@ use Illuminate\Mail\Mailables\Attachment;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Log;
 
 class BenefitUserCreated extends Mailable implements ShouldQueue
 {
@@ -72,5 +73,10 @@ class BenefitUserCreated extends Mailable implements ShouldQueue
                 'invite.ics'
             )
         ];
+    }
+
+    public function failed($error)
+    {
+        Log::error($error);
     }
 }
