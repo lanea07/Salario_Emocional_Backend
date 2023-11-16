@@ -15,7 +15,8 @@ class UserService
 
     public function getAllUsers(): Collection
     {
-        return User::with(['leader', 'subordinates', 'positions', 'roles'])->orderBy('name')->get();
+        // return User::with(['leader', 'subordinates', 'positions', 'roles', 'dependency'])->orderBy('name')->get();
+        return User::with(['positions', 'roles', 'dependency'])->orderBy('name')->get();
     }
 
     public function saveUser(array $userData): User
@@ -54,7 +55,7 @@ class UserService
 
     public function getUserById(User $user): Collection
     {
-        return $user->with(['leader', 'subordinates', 'positions', 'roles'])->where('id', $user->id)->get();
+        return $user->with(['leader', 'subordinates', 'positions', 'roles', 'dependency'])->where('id', $user->id)->get();
     }
 
     public function updateUser(array $userData, User $user): User

@@ -7,6 +7,7 @@ use App\Http\Controllers\api\PositionController;
 use App\Http\Controllers\api\RoleController;
 use App\Http\Controllers\api\UserController;
 use App\Http\Controllers\api\BenefitUserController;
+use App\Http\Controllers\api\DependencyController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -71,6 +72,11 @@ Route::middleware('auth:sanctum')->group(function () {
         }
     );
     Route::resource('/user', UserController::class)->missing(
+        function () {
+            throw new Exception('Recurso no Encontrado');
+        }
+    );
+    Route::resource('/dependencies', DependencyController::class)->missing(
         function () {
             throw new Exception('Recurso no Encontrado');
         }

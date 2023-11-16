@@ -10,7 +10,6 @@ use Laravel\Sanctum\HasApiTokens;
 class User extends Model //Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable;
-    // use \Staudenmeir\LaravelAdjacencyList\Eloquent\HasRecursiveRelationships;
 
     /**
      * The attributes that are mass assignable.
@@ -65,15 +64,15 @@ class User extends Model //Authenticatable
         return $this->belongsToMany(Role::class)->withTimestamps();
     }
 
-    public function leader()
-    {
-        return $this->belongsTo(User::class, 'leader');
-    }
+    // public function leader()
+    // {
+    //     return $this->belongsTo(User::class, 'leader');
+    // }
 
-    public function subordinates()
-    {
-        return $this->hasMany(User::class, 'leader');
-    }
+    // public function subordinates()
+    // {
+    //     return $this->hasMany(User::class, 'leader');
+    // }
 
     public function positions()
     {
@@ -95,8 +94,8 @@ class User extends Model //Authenticatable
         return $this->requirePassChange;
     }
 
-    public function getParentKeyName()
+    public function dependency()
     {
-        return 'leader';
+        return $this->belongsTo(Dependency::class);
     }
 }

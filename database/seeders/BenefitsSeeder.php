@@ -4,10 +4,9 @@ namespace Database\Seeders;
 
 use App\Models\Benefit;
 use App\Models\BenefitDetail;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
-class Benefits extends Seeder
+class BenefitsSeeder extends Seeder
 {
     /**
      * Run the database seeds.

@@ -2,12 +2,10 @@
 
 namespace Database\Seeders;
 
-use App\Models\BenefitUser;
 use App\Models\User;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
-class Users extends Seeder
+class UsersSeeder extends Seeder
 {
     /**
      * Run the database seeds.
@@ -31,14 +29,14 @@ class Users extends Seeder
         // ]);
         // $user->roles()->attach(2);
 
-        $user = User::create([
-            'name' => 'Juan Camilo Soto Pineda',
-            'password' => 'Marianita.07',
-            'email' => 'juan.soto@flamingo.com.co',
-            'position_id' => 2,
-            'leader' => 1
-        ]);
-        $user->roles()->attach(1);
+        // $user = User::create([
+        //     'name' => 'Juan Camilo Soto Pineda',
+        //     'password' => 'Marianita.07',
+        //     'email' => 'juan.soto@flamingo.com.co',
+        //     'dependency_id' => 8,
+        //     'leader' => null
+        // ]);
+        // $user->roles()->attach(1);
 
 
         // BenefitUser::create([
