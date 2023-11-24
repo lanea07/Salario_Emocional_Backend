@@ -10,7 +10,12 @@ class Position extends Model
     use HasFactory;
 
     protected $fillable = [
-        'name'
+        'name',
+        'valid_id',
+    ];
+
+    protected $casts = [
+        'valid_id' => 'boolean',
     ];
 
     public function users()

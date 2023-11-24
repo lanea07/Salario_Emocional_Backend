@@ -30,7 +30,8 @@ class BenefitUserService
                         $q->orderBy('benefit_begin_time');
                     },
                     'benefit_user.benefits',
-                    'benefit_user.benefit_detail'
+                    'benefit_user.benefit_detail',
+                    'benefit_user.user.dependency'
                 ]
             )->get();
         }
@@ -41,7 +42,8 @@ class BenefitUserService
                     $q->orderBy('benefit_begin_time');
                 },
                 'benefit_user.benefits',
-                'benefit_user.benefit_detail'
+                'benefit_user.benefit_detail',
+                'benefit_user.user.dependency'
             ]
         )->where(function ($q) use ($userId) {
             $q->where('leader', $userId)
@@ -113,7 +115,8 @@ class BenefitUserService
                     $q->orderBy('benefit_begin_time');
                 },
                 'benefit_user.benefits',
-                'benefit_user.benefit_detail'
+                'benefit_user.benefit_detail',
+                'benefit_user.user.dependency'
             ]
         )->wherehas('benefit_user', function ($q) use ($benefitUser) {
             $q->where('id', '=', $benefitUser->id);

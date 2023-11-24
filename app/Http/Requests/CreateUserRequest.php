@@ -25,13 +25,13 @@ class CreateUserRequest extends FormRequest
             'name' => 'required',
             'email' => 'required|email:rfc,dns',
             'password' => 'sometimes',
-            'leader' => 'required_unless:leader,null',
-            'rolesFormGroup' => 'required',
-            'position_id' => 'required',
-            'subordinates' => 'nullable',
             'requirePassChange' => 'required_unless:requirePassChange,null',
+            'dependency_id' => 'required',
+            'position_id' => 'required',
+            'leader' => 'required_unless:leader,null',
             'valid_id' => 'required',
-            'birthdate' => 'nullable'
+            'birthdate' => 'nullable',
+            'rolesFormGroup' => 'required',
         ];
     }
 }

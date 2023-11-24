@@ -11,7 +11,12 @@ class BenefitDetail extends Model
 
     protected $fillable = [
         'name',
-        'time_hours'
+        'time_hours',
+        'valid_id',
+    ];
+
+    protected $casts = [
+        'valid_id' => 'boolean',
     ];
 
     public function benefit()

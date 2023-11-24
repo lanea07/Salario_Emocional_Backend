@@ -12,11 +12,13 @@ class Benefit extends Model
 
     protected $fillable = [
         'name',
-        'politicas_path'
+        'politicas_path',
+        'valid_id',
     ];
 
     protected $casts = [
         'politicas_path' => GooglePath::class,
+        'valid_id' => 'boolean',
     ];
 
     public function benefit_detail()

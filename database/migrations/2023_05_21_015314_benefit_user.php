@@ -19,7 +19,9 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
             $table->dateTime('benefit_begin_time');
             $table->dateTime('benefit_end_time');
+            $table->boolean('is_approved')->default(false);
             $table->timestamps();
+            $table->dateTime('approved_at')->nullable();
             $table->unique(['benefit_id', 'benefit_detail_id', 'user_id', 'benefit_begin_time'], 'unique_benefit_per_user');
         });
 

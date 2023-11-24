@@ -16,7 +16,8 @@ class UserService
     public function getAllUsers(): Collection
     {
         // return User::with(['leader', 'subordinates', 'positions', 'roles', 'dependency'])->orderBy('name')->get();
-        return User::with(['positions', 'roles', 'dependency'])->orderBy('name')->get();
+        $users = User::with(['dependency', 'parent', 'positions', 'roles'])->orderBy('name')->tree()->get();
+        return $users->toTree();
     }
 
     public function saveUser(array $userData): User
@@ -34,13 +35,7 @@ class UserService
 
         $userData['requirePassChange'] = true;
 
-        if ($userData['subordinates']) {
-            $newSubordinates = $userData['subordinates'];
-            $user = User::create($userData);
-            User::whereIn('id', $newSubordinates)->update(['leader' => $user->id]);
-        } else {
-            $user = User::create($userData);
-        }
+        $user = User::create($userData);
 
         $user->roles()->sync($rolesToAsign);
 
@@ -53,9 +48,10 @@ class UserService
         return $user;
     }
 
-    public function getUserById(User $user): Collection
+    public function getUserById(User $user)
     {
-        return $user->with(['leader', 'subordinates', 'positions', 'roles', 'dependency'])->where('id', $user->id)->get();
+        $users = User::with(['dependency', 'parent', 'positions', 'roles'])->treeOf($user, 1)->get();
+        return $users->toTree();
     }
 
     public function updateUser(array $userData, User $user): User

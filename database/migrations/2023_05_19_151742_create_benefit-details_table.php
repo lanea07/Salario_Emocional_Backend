@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('name')->unique();
             $table->integer('time_hours')->nullable();
+            $table->boolean('valid_id')->default(true);
             $table->timestamps();
         });
     }

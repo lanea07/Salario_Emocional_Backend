@@ -14,6 +14,11 @@ class Dependency extends Model
         'name',
         'address',
         'phone',
+        'valid_id',
+    ];
+
+    protected $casts = [
+        'valid_id' => 'boolean',
     ];
 
     public function users()

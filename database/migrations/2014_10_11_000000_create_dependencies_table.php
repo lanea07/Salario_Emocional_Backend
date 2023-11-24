@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->unsignedBigInteger('parent_id')->nullable();
+            $table->boolean('valid_id')->default(true);
             $table->timestamps();
         });
         Schema::table('dependencies', function (Blueprint $table) {

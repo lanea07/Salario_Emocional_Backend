@@ -6,10 +6,11 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
+use Staudenmeir\LaravelAdjacencyList\Eloquent\HasRecursiveRelationships;
 
 class User extends Model //Authenticatable
 {
-    use HasApiTokens, HasFactory, Notifiable;
+    use HasApiTokens, HasFactory, Notifiable, HasRecursiveRelationships;
 
     /**
      * The attributes that are mass assignable.
@@ -20,11 +21,12 @@ class User extends Model //Authenticatable
         'name',
         'email',
         'password',
+        'requirePassChange',
+        'dependency_id',
         'position_id',
         'leader',
-        'requirePassChange',
         'valid_id',
-        'birthdate'
+        'birthdate',
     ];
 
     /**
@@ -49,6 +51,11 @@ class User extends Model //Authenticatable
         'valid_id' => 'boolean'
     ];
 
+    public function getParentKeyName()
+    {
+        return 'leader';
+    }
+
     public function benefit_user()
     {
         return $this->hasMany(BenefitUser::class);
@@ -64,15 +71,10 @@ class User extends Model //Authenticatable
         return $this->belongsToMany(Role::class)->withTimestamps();
     }
 
-    // public function leader()
-    // {
-    //     return $this->belongsTo(User::class, 'leader');
-    // }
-
-    // public function subordinates()
-    // {
-    //     return $this->hasMany(User::class, 'leader');
-    // }
+    public function leader()
+    {
+        return $this->belongsTo(User::class, 'leader');
+    }
 
     public function positions()
     {

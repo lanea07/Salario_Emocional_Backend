@@ -16,7 +16,13 @@ class BenefitUser extends Model
         'benefit_detail_id',
         'user_id',
         'benefit_begin_time',
-        'benefit_end_time'
+        'benefit_end_time',
+        'is_approved',
+        'approved_at',
+    ];
+
+    protected $casts = [
+        'is_approved' => 'boolean',
     ];
 
     public function user()
