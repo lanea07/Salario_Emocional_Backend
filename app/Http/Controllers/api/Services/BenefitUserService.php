@@ -12,6 +12,7 @@ use DateTime;
 use DateTimeZone;
 use Exception;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 use Spatie\IcalendarGenerator\Components\Calendar;
 use Spatie\IcalendarGenerator\Components\Event;
@@ -22,22 +23,10 @@ class BenefitUserService
 
     public function getAllBenefitUser(int $userId, int $year): Collection
     {
-        if (auth()->user()->isAdmin()) {
-            return User::with(
-                [
-                    'benefit_user' => function ($q) use ($year) {
-                        $q->whereYear('benefit_begin_time', $year);
-                        $q->orderBy('benefit_begin_time');
-                    },
-                    'benefit_user.benefits',
-                    'benefit_user.benefit_detail',
-                    'benefit_user.user.dependency'
-                ]
-            )->get();
-        }
         return User::with(
             [
                 'benefit_user' => function ($q) use ($year) {
+                    $q->where('is_approved', true);
                     $q->whereYear('benefit_begin_time', $year);
                     $q->orderBy('benefit_begin_time');
                 },
@@ -45,10 +34,9 @@ class BenefitUserService
                 'benefit_user.benefit_detail',
                 'benefit_user.user.dependency'
             ]
-        )->where(function ($q) use ($userId) {
-            $q->where('leader', $userId)
-                ->orWhere('id', $userId);
-        })->get();
+        )
+        ->where('id', $userId)
+        ->get();
     }
 
     public function saveBenefitUser(array $benefitUserData): BenefitUser
@@ -153,6 +141,52 @@ class BenefitUserService
     public function deleteBenefitUser(BenefitUser $benefitUser): void
     {
         $benefitUser->delete();
+    }
+
+    public function getAllBenefitUserNonApproved(int $userId): Collection
+    {
+        return User::with(
+            [
+                'benefit_user' => function ($q) {
+                    $q->where('is_approved', false);
+                    $q->orderBy('benefit_begin_time');
+                },
+                'benefit_user.benefits',
+                'benefit_user.benefit_detail',
+                'benefit_user.user.dependency'
+            ]
+        )
+            ->where('id', $userId)
+            ->get();
+    }
+
+    public function getAllBenefitCollaboratorsNonApproved(Request $request): Collection
+    {
+        $user = $request->user();
+        return BenefitUser::withWhereHas(
+            'user',
+            function ($q) use ($user) {
+                $q->where('leader', '=', $user->id);
+            },
+        )
+            ->with(['benefits', 'benefit_detail'])
+            ->where('is_approved', false)
+            ->get();
+    }
+
+    public function getAllBenefitCollaborators(Request $request): Collection
+    {
+        $user = $request->user();
+        $user = User::find(2);
+        return BenefitUser::withWhereHas(
+            'user',
+            function ($q) use ($user) {
+                $q->where('leader', '=', $user->id);
+            },
+        )
+            ->with(['benefits', 'benefit_detail'])
+            ->where('is_approved', true)
+            ->get();
     }
 
 

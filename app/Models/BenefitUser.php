@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class BenefitUser extends Model
 {
@@ -38,5 +39,14 @@ class BenefitUser extends Model
     public function benefit_detail()
     {
         return $this->belongsTo(BenefitDetail::class);
+    }
+
+    public function resolveRouteBinding($value, $field = null)
+    {
+        try {
+            return $this->where('id', $value)->firstOrFail();
+        } catch (\Throwable $th) {
+            throw new ModelNotFoundException('Beneficio de Colaborador no encontrado');
+        }
     }
 }

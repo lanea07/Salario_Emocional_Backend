@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Casts\GooglePath;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class Benefit extends Model
 {
@@ -30,4 +31,13 @@ class Benefit extends Model
     // {
     //     return $this->belongsToMany(BenefitDetail::class, 'benefit_user');
     // }
+
+    public function resolveRouteBinding($value, $field = null)
+    {
+        try {
+            return $this->where('id', $value)->firstOrFail();
+        } catch (\Throwable $th) {
+            throw new ModelNotFoundException('Beneficio no encontrado');
+        }
+    }
 }

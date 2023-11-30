@@ -82,7 +82,7 @@ class BenefitController extends Controller
         try {
             $this->authorize('destroy', $benefit);
             $this->benefitService->deleteBenefit($benefit);
-            return response()->json(['msg' => 'Beneficio eliminado'], 200);
+            return response()->json(['message' => 'Beneficio eliminado'], 200);
         } catch (\Throwable $th) {
             return response()->json($th, 500);
         }

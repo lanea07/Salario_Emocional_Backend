@@ -82,7 +82,7 @@ class PositionController extends Controller
         try {
             $this->authorize('destroy', $position);
             $this->positionService->deletePosition($position);
-            return response()->json(['msg' => 'Posición eliminada'], 200);
+            return response()->json(['message' => 'Posición eliminada'], 200);
         } catch (\Throwable $th) {
             return response()->json($th, 500);
         }

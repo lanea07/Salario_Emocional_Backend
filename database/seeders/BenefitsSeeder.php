@@ -15,29 +15,32 @@ class BenefitsSeeder extends Seeder
     {
 
         // Beneficios
-        // Mi Cumpleaños
         $miCumpleaños = Benefit::create([
             'name' => 'Mi Cumpleaños'
         ]);
 
-        // Mi Banco de Horas
         $miBancoHoras = Benefit::create([
             'name' => 'Mi Banco de Horas'
         ]);
 
-        // Mi Horario Flexible
         $miHorarioFlexible = Benefit::create([
             'name' => 'Mi Horario Flexible'
         ]);
 
-        // Mi Viernes
         $miViernes = Benefit::create([
             'name' => 'Mi Viernes'
         ]);
 
-        // Tiempo para el Viajero
         $tiempoViajero = Benefit::create([
             'name' => 'Tiempo para el Viajero'
+        ]);
+
+        $misVacaciones = Benefit::create([
+            'name' => 'Mis Vacaciones'
+        ]);
+
+        $miAlternancia = Benefit::create([
+            'name' => 'Mi Alternancia'
         ]);
 
 
@@ -78,28 +81,78 @@ class BenefitsSeeder extends Seeder
             'name' => 'Personalizado'
         ]);
 
+        $alternancia1 = BenefitDetail::create([
+            'name' => 'Lunes - Martes'
+        ]);
+        $alternancia2 = BenefitDetail::create([
+            'name' => 'Lunes - Miércoles'
+        ]);
+        $alternancia3 = BenefitDetail::create([
+            'name' => 'Lunes - Jueves'
+        ]);
+        $alternancia4 = BenefitDetail::create([
+            'name' => 'Lunes - Viernes'
+        ]);
+        $alternancia5 = BenefitDetail::create([
+            'name' => 'Martes - Miércoles'
+        ]);
+        $alternancia6 = BenefitDetail::create([
+            'name' => 'Martes - Jueves'
+        ]);
+        $alternancia7 = BenefitDetail::create([
+            'name' => 'Martes - Viernes'
+        ]);
+        $alternancia8 = BenefitDetail::create([
+            'name' => 'Miércoles - Jueves'
+        ]);
+        $alternancia9 = BenefitDetail::create([
+            'name' => 'Miércoles - Viernes'
+        ]);
+        $alternancia10 = BenefitDetail::create([
+            'name' => 'Jueves - Viernes'
+        ]);
+
+
 
         // Establecimiento de las relaciones
-        // Mi Cumpleaños
         $miCumpleaños->benefit_detail()->attach($horas4);
 
-        // Mi Banco de Horas
-        $miBancoHoras->benefit_detail()->attach($horas2);
-        $miBancoHoras->benefit_detail()->attach($horas4);
-        $miBancoHoras->benefit_detail()->attach($horas6);
-        $miBancoHoras->benefit_detail()->attach($horas8);
+        $miBancoHoras->benefit_detail()->attach([
+            $horas2,
+            $horas4,
+            $horas6,
+            $horas8,
+        ]);
 
-        // Mi Horario Flexible
-        $miHorarioFlexible->benefit_detail()->attach($franja1);
-        $miHorarioFlexible->benefit_detail()->attach($franja2);
-        $miHorarioFlexible->benefit_detail()->attach($franja3);
-        $miHorarioFlexible->benefit_detail()->attach($franja4);
+        $miHorarioFlexible->benefit_detail()->attach([
+            $franja1,
+            $franja2,
+            $franja3,
+            $franja4,
+        ]);
+        
 
-        // Mi Viernes
         $miViernes->benefit_detail()->attach($horas4);
 
-        // Tiempo para el Viajero
-        $tiempoViajero->benefit_detail()->attach($horas2);
-        $tiempoViajero->benefit_detail()->attach($personalizado);
+        $tiempoViajero->benefit_detail()->attach([
+            $horas2,
+            $personalizado,
+        ]);
+
+
+        $misVacaciones->benefit_detail()->attach($personalizado);
+
+        $miAlternancia->benefit_detail()->attach([
+            $alternancia1->id,
+            $alternancia2->id,
+            $alternancia3->id,
+            $alternancia4->id,
+            $alternancia5->id,
+            $alternancia6->id,
+            $alternancia7->id,
+            $alternancia8->id,
+            $alternancia9->id,
+            $alternancia10->id,
+        ]);
     }
 }

@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use Staudenmeir\LaravelAdjacencyList\Eloquent\HasRecursiveRelationships;
@@ -99,5 +100,14 @@ class User extends Model //Authenticatable
     public function dependency()
     {
         return $this->belongsTo(Dependency::class);
+    }
+
+    public function resolveRouteBinding($value, $field = null)
+    {
+        try {
+            return $this->where('id', $value)->firstOrFail();
+        } catch (\Throwable $th) {
+            throw new ModelNotFoundException('Usuario no encontrado');
+        }
     }
 }

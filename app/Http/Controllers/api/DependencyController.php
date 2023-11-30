@@ -59,7 +59,7 @@ class DependencyController extends Controller
         try {
             $this->authorize('destroy', $dependency);
             $this->dependencyService->deleteDependency($dependency);
-            return response()->json(['msg' => 'Dependencia eliminada'], 200);
+            return response()->json(['message' => 'Dependencia eliminada'], 200);
         } catch (\Throwable $th) {
             return response()->json($th, 500);
         }

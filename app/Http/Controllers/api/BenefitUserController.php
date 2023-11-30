@@ -103,11 +103,27 @@ class BenefitUserController extends Controller
         }
     }
 
-    public function exportDetail(Request $request)
+    public function exportDetail(Request $request): void
     {
         $year = $request->years;
         $user_id = $request->users;
         $data = ['year' => $year, 'user_id' => $user_id, 'isAuthenticatedUserAdmin' => auth()->user()->isAdmin()];
         Mail::to(auth()->user()->email)->queue(new BenefitUserExcelExport($data));
+    }
+
+    public function indexNonApproved(Request $request): JsonResponse
+    {
+        $userId = $request->userId;
+        return response()->json($this->benefitUserService->getAllBenefitUserNonApproved($userId), 200);
+    }
+
+    public function indexCollaboratorsNonApproved(): JsonResponse
+    {
+        return response()->json($this->benefitUserService->getAllBenefitCollaboratorsNonApproved(request()), 200);
+    }
+
+    public function indexCollaborators(): JsonResponse
+    {
+        return response()->json($this->benefitUserService->getAllBenefitCollaborators(request()), 200);
     }
 }

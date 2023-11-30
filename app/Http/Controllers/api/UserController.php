@@ -82,7 +82,7 @@ class UserController extends Controller
         try {
             $this->authorize('destroy', $user);
             $this->userService->deleteUser($user);
-            return response()->json(['msg' => 'Usuario eliminado'], 200);
+            return response()->json(['message' => 'Usuario eliminado'], 200);
         } catch (\Throwable $th) {
             return response()->json($th, 500);
         }
