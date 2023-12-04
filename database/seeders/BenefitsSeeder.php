@@ -117,26 +117,24 @@ class BenefitsSeeder extends Seeder
         // Establecimiento de las relaciones
         $miCumpleaños->benefit_detail()->attach($horas4);
 
-        $miBancoHoras->benefit_detail()->attach([
-            $horas2,
-            $horas4,
-            $horas6,
-            $horas8,
+        $miBancoHoras->benefit_detail()->attach([$horas2->id,
+            $horas4->id,
+            $horas6->id,
+            $horas8->id,
         ]);
 
         $miHorarioFlexible->benefit_detail()->attach([
-            $franja1,
-            $franja2,
-            $franja3,
-            $franja4,
+            $franja1->id,
+            $franja2->id,
+            $franja3->id,
+            $franja4->id,
         ]);
         
 
         $miViernes->benefit_detail()->attach($horas4);
 
-        $tiempoViajero->benefit_detail()->attach([
-            $horas2,
-            $personalizado,
+        $tiempoViajero->benefit_detail()->attach([$horas2->id,
+            $personalizado->id,
         ]);
 
 

@@ -177,11 +177,11 @@ class BenefitUserService
     public function getAllBenefitCollaborators(Request $request): Collection
     {
         $user = $request->user();
-        $user = User::find(2);
         return BenefitUser::withWhereHas(
             'user',
             function ($q) use ($user) {
                 $q->where('leader', '=', $user->id);
+                $q->orWhere('id', '=', $user->id);
             },
         )
             ->with(['benefits', 'benefit_detail'])
