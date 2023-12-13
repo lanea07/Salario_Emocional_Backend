@@ -15,7 +15,6 @@ class UserService
 
     public function getAllUsers(): Collection
     {
-        // return User::with(['leader', 'subordinates', 'positions', 'roles', 'dependency'])->orderBy('name')->get();
         $users = User::with(['dependency', 'parent', 'positions', 'roles'])->orderBy('name')->tree()->get();
         return $users->toTree();
     }

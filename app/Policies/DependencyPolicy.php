@@ -13,7 +13,7 @@ class DependencyPolicy
      */
     public function viewAny(User $user): bool
     {
-        return true;
+        return $user->isAdmin() && auth('sanctum')->check();
     }
 
     /**
@@ -21,7 +21,7 @@ class DependencyPolicy
      */
     public function view(User $user, Dependency $dependency): bool
     {
-        return true;
+        return $user->isAdmin() && auth('sanctum')->check();
     }
 
     /**
@@ -29,7 +29,7 @@ class DependencyPolicy
      */
     public function create(User $user): bool
     {
-        return true;
+        return $user->isAdmin() && auth('sanctum')->check();
     }
 
     /**
@@ -37,7 +37,7 @@ class DependencyPolicy
      */
     public function update(User $user, Dependency $dependency): bool
     {
-        return true;
+        return $user->isAdmin() && auth('sanctum')->check();
     }
 
     /**
@@ -45,7 +45,7 @@ class DependencyPolicy
      */
     public function delete(User $user, Dependency $dependency): bool
     {
-        return true;
+        return $user->isAdmin() && auth('sanctum')->check();
     }
 
     /**
@@ -53,7 +53,7 @@ class DependencyPolicy
      */
     public function restore(User $user, Dependency $dependency): bool
     {
-        return true;
+        return $user->isAdmin() && auth('sanctum')->check();
     }
 
     /**
@@ -61,6 +61,6 @@ class DependencyPolicy
      */
     public function forceDelete(User $user, Dependency $dependency): bool
     {
-        return true;
+        return $user->isAdmin() && auth('sanctum')->check();
     }
 }

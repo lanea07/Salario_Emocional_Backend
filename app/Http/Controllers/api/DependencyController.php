@@ -32,7 +32,25 @@ class DependencyController extends Controller
      */
     public function store(StoreDependencyRequest $request)
     {
-        //
+        try {
+            $this->authorize('create', Dependency::class);
+            return response()->json($this->dependencyService->saveDependency($request->validated()), 201);
+        } catch (\Illuminate\Database\QueryException $th) {
+            switch ($th->errorInfo[1]) {
+                case 1062:
+                    return response()->json(['message' => 'No se puede guardar el beneficio porque ya existe un beneficio con el mismo nombre registrado.'], 400);
+                    break;
+                case 4025:
+                    return response()->json(['message' => $th->errorInfo[2]], 400);
+                    break;
+                case 1:
+                    return response()->json(['message' => $th->errorInfo[2]], 400);
+                    break;
+                default:
+                    return response()->json(['message' => 'Ha ocurrido un error interno, contacte con el administrador'], 400);
+                    break;
+            }
+        }
     }
 
     /**
@@ -48,7 +66,25 @@ class DependencyController extends Controller
      */
     public function update(UpdateDependencyRequest $request, Dependency $dependency)
     {
-        //
+        try {
+            $this->authorize('update', $dependency);
+            return response()->json($this->dependencyService->updatedependency($request->validated(), $dependency), 200);
+        } catch (\Illuminate\Database\QueryException $th) {
+            switch ($th->errorInfo[1]) {
+                case 1062:
+                    return response()->json(['message' => 'No se puede actualizar el cargo porque ya existe un cargo con el mismo nombre registrado.'], 400);
+                    break;
+                case 4025:
+                    return response()->json(['message' => $th->errorInfo[2]], 400);
+                    break;
+                case 1:
+                    return response()->json(['message' => $th->errorInfo[2]], 400);
+                    break;
+                default:
+                    return response()->json(['message' => 'Ha ocurrido un error interno, contacte con el administrador'], 400);
+                    break;
+            }
+        }
     }
 
     /**

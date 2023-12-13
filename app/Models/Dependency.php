@@ -13,8 +13,7 @@ class Dependency extends Model
 
     protected $fillable = [
         'name',
-        'address',
-        'phone',
+        'parent_id',
         'valid_id',
     ];
 

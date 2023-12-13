@@ -20,6 +20,7 @@ class DependencyService
 
     public function saveDependency(array $dependencyData): Dependency
     {
+        return Dependency::create($dependencyData);
     }
 
     public function getDependencyById(Dependency $dependency): Collection
@@ -30,6 +31,8 @@ class DependencyService
 
     public function updateDependency(array $dependencyData, Dependency $dependency): Dependency
     {
+        $dependency->update($dependencyData);
+        return $dependency;
     }
 
     public function deleteDependency(Dependency $dependency): void
