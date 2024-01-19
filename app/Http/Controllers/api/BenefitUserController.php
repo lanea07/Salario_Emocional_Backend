@@ -77,7 +77,6 @@ class BenefitUserController extends Controller
         try {
             $this->authorize('update', $benefituser);
             return response()->json($this->benefitUserService->updateBenefitUser($request->validated(), $benefituser), 200);
-            // broadcast(new DirectorioUpdate($benefituser));
         } catch (\Illuminate\Database\QueryException $th) {
             return response()->json(['message' => 'Ha ocurrido un error interno, contacte con el administrador'], 400);
         } catch (Exception $e) {

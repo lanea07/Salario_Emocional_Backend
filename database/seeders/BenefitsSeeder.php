@@ -31,16 +31,16 @@ class BenefitsSeeder extends Seeder
             'name' => 'Mi Viernes'
         ]);
 
-        $tiempoViajero = Benefit::create([
-            'name' => 'Tiempo para el Viajero'
-        ]);
-
         $misVacaciones = Benefit::create([
             'name' => 'Mis Vacaciones'
         ]);
 
-        $miAlternancia = Benefit::create([
-            'name' => 'Mi Alternancia'
+        $trabajoHibrido = Benefit::create([
+            'name' => 'Trabajo Híbrido'
+        ]);
+
+        $diaDeLaFamilia = Benefit::create([
+            'name' => 'Día de la Familia'
         ]);
 
 
@@ -77,45 +77,67 @@ class BenefitsSeeder extends Seeder
             'name' => 'De 8:00 a.m. a 18:00 p.m.',
             'time_hours' => 1
         ]);
-        $personalizado = BenefitDetail::create([
-            'name' => 'Personalizado'
+        $personalizado = BenefitDetail::create(['name' => 'Personalizado',
+            'time_hours' => 1
         ]);
 
-        $alternancia1 = BenefitDetail::create([
-            'name' => 'Lunes - Martes'
+        $trabajoHibrido1 = BenefitDetail::create([
+            'name' => 'Lunes - Martes - Miércoles',
+            'time_hours' => 1,
         ]);
-        $alternancia2 = BenefitDetail::create([
-            'name' => 'Lunes - Miércoles'
+        $trabajoHibrido2 = BenefitDetail::create([
+            'name' => 'Lunes - Martes - Jueves',
+            'time_hours' => 1,
         ]);
-        $alternancia3 = BenefitDetail::create([
-            'name' => 'Lunes - Jueves'
+        $trabajoHibrido3 = BenefitDetail::create([
+            'name' => 'Lunes - Martes - Viernes',
+            'time_hours' => 1,
         ]);
-        $alternancia4 = BenefitDetail::create([
-            'name' => 'Lunes - Viernes'
+        $trabajoHibrido4 = BenefitDetail::create([
+            'name' => 'Lunes - Miércoles - Jueves',
+            'time_hours' => 1,
         ]);
-        $alternancia5 = BenefitDetail::create([
-            'name' => 'Martes - Miércoles'
+        $trabajoHibrido5 = BenefitDetail::create([
+            'name' => 'Lunes - Miércoles - Viernes',
+            'time_hours' => 1,
         ]);
-        $alternancia6 = BenefitDetail::create([
-            'name' => 'Martes - Jueves'
+        $trabajoHibrido6 = BenefitDetail::create([
+            'name' => 'Lunes - Jueves - Viernes',
+            'time_hours' => 1,
         ]);
-        $alternancia7 = BenefitDetail::create([
-            'name' => 'Martes - Viernes'
+        $trabajoHibrido7 = BenefitDetail::create([
+            'name' => 'Martes - Miércoles - Jueves',
+            'time_hours' => 1,
         ]);
-        $alternancia8 = BenefitDetail::create([
-            'name' => 'Miércoles - Jueves'
+        $trabajoHibrido8 = BenefitDetail::create([
+            'name' => 'Martes - Miércoles - Viernes',
+            'time_hours' => 1,
         ]);
-        $alternancia9 = BenefitDetail::create([
-            'name' => 'Miércoles - Viernes'
+        $trabajoHibrido9  = BenefitDetail::create([
+            'name' => 'Martes - Jueves - Viernes',
+            'time_hours' => 1,
         ]);
-        $alternancia10 = BenefitDetail::create([
-            'name' => 'Jueves - Viernes'
+        $trabajoHibrido10  = BenefitDetail::create([
+            'name' => 'Miércoles - Jueves - Viernes',
+            'time_hours' => 1,
         ]);
-
+        $miCumpleanosManana = BenefitDetail::create([
+            'name' => 'Mañana',
+            'time_hours' => 4
+        ]);
+        $miCumpleanosTarde = BenefitDetail::create([
+            'name' => 'Tarde',
+            'time_hours' => 4
+        ]);
 
 
         // Establecimiento de las relaciones
-        $miCumpleaños->benefit_detail()->attach($horas4);
+        $diaDeLaFamilia->benefit_detail()->attach($personalizado);
+
+        $miCumpleaños->benefit_detail()->attach([
+            $miCumpleanosManana->id,
+            $miCumpleanosTarde->id
+        ]);
 
         $miBancoHoras->benefit_detail()->attach([$horas2->id,
             $horas4->id,
@@ -133,24 +155,19 @@ class BenefitsSeeder extends Seeder
 
         $miViernes->benefit_detail()->attach($horas4);
 
-        $tiempoViajero->benefit_detail()->attach([$horas2->id,
-            $personalizado->id,
-        ]);
-
-
         $misVacaciones->benefit_detail()->attach($personalizado);
 
-        $miAlternancia->benefit_detail()->attach([
-            $alternancia1->id,
-            $alternancia2->id,
-            $alternancia3->id,
-            $alternancia4->id,
-            $alternancia5->id,
-            $alternancia6->id,
-            $alternancia7->id,
-            $alternancia8->id,
-            $alternancia9->id,
-            $alternancia10->id,
+        $trabajoHibrido->benefit_detail()->attach([
+            $trabajoHibrido1->id,
+            $trabajoHibrido2->id,
+            $trabajoHibrido3->id,
+            $trabajoHibrido4->id,
+            $trabajoHibrido5->id,
+            $trabajoHibrido6->id,
+            $trabajoHibrido7->id,
+            $trabajoHibrido8->id,
+            $trabajoHibrido9->id,
+            $trabajoHibrido10->id,
         ]);
     }
 }

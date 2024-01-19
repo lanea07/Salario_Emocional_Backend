@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class Benefit extends Model
 {
+    public $table = 'benefits';
     use HasFactory;
 
     protected $fillable = [
