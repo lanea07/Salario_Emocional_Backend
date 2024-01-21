@@ -18,6 +18,13 @@ class DependencyService
         return $userDependency->toTree();
     }
 
+    public function getAllDependenciesAncestors(): Collection
+    {
+        $userDependency = auth()->user()->dependency;
+        $userDependency = $userDependency->ancestorsAndSelf()->with(['users.positions'])->get();
+        return $userDependency->toTree();
+    }
+
     public function saveDependency(array $dependencyData): Dependency
     {
         return Dependency::create($dependencyData);

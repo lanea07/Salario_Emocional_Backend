@@ -80,6 +80,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/benefituser', 'store')->name('benefituser.store');
         Route::put('/benefituser/{benefituser}', 'update')->name('benefituser.update');
         Route::patch('/benefituser/{benefituser}', 'update')->name('benefituser.update');
+        Route::post('/benefituser/decidebenefituser', 'decideBenefitUser')->name('benefituser.decidebenefituser');
     });
 
     Route::controller(PositionController::class)->group(function () {
@@ -116,10 +117,11 @@ Route::middleware('auth:sanctum')->group(function () {
     });
 
     Route::controller(DependencyController::class)->group(function () {
+        Route::get('/dependency/dependencyAncestors', 'indexAncestors')->name('dependency.dependencyAncestors');
+        Route::get('/dependency', 'index')->name('dependency.index');
         Route::get('/dependency/create', 'create')->name('dependency.create');
         Route::delete('/dependency/{dependency}', 'destroy')->name('dependency.destroy');
         Route::get('/dependency/{dependency}/edit', 'edit')->name('dependency.edit');
-        Route::get('/dependency', 'index')->name('dependency.index');
         Route::get('/dependency/{dependency}', 'show')->name('dependency.show');
         Route::post('/dependency', 'store')->name('dependency.store');
         Route::put('/dependency/{dependency}', 'update')->name('dependency.update');

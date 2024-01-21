@@ -23,7 +23,6 @@ class BenefitUser extends Model
     ];
 
     protected $casts = [
-        'is_approved' => 'boolean',
     ];
 
     public function user()

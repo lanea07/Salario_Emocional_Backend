@@ -100,4 +100,9 @@ class DependencyController extends Controller
             return response()->json($th, 500);
         }
     }
+
+    public function indexAncestors()
+    {
+        return response()->json($this->dependencyService->getAllDependenciesAncestors(), 200);
+    }
 }

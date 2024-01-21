@@ -27,4 +27,9 @@ class BenefitUserPolicy
     {
         return $user->isAdmin() && auth('sanctum')->check();
     }
+
+    public function decideBenefitUser(User $user, BenefitUser $benefitUser)
+    {
+        return $user->id === $benefitUser->user->leader && auth('sanctum')->check();
+    }
 }

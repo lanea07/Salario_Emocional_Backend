@@ -9,8 +9,6 @@ use App\Models\BenefitUser;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use App\Mail\BenefitUserExcelExport;
-use Illuminate\Support\Facades\Mail;
 
 class BenefitUserController extends Controller
 {
@@ -104,10 +102,7 @@ class BenefitUserController extends Controller
 
     public function exportDetail(Request $request): void
     {
-        $year = $request->years;
-        $user_id = $request->users;
-        $data = ['year' => $year, 'user_id' => $user_id, 'isAuthenticatedUserAdmin' => auth()->user()->isAdmin()];
-        Mail::to(auth()->user()->email)->queue(new BenefitUserExcelExport($data));
+        $this->benefitUserService->exportOwnBenefits($request);
     }
 
     public function indexNonApproved(Request $request): JsonResponse
@@ -124,5 +119,25 @@ class BenefitUserController extends Controller
     public function indexCollaborators(): JsonResponse
     {
         return response()->json($this->benefitUserService->getAllBenefitCollaborators(request()), 200);
+    }
+
+    public function decideBenefitUser(Request $request): JsonResponse
+    {
+        try {
+            $benefitUser = BenefitUser::find($request->data)->first();
+            $this->authorize('decideBenefitUser', $benefitUser);
+            return response()->json($this->benefitUserService->decideBenefitUser($request->cmd, $benefitUser), 200);
+        } catch (\Illuminate\Database\QueryException $th) {
+            return response()->json(['message' => 'Ha ocurrido un error interno, contacte con el administrador'], 400);
+        } catch (Exception $e) {
+            switch ($e->getCode()) {
+                case 1:
+                    return response()->json(['message' => $e->getMessage()], 400);
+                    break;
+                default:
+                    return response()->json(['message' => 'Ha ocurrido un error interno, contacte con el administrador'], 400);
+                    break;
+            }
+        }
     }
 }

@@ -2,7 +2,10 @@
 
 namespace App\Http\Controllers\api\Services;
 
+use App\Enums\BenefitDecision;
+use App\Mail\BenefitDecision as MailBenefitDecision;
 use App\Mail\BenefitUserCreated;
+use App\Mail\BenefitUserExcelExport;
 use App\Models\Benefit;
 use App\Models\BenefitUser;
 use App\Models\DiaDeLaFamilia;
@@ -18,7 +21,9 @@ use DateTime;
 use DateTimeZone;
 use Exception;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\Mail;
 use Spatie\IcalendarGenerator\Components\Calendar;
 use Spatie\IcalendarGenerator\Components\Event;
@@ -251,5 +256,34 @@ class BenefitUserService
                 )
         ]);
         return $event->get();
+    }
+
+    public function decideBenefitUser(
+        string $decision,
+        BenefitUser $benefitUser
+    ) {
+        switch ($decision) {
+            case 'approve':
+                $benefitUser->is_approved = BenefitDecision::APPROVED->value;
+                break;
+            case 'reject':
+                $benefitUser->is_approved = BenefitDecision::DENIED->value;
+                break;
+            default:
+                throw new Exception("No se pudo reconocer la acción. Intente más tarde", 1);
+                break;
+        }
+        $benefitUser->approved_at = Carbon::now();
+        $benefitUser->save();
+        Mail::to($benefitUser->user->email)->queue(new MailBenefitDecision($benefitUser));
+        return $benefitUser;
+    }
+
+    public function exportOwnBenefits(Request $request)
+    {
+        $year = $request->years;
+        $user_id = $request->users;
+        $data = ['year' => $year, 'user_id' => $user_id, 'isAuthenticatedUserAdmin' => auth()->user()->isAdmin()];
+        Mail::to(auth()->user()->email)->queue(new BenefitUserExcelExport($data));
     }
 }

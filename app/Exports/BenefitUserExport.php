@@ -4,7 +4,6 @@ namespace App\Exports;
 
 use App\Models\User;
 use Illuminate\Support\Arr;
-use Illuminate\Support\Facades\Auth;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithMapping;
