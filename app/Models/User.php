@@ -9,7 +9,7 @@ use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use Staudenmeir\LaravelAdjacencyList\Eloquent\HasRecursiveRelationships;
 
-class User extends Model //Authenticatable
+class User extends Model
 {
     use HasApiTokens, HasFactory, Notifiable, HasRecursiveRelationships;
 

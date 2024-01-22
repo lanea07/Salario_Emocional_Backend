@@ -3,10 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Jobs\SendBirthdayReminders;
-use App\Models\User;
-use Carbon\Carbon;
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\Log;
 
 class BirthdayCheck extends Command
 {

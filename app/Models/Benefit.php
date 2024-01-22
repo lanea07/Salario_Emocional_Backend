@@ -3,14 +3,12 @@
 namespace App\Models;
 
 use App\Casts\GooglePath;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class Benefit extends Model
 {
     public $table = 'benefits';
-    use HasFactory;
 
     protected $fillable = [
         'name',

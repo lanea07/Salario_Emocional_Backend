@@ -1,6 +1,5 @@
 <?php
 
-use App\Http\Controllers\api\Services\BenefitService;
 use Illuminate\Support\Facades\Facade;
 use Illuminate\Support\ServiceProvider;
 

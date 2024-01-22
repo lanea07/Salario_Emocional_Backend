@@ -2,14 +2,13 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Staudenmeir\LaravelAdjacencyList\Eloquent\HasRecursiveRelationships;
 
 class Dependency extends Model
 {
-    use HasFactory, HasRecursiveRelationships;
+    use HasRecursiveRelationships;
 
     protected $fillable = [
         'name',
