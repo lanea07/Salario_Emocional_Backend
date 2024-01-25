@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Enums\BenefitDecision;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 
@@ -21,6 +23,7 @@ class BenefitUser extends Model
     ];
 
     protected $casts = [
+        'is_approved' => BenefitDecision::class,
     ];
 
     public function user()
@@ -45,5 +48,20 @@ class BenefitUser extends Model
         } catch (\Throwable $th) {
             throw new ModelNotFoundException('Beneficio de Colaborador no encontrado');
         }
+    }
+
+    public function scopeIs_Pending(Builder $query): void
+    {
+        $query->where('is_approved', BenefitDecision::PENDING);
+    }
+
+    public function scopeIs_Approved(Builder $query): void
+    {
+        $query->where('is_approved', BenefitDecision::APPROVED);
+    }
+
+    public function scopeIs_Denied(Builder $query): void
+    {
+        $query->where('is_approved', BenefitDecision::DENIED);
     }
 }

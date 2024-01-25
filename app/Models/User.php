@@ -72,7 +72,7 @@ class User extends Model
         return $this->belongsToMany(Role::class)->withTimestamps();
     }
 
-    public function leader()
+    public function leader_user()
     {
         return $this->belongsTo(User::class, 'leader');
     }

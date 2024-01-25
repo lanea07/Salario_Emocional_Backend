@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Casts\GooglePath;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 
@@ -38,5 +39,10 @@ class Benefit extends Model
         } catch (\Throwable $th) {
             throw new ModelNotFoundException('Beneficio no encontrado');
         }
+    }
+
+    public function scopeIs_Valid(Builder $query)
+    {
+        return $query->where('valid_id', true);
     }
 }

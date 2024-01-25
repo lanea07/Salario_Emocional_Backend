@@ -6,6 +6,7 @@ use App\Enums\BenefitDecision;
 use App\Mail\BenefitDecision as MailBenefitDecision;
 use App\Mail\BenefitUserCreated;
 use App\Mail\BenefitUserExcelExport;
+use App\Mail\NotifyNewBenefitRequestToLeader;
 use App\Models\Benefit;
 use App\Models\BenefitUser;
 use App\Models\DiaDeLaFamilia;
@@ -21,9 +22,7 @@ use DateTime;
 use DateTimeZone;
 use Exception;
 use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\Mail;
 use Spatie\IcalendarGenerator\Components\Calendar;
 use Spatie\IcalendarGenerator\Components\Event;
@@ -32,13 +31,12 @@ use Spatie\IcalendarGenerator\Properties\TextProperty;
 class BenefitUserService
 {
 
-    // TODO: Implement logic to approve or deny benefits
     public function getAllBenefitUser(int $userId, int $year): Collection
     {
         return User::with(
             [
                 'benefit_user' => function ($q) use ($year) {
-                    $q->where('is_approved', true);
+                    $q->is_approved();
                     $q->whereYear('benefit_begin_time', $year);
                     $q->orderBy('benefit_begin_time');
                 },
@@ -94,23 +92,33 @@ class BenefitUserService
         $requestedBenefit->canCreate($benefitUserData);
 
         $benefitUserData = BenefitUser::create($benefitUserData);
-        $benefitUserData = BenefitUser::with(['user', 'benefits', 'benefit_detail'])->find($benefitUserData->id);
+        $benefitUserData = $benefitUserData->load(['user', 'benefits', 'benefit_detail', 'user.leader_user']);
 
         if ($requestedBenefit->name === 'Mi Banco de Horas') {
-            $bancoHoras = BenefitUser::with(['benefit_detail'])->where(function ($q) use ($benefitUserData) {
-                $q->where('user_id', $benefitUserData->user_id);
-                $q->where('benefit_id', $benefitUserData->benefit_id);
-                $q->where('id', '<>', $benefitUserData->id);
-                $q->whereYear('benefit_begin_time', date("Y", strtotime($benefitUserData['benefit_begin_time'])));
-            })->orderBy('benefit_begin_time')->get();
+            $bancoHoras = BenefitUser::with(['benefit_detail'])->where(
+                function ($q) use ($benefitUserData) {
+                    $q->where('user_id', $benefitUserData->user_id);
+                    $q->where('benefit_id', $benefitUserData->benefit_id);
+                    $q->where('id', '<>', $benefitUserData->id);
+                    $q->whereYear('benefit_begin_time', date("Y", strtotime($benefitUserData['benefit_begin_time'])));
+                    $q->is_Approved();
+                }
+            )
+            ->orderBy('benefit_begin_time')
+            ->get();
         }
         if ($requestedBenefit->name === 'Mi Viernes') {
-            $miViernes = BenefitUser::where(function ($q) use ($benefitUserData) {
-                $q->where('user_id', $benefitUserData->user_id);
-                $q->where('benefit_id', $benefitUserData->benefit_id);
-                $q->where('id', '<>', $benefitUserData->id);
-                $q->whereYear('benefit_begin_time', date("Y", strtotime($benefitUserData['benefit_begin_time'])));
-            })->orderBy('benefit_begin_time')->get();
+            $miViernes = BenefitUser::where(
+                function ($q) use ($benefitUserData) {
+                    $q->where('user_id', $benefitUserData->user_id);
+                    $q->where('benefit_id', $benefitUserData->benefit_id);
+                    $q->where('id', '<>', $benefitUserData->id);
+                    $q->whereYear('benefit_begin_time', date("Y", strtotime($benefitUserData['benefit_begin_time'])));
+                    $q->is_Approved();
+                }
+            )
+            ->orderBy('benefit_begin_time')
+            ->get();
         }
 
         $data = [
@@ -119,7 +127,16 @@ class BenefitUserService
             $miViernes
         ];
 
-        Mail::to($benefitUserData->user->email)->queue(new BenefitUserCreated($data));
+        if ($benefitUserData->user->leader_user !== null) {
+            Mail::to($benefitUserData->user->leader_user->email)->queue(new NotifyNewBenefitRequestToLeader($data));
+            Mail::to($benefitUserData->user->email)->queue(new BenefitUserCreated($data));
+        } else {
+            $benefitUserData->is_approved = BenefitDecision::APPROVED->value;
+            $benefitUserData->approved_at = Carbon::now();
+            $benefitUserData->approved_by = auth()->user()->id;
+            $benefitUserData->save();
+            Mail::to($benefitUserData->user->email)->queue(new MailBenefitDecision($benefitUserData));
+        }
         return $benefitUserData;
     }
 
@@ -217,23 +234,28 @@ class BenefitUserService
             },
         )
             ->with(['benefits', 'benefit_detail'])
-            ->where('is_approved', false)
+            ->is_pending()
             ->get();
     }
 
     public function getAllBenefitCollaborators(Request $request): Collection
     {
         $user = $request->user();
-        return BenefitUser::withWhereHas(
-            'user',
-            function ($q) use ($user) {
-                $q->where('leader', '=', $user->id);
-                $q->orWhere('id', '=', $user->id);
-            },
+        return $user
+        ->descendantsAndSelf()
+        ->with(
+            [
+                'benefit_user' => function ($q) use ($request) {
+                    $q->whereYear('benefit_begin_time', $request->year);
+                    $q->is_approved();
+                },
+                'benefit_user.benefits',
+                'benefit_user.user',
+                'benefit_user.benefit_detail',
+            ]
         )
-            ->with(['benefits', 'benefit_detail'])
-            ->where('is_approved', true)
-            ->get();
+        ->oldest('name')
+        ->get();
     }
 
     /**
@@ -274,16 +296,17 @@ class BenefitUserService
                 break;
         }
         $benefitUser->approved_at = Carbon::now();
+        $benefitUser->approved_by = auth()->user()->id;
         $benefitUser->save();
         Mail::to($benefitUser->user->email)->queue(new MailBenefitDecision($benefitUser));
         return $benefitUser;
     }
 
-    public function exportOwnBenefits(Request $request)
+    public function exportBenefits(Request $request)
     {
         $year = $request->years;
-        $user_id = $request->users;
-        $data = ['year' => $year, 'user_id' => $user_id, 'isAuthenticatedUserAdmin' => auth()->user()->isAdmin()];
+        $user_id = auth()->user()->id;
+        $data = ['year' => $year, 'user_id' => $user_id];
         Mail::to(auth()->user()->email)->queue(new BenefitUserExcelExport($data));
     }
 }

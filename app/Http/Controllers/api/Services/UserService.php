@@ -15,14 +15,13 @@ class UserService
 
     public function getAllUsers(): Collection
     {
-        $users = User::with(['dependency', 'parent', 'positions', 'roles'])->orderBy('name')->tree()->get();
-        return $users->toTree();
+        return User::with(['dependency', 'parent', 'positions', 'roles'])->orderBy('name')->get();
     }
 
     public function saveUser(array $userData): User
     {
         if (!$userData['password']) {
-            $password = Str::password(10);
+            $password = Str::password(10, true, true, false, false);
             $userData['password'] = $password;
         }
 

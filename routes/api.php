@@ -47,10 +47,11 @@ Route::middleware('auth:sanctum')->group(function () {
     });
 
     Route::controller(BenefitController::class)->group(function () {
+        Route::get('/benefit', 'index')->name('benefit.index');
+        Route::get('/benefit/available', 'indexAvailable')->name('benefit.indexavailable');
         Route::get('/benefit/create', 'create')->name('	benefit.create');
         Route::delete('/benefit/{benefit}', 'destroy')->name('benefit.destroy');
         Route::get('/benefit/{benefit}/edit', 'edit')->name('benefit.edit');
-        Route::get('/benefit', 'index')->name('benefit.index');
         Route::get('/benefit/{benefit}', 'show')->name('benefit.show');
         Route::post('/benefit', 'store')->name('benefit.store');
         Route::put('/benefit/{benefit}', 'update')->name('benefit.update');

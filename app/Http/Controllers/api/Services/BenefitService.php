@@ -12,7 +12,9 @@ class BenefitService
 
     public function getAllBenefits(): Collection
     {
-        return Benefit::with('benefit_detail')->orderBy('name', 'asc')->get();
+        return Benefit::with('benefit_detail')
+        ->orderBy('name', 'asc')
+        ->get();
     }
 
     public function saveBenefit(array $benefitData)//: Benefit
@@ -70,4 +72,13 @@ class BenefitService
     {
         $benefit->delete();
     }
+
+    public function getAllEnabledBenefits(): Collection
+    {
+        return Benefit::with('benefit_detail')
+            ->is_valid()
+            ->orderBy('name', 'asc')
+            ->get();
+    }
+
 }

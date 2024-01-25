@@ -22,6 +22,7 @@ return new class extends Migration
             $table->integer('is_approved')->default(0);
             $table->timestamps();
             $table->dateTime('approved_at')->nullable();
+            $table->integer('approved_by')->nullable();
             $table->unique(['benefit_id', 'benefit_detail_id', 'user_id', 'benefit_begin_time'], 'unique_benefit_per_user');
         });
 

@@ -13,15 +13,16 @@ class DependencySeeder extends Seeder
      */
     public function run(): void
     {
+        Dependency::create(['name' => 'root']);
         Dependency::create(['name' => 'Presidencia']);
-        $dependency = Dependency::create(['name' => 'Gerencia de Tecnología, Logística y Procesos', 'parent_id' => 1]);
-        $dependency = Dependency::create(['name' => 'Gerencia de Finanzas y Crédito', 'parent_id' => 1]);
-        $dependency = Dependency::create(['name' => 'Gerencia Jurídica', 'parent_id' => 1]);
-        $dependency = Dependency::create(['name' => 'Gerencia de Gestión Humana', 'parent_id' => 1]);
-        $dependency = Dependency::create(['name' => 'Gerencia Comercial (electro y bazar)', 'parent_id' => 1]);
-        $dependency = Dependency::create(['name' => 'Gerencia Comercial (hogar, vestuario y calzado) y de Mercadeo', 'parent_id' => 1]);
+        $dependency = Dependency::create(['name' => 'Gerencia de Tecnología, Logística y Procesos', 'parent_id' => 2]);
+        $dependency = Dependency::create(['name' => 'Gerencia de Finanzas y Crédito', 'parent_id' => 2]);
+        $dependency = Dependency::create(['name' => 'Gerencia Jurídica', 'parent_id' => 2]);
+        $dependency = Dependency::create(['name' => 'Gerencia de Gestión Humana', 'parent_id' => 2]);
+        $dependency = Dependency::create(['name' => 'Gerencia Comercial (electro y bazar)', 'parent_id' => 2]);
+        $dependency = Dependency::create(['name' => 'Gerencia Comercial (hogar, vestuario y calzado) y de Mercadeo', 'parent_id' => 2]);
 
-        $dependency = Dependency::create(['name' => 'Gerencia de Operaciones y Experiencia al Cliente', 'parent_id' => 1]);
+        $dependency = Dependency::create(['name' => 'Gerencia de Operaciones y Experiencia al Cliente', 'parent_id' => 2]);
         $user = User::create([
             'name' => 'Roberto Arturo Osorio García',
             'password' => 'Marianita.07',

@@ -102,7 +102,7 @@ class BenefitUserController extends Controller
 
     public function exportDetail(Request $request): void
     {
-        $this->benefitUserService->exportOwnBenefits($request);
+        $this->benefitUserService->exportBenefits($request);
     }
 
     public function indexNonApproved(Request $request): JsonResponse
@@ -124,7 +124,7 @@ class BenefitUserController extends Controller
     public function decideBenefitUser(Request $request): JsonResponse
     {
         try {
-            $benefitUser = BenefitUser::find($request->data)->first();
+            $benefitUser = BenefitUser::find($request->data['id']);
             $this->authorize('decideBenefitUser', $benefitUser);
             return response()->json($this->benefitUserService->decideBenefitUser($request->cmd, $benefitUser), 200);
         } catch (\Illuminate\Database\QueryException $th) {

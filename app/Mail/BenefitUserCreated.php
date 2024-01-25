@@ -66,13 +66,7 @@ class BenefitUserCreated extends Mailable implements ShouldQueue
      */
     public function attachments(): array
     {
-        return [
-            Attachment::fromData(
-                fn () =>
-                BenefitUserService::generateICS($this->newBenefitUser),
-                'invite.ics'
-            )
-        ];
+        return [];
     }
 
     public function failed($error)

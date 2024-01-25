@@ -12,6 +12,7 @@ class PositionsSeeder extends Seeder
      */
     public function run(): void
     {
+        Position::create(['name' => 'root']);
         Position::create(['name' => 'Presidente']);
         Position::create(['name' => 'Gerente']);
         Position::create(['name' => 'Jefe']);
