@@ -19,14 +19,5 @@ class DatabaseSeeder extends Seeder
             DependencySeeder::class,
             UsersSeeder::class,
         ]);
-
-        $user = User::create([
-            'name' => 'root',
-            'email' => 'root@localhost',
-            'password' => 'root',
-            'dependency_id' => 1,
-            'position_id' => 1,
-        ]);
-        $user->roles()->attach(1);
     }
 }
