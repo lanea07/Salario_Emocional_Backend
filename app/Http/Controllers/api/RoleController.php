@@ -82,7 +82,7 @@ class RoleController extends Controller
         try {
             $this->authorize('destroy', $role);
             $this->roleService->deleteRole($role);
-            return response()->json(['msg' => 'Rol eliminado'], 200);
+            return response()->json(['message' => 'Rol eliminado'], 200);
         } catch (\Throwable $th) {
             return response($th, 500);
         }

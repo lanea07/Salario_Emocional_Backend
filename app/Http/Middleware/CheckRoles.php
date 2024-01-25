@@ -20,8 +20,7 @@ class CheckRoles
         if (auth('sanctum')->check() && auth()->user()->hasRoles($roles)) {
             return $next($request);
         }
-        return response([
-            'msg' => 'User is not authorized to execute this action on this route'
+        return response(['message' => 'User is not authorized to execute this action on this route'
         ], 403);
     }
 }

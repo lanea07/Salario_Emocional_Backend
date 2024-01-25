@@ -10,7 +10,7 @@ class PositionService
 
     public function getAllPositions(): Collection
     {
-        return Position::all();
+        return Position::where('id', '<>', 1)->get();
     }
 
     public function savePosition(array $positionData): Position

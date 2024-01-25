@@ -84,7 +84,7 @@ class BenefitDetailController extends Controller
         try {
             $this->authorize('destroy', $benefitdetail);
             $this->benefitDetailService->deleteBenefitDetail($benefitdetail);
-            return response()->json(['msg' => 'Detalle de Beneficio eliminado'], 200);
+            return response()->json(['message' => 'Detalle de Beneficio eliminado'], 200);
         } catch (\Throwable $th) {
             return response()->json($th, 500);
         }

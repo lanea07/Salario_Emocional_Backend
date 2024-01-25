@@ -13,7 +13,9 @@ return new class extends Migration
     {
         Schema::create('benefits', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
+            $table->string('name')->unique();
+            $table->text('politicas_path')->nullable();
+            $table->boolean('valid_id')->default(true);
             $table->timestamps();
         });
     }

@@ -10,21 +10,26 @@ class BenefitUserPolicy
 
     public function show(User $user, BenefitUser $benefitUser)
     {
-        return $user->isAdmin() || $user->id === $benefitUser->user->leader || $user->id === $benefitUser->user->id;
+        return $user->id === $benefitUser->user->leader || $user->id === $benefitUser->user->id;
     }
 
     public function store(User $user)
     {
-        return $user->isAdmin() && auth('sanctum')->check();
+        return auth('sanctum')->check();
     }
 
     public function update(User $user, BenefitUser $benefitUser)
     {
-        return $user->isAdmin() && auth('sanctum')->check();
+        return auth('sanctum')->check() && $user->id === $benefitUser->user->id;
     }
 
     public function destroy(User $user, BenefitUser $benefitUser)
     {
         return $user->isAdmin() && auth('sanctum')->check();
+    }
+
+    public function decideBenefitUser(User $user, BenefitUser $benefitUser)
+    {
+        return auth('sanctum')->check() && $user->id === $benefitUser->user->leader;
     }
 }

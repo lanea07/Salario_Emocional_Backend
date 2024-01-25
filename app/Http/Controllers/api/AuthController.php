@@ -35,16 +35,15 @@ class AuthController extends Controller
 
         if (!$user || !Hash::check(request()->password, $user->password)) {
             throw ValidationException::withMessages([
-                'email' => 'The provided credentials are incorrect.'
+                'email' => 'Credenciales incorrectas.'
             ]);
         }
 
         return response()->json(
             [
                 'token' => $user->createToken(request()->device_name)->plainTextToken,
-                'can' => $user->roles,
                 'id' => $user->id,
-                'user' => $user
+                'user' => $user->only('name', 'email', 'id'),
             ],
             200
         );

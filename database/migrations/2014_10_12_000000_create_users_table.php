@@ -16,16 +16,20 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->string('email')->unique();
-            $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
+            $table->boolean('requirePassChange')->default(false);
+            $table->foreignId('dependency_id')->constrained();
             $table->foreignId('position_id')->constrained();
             $table->unsignedBigInteger('leader')->nullable();
+            $table->tinyInteger('valid_id')->default(1);
             $table->rememberToken();
+            $table->date('birthdate')->nullable();
+            $table->timestamp('email_verified_at')->nullable();
             $table->timestamps();
         });
 
         Schema::table('users', function (Blueprint $table) {
-            $table->foreign('leader')->references('id')->on('users')->nullOnDelete();
+            $table->foreign('leader')->references('id')->on('users');
         });
     }
 

@@ -16,7 +16,7 @@ class BenefitController extends Controller
     public function __construct(BenefitService $benefitService)
     {
         $this->benefitService = $benefitService;
-        $this->middleware('checkroles:Admin', ['except' => ['index', 'show']]);
+        $this->middleware('checkroles:Admin', ['except' => ['index', 'indexAvailable', 'show']]);
     }
 
     public function index(): JsonResponse
@@ -82,9 +82,14 @@ class BenefitController extends Controller
         try {
             $this->authorize('destroy', $benefit);
             $this->benefitService->deleteBenefit($benefit);
-            return response()->json(['msg' => 'Beneficio eliminado'], 200);
+            return response()->json(['message' => 'Beneficio eliminado'], 200);
         } catch (\Throwable $th) {
             return response()->json($th, 500);
         }
+    }
+
+    public function indexAvailable(): JsonResponse
+    {
+        return response()->json($this->benefitService->getAllEnabledBenefits(), 200);
     }
 }
