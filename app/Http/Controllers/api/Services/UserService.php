@@ -66,7 +66,7 @@ class UserService
 
         $positionsToAsign = Position::where('id', $userData['position_id'])->first();
 
-        if ($userData['subordinates']) {
+        if (array_key_exists('subordinates', $userData)) {
             $newSubordinates = $userData['subordinates'];
             $user->update($userData);
             User::where('leader', $user->id)->update(['leader' => null]);
