@@ -110,4 +110,9 @@ class User extends Model
             throw new ModelNotFoundException('Usuario no encontrado');
         }
     }
+
+    public function scopeIs_Valid()
+    {
+        return $this->where('valid_id', true);
+    }
 }

@@ -34,7 +34,11 @@ class DependencyService
 
     public function getDependencyById(Dependency $dependency): Collection
     {
-        $dependency = $dependency->descendantsAndSelf()->with(['users.positions'])->get();
+        $dependency = $dependency
+            ->descendantsAndSelf()
+            ->with(['users.positions'])
+            ->whereRelation('users', 'valid_id', true)
+            ->get();
         return $dependency->toTree();
     }
 
