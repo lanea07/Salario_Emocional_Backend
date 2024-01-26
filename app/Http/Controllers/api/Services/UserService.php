@@ -65,17 +65,7 @@ class UserService
         $rolesToAsign = Role::whereIn('name', $rolesToAsign)->get();
 
         $positionsToAsign = Position::where('id', $userData['position_id'])->first();
-
-        if (array_key_exists('subordinates', $userData)) {
-            $newSubordinates = $userData['subordinates'];
-            $user->update($userData);
-            User::where('leader', $user->id)->update(['leader' => null]);
-            User::whereIn('id', $newSubordinates)->update(['leader' => $user->id]);
-        } else {
-            User::where('leader', '=', $user->id)->update(['leader' => null]);
-            $user->update($userData);
-        }
-
+        $user->update($userData);
         $user->roles()->sync($rolesToAsign);
         $user->update(['position_id' => $positionsToAsign->id]);
         return $user;
