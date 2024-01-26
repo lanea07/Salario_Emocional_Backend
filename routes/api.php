@@ -118,7 +118,7 @@ Route::middleware('auth:sanctum')->group(function () {
     });
 
     Route::controller(DependencyController::class)->group(function () {
-        Route::get('/dependency/dependencyAncestors', 'indexAncestors')->name('dependency.dependencyAncestors');
+        Route::get('/dependency/dependencyAncestors/{id}', 'indexAncestors')->name('dependency.dependencyAncestors');
         Route::get('/dependency', 'index')->name('dependency.index');
         Route::get('/dependency/create', 'create')->name('dependency.create');
         Route::delete('/dependency/{dependency}', 'destroy')->name('dependency.destroy');

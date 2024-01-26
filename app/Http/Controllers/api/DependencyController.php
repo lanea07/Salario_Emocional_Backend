@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Dependency;
 use App\Http\Requests\StoreDependencyRequest;
 use App\Http\Requests\UpdateDependencyRequest;
+use Illuminate\Http\Request;
 
 class DependencyController extends Controller
 {
@@ -101,8 +102,8 @@ class DependencyController extends Controller
         }
     }
 
-    public function indexAncestors()
+    public function indexAncestors(Request $request)
     {
-        return response()->json($this->dependencyService->getAllDependenciesAncestors(), 200);
+        return response()->json($this->dependencyService->getAllDependenciesAncestors($request), 200);
     }
 }

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\api\Services;
 
 use App\Models\Dependency;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Http\Request;
 
 class DependencyService
 {
@@ -20,10 +21,9 @@ class DependencyService
         return $userDependency->toTree();
     }
 
-    public function getAllDependenciesAncestors(): Collection
+    public function getAllDependenciesAncestors(Request $request): Collection
     {
-        $userDependency = auth()->user()->dependency;
-        $userDependency = $userDependency->ancestorsAndSelf()->with(['users.positions'])->get();
+        $userDependency = Dependency::find($request->id)->ancestorsAndSelf()->with(['users.positions'])->get();
         return $userDependency->toTree();
     }
 
@@ -34,11 +34,7 @@ class DependencyService
 
     public function getDependencyById(Dependency $dependency): Collection
     {
-        $dependency = $dependency
-            ->descendantsAndSelf()
-            ->with(['users.positions'])
-            ->whereRelation('users', 'valid_id', true)
-            ->get();
+        $dependency = $dependency->descendantsAndSelf()->with(['users.positions'])->get();
         return $dependency->toTree();
     }
 
