@@ -12,7 +12,9 @@ class DependencyService
     {
         $userDependency = auth()->user()->dependency;
         if (auth()->user()->isAdmin()) {
-            $userDependency = $userDependency->rootAncestor()->first();
+            if ($userDependency->parent_id !== null) {
+                $userDependency = $userDependency->rootAncestor()->first();
+            }
         }
         $userDependency = $userDependency->descendantsAndSelf()->with(['users.positions'])->get();
         return $userDependency->toTree();
