@@ -48,4 +48,9 @@ class DependencyService
     {
         $dependency->delete();
     }
+
+    public function getNonTreeValidDependencies(): Collection
+    {
+        return Dependency::is_valid()->oldest('name')->get();
+    }
 }
