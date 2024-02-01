@@ -230,7 +230,7 @@ class BenefitUserService
         return BenefitUser::withWhereHas(
             'user',
             function ($q) use ($user) {
-                $q->where('leader', '=', $user->id);
+                $q->with('descendantsAndSelf');
             },
         )
             ->with(['benefits', 'benefit_detail'])
