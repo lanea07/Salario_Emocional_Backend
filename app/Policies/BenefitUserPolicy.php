@@ -30,6 +30,6 @@ class BenefitUserPolicy
 
     public function decideBenefitUser(User $user, BenefitUser $benefitUser)
     {
-        return auth('sanctum')->check() && $user->id === $benefitUser->user->leader;
+        return auth('sanctum')->check() && in_array($user->id, $benefitUser->user->ancestors->pluck('id')->toArray());
     }
 }
