@@ -106,4 +106,9 @@ class DependencyController extends Controller
     {
         return response()->json($this->dependencyService->getAllDependenciesAncestors($request), 200);
     }
+
+    public function getNonTreeValidDependencies()
+    {
+        return response()->json($this->dependencyService->getNonTreeValidDependencies(), 200);
+    }
 }

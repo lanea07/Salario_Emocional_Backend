@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\api\AdminController;
 use App\Http\Controllers\api\AuthController;
 use App\Http\Controllers\api\BenefitController;
 use App\Http\Controllers\api\BenefitDetailController;
@@ -82,6 +83,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::put('/benefituser/{benefituser}', 'update')->name('benefituser.update');
         Route::patch('/benefituser/{benefituser}', 'update')->name('benefituser.update');
         Route::post('/benefituser/decidebenefituser', 'decideBenefitUser')->name('benefituser.decidebenefituser');
+        Route::post('/exportbenefits', 'exportDetail');
     });
 
     Route::controller(PositionController::class)->group(function () {
@@ -120,6 +122,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::controller(DependencyController::class)->group(function () {
         Route::get('/dependency/dependencyAncestors/{id}', 'indexAncestors')->name('dependency.dependencyAncestors');
         Route::get('/dependency', 'index')->name('dependency.index');
+        Route::get('/dependency/getNonTreeValidDependencies', 'getNonTreeValidDependencies')->name('dependency.getNonTreeValidDependencies');
         Route::get('/dependency/create', 'create')->name('dependency.create');
         Route::delete('/dependency/{dependency}', 'destroy')->name('dependency.destroy');
         Route::get('/dependency/{dependency}/edit', 'edit')->name('dependency.edit');
@@ -129,5 +132,9 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::patch('/dependency/{dependency}', 'update')->name('dependency.update');
     });
 
-    Route::post('/exportbenefits', [BenefitUserController::class, 'exportDetail']);
+    Route::controller(AdminController::class)->group(function () {
+        Route::get('/admin/getAllBenefitUser', 'getAllBenefitUser')->name('admin.getAllBenefitUser');
+        Route::get('/admin/getAllGroupedBenefits', 'getAllGroupedBenefits')->name('admin.getAllGroupedBenefits');
+    });
+
 });
