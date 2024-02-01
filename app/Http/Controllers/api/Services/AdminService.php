@@ -12,21 +12,21 @@ class AdminService
     {
         return BenefitUser::with(['user', 'user.dependency', 'benefits', 'benefit_detail'])
             ->when(isset($request->year), function ($q) use ($request) {
-                return $q->whereYear('created_at', $request->year);
+            return $q->whereYear('created_at', '=', $request->year);
             })
             ->when(isset($request->benefit_id), function ($q) use ($request) {
-                return $q->where('benefit_id', $request->benefit_id);
+            return $q->where('benefit_id', '=', $request->benefit_id);
             })
             ->when(isset($request->user_id), function ($q) use ($request) {
-                return $q->where('user_id', $request->user_id);
+            return $q->where('user_id', '=', $request->user_id);
             })
             ->when(isset($request->dependency_id), function ($q) use ($request) {
                 return $q->whereRelation('user', function ($q) use ($request) {
-                    $q->where('dependency_id', $request->dependency_id);
+                $q->where('dependency_id', '=', $request->dependency_id);
                 });
             })
             ->when(isset($request->is_approved), function ($q) use ($request) {
-                return $q->where('is_approved', $request->is_approved);
+            return $q->where('is_approved', '=', $request->is_approved);
             })
             ->get();
     }
@@ -45,21 +45,21 @@ class AdminService
             },
         ])
             ->when(isset($request->year), function ($q) use ($request) {
-                return $q->whereYear('created_at', $request->year);
+            return $q->whereYear('created_at', '=', $request->year);
             })
             ->when(isset($request->benefit_id), function ($q) use ($request) {
-                return $q->where('benefit_id', $request->benefit_id);
+            return $q->where('benefit_id', '=', $request->benefit_id);
             })
             ->when(isset($request->user_id), function ($q) use ($request) {
-                return $q->where('user_id', $request->user_id);
+            return $q->where('user_id', '=', $request->user_id);
             })
             ->when(isset($request->dependency_id), function ($q) use ($request) {
                 return $q->whereRelation('user', function ($q) use ($request) {
-                    $q->where('dependency_id', $request->dependency_id);
+                $q->where('dependency_id', '=', $request->dependency_id);
                 });
             })
             ->when(isset($request->is_approved), function ($q) use ($request) {
-                return $q->where('is_approved', $request->is_approved);
+            return $q->where('is_approved', '=', $request->is_approved);
             })
             ->get([
                 'id',
