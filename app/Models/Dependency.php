@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Staudenmeir\LaravelAdjacencyList\Eloquent\HasRecursiveRelationships;
@@ -32,5 +33,10 @@ class Dependency extends Model
         } catch (\Throwable $th) {
             throw new ModelNotFoundException('Dependencia no encontrada');
         }
+    }
+
+    public function scopeIs_Valid(Builder $query)
+    {
+        return $query->where('valid_id', true);
     }
 }
