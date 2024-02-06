@@ -11,7 +11,7 @@ use Illuminate\Validation\ValidationException;
 class AuthService
 {
 
-    public function validateUserLogin(string $email, string $password): User | JsonResponse
+    public function validateUserLogin(string $email, string $password): User | null
     {
         $user = User::where('email', $email)->first();
         return $user;

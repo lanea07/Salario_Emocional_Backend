@@ -22,6 +22,7 @@ use DateTime;
 use DateTimeZone;
 use Exception;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Query\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 use Spatie\IcalendarGenerator\Components\Calendar;
@@ -31,6 +32,14 @@ use Spatie\IcalendarGenerator\Properties\TextProperty;
 class BenefitUserService
 {
 
+    /**
+     * Returns all the benefits of a user
+     * 
+     * @param int $userId
+     * @param int $year
+     * 
+     * @return Collection
+     */
     public function getAllBenefitUser(int $userId, int $year): Collection
     {
         return User::with(
@@ -49,6 +58,13 @@ class BenefitUserService
         ->get();
     }
 
+    /**
+     * Saves a new benefit for a user
+     * 
+     * @param array $benefitUserData
+     * 
+     * @return BenefitUser
+     */
     public function saveBenefitUser(array $benefitUserData): BenefitUser
     {
         $requestedBenefit = Benefit::find($benefitUserData['benefit_id']);
@@ -140,6 +156,13 @@ class BenefitUserService
         return $benefitUserData;
     }
 
+    /**
+     * Returns a benefit by its ID
+     * 
+     * @param BenefitUser $benefitUser
+     * 
+     * @return Collection
+     */
     public function getBenefitUserByID(BenefitUser $benefitUser): Collection
     {
         return User::with(
@@ -158,6 +181,14 @@ class BenefitUserService
         })->get();
     }
 
+    /**
+     * Updates a benefit for a user
+     * 
+     * @param array $benefitUserData
+     * @param BenefitUser $benefitUser
+     * 
+     * @return BenefitUser
+     */
     public function updateBenefitUser(array $benefitUserData, BenefitUser $benefitUser): BenefitUser
     {
         $requestedBenefit = Benefit::find($benefitUserData['benefit_id']);
@@ -202,11 +233,25 @@ class BenefitUserService
         return $benefitUser;
     }
 
+    /**
+     * Deletes a benefit for a user
+     * 
+     * @param BenefitUser $benefitUser
+     * 
+     * @return void
+     */
     public function deleteBenefitUser(BenefitUser $benefitUser): void
     {
         $benefitUser->delete();
     }
 
+    /**
+     * Returns all the benefits of a user that are not approved
+     * 
+     * @param int $userId
+     * 
+     * @return Collection
+     */
     public function getAllBenefitUserNonApproved(int $userId): Collection
     {
         return User::with(
@@ -224,6 +269,13 @@ class BenefitUserService
             ->get();
     }
 
+    /**
+     * Returns all the benefits of users that are not approved
+     * 
+     * @param Request $request
+     * 
+     * @return Collection
+     */
     public function getAllBenefitCollaboratorsNonApproved(Request $request): Collection
     {
         $user = $request->user();
@@ -238,20 +290,26 @@ class BenefitUserService
             ->get();
     }
 
-    public function getAllBenefitCollaborators(Request $request): Collection
+    /**
+     * Returns all the benefits of user descendants and self
+     * 
+     * @param Request $request
+     * 
+     * @return Collection
+     */
+    public function getAllBenefitCollaborators(Request $request)
     {
         $user = $request->user();
-        return $user
-        ->descendantsAndSelf()
+        return User::where('id', '=', $user->id)
         ->with(
             [
-                'benefit_user' => function ($q) use ($request) {
+                'descendantsAndSelf.benefit_user' => function ($q) use ($request) {
                     $q->whereYear('benefit_begin_time', $request->year);
                     $q->is_approved();
                 },
-                'benefit_user.benefits',
-                'benefit_user.user',
-                'benefit_user.benefit_detail',
+                'descendantsAndSelf.benefit_user.benefits',
+                'descendantsAndSelf.benefit_user.user',
+                'descendantsAndSelf.benefit_user.benefit_detail',
             ]
         )
         ->oldest('name')
@@ -280,6 +338,14 @@ class BenefitUserService
         return $event->get();
     }
 
+    /**
+     * Decides if a benefit is approved or rejected
+     * 
+     * @param string $decision
+     * @param BenefitUser $benefitUser
+     * 
+     * @return BenefitUser
+     */
     public function decideBenefitUser(
         string $decision,
         BenefitUser $benefitUser
@@ -302,6 +368,13 @@ class BenefitUserService
         return $benefitUser;
     }
 
+    /**
+     * Exports the benefits of a user and descendants to an Excel file and mails it
+     * 
+     * @param Request $request
+     * 
+     * @return void
+     */
     public function exportBenefits(Request $request)
     {
         $year = $request->years;
