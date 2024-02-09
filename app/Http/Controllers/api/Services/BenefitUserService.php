@@ -128,8 +128,13 @@ class BenefitUserService
         ];
 
         if ($benefitUserData->user->leader_user !== null) {
-            Mail::to($benefitUserData->user->leader_user->email)->queue(new NotifyNewBenefitRequestToLeader($data));
-            Mail::to($benefitUserData->user->email)->queue(new BenefitUserCreated($data));
+            $leader = $benefitUserData->user->leader_user;
+            if ($leader->settings()->get('Auto Aprobar Beneficios de mis Colaboradores') === 'Sí') {
+                $this->decideBenefitUser('approve', $benefitUserData);
+            } else {
+                Mail::to($benefitUserData->user->leader_user->email)->queue(new NotifyNewBenefitRequestToLeader($data));
+                Mail::to($benefitUserData->user->email)->queue(new BenefitUserCreated($data));
+            }
         } else {
             $benefitUserData->is_approved = BenefitDecision::APPROVED->value;
             $benefitUserData->approved_at = Carbon::now();

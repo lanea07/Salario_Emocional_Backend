@@ -24,24 +24,24 @@ class AuthService
 
     public function validatePasswordChange(Request $request): void
     {
-        if (!Hash::check($request->currentPassword, auth()->user()->password)) {
+        $validated = $request->validate([
+            'current_password' => ['required', 'current_password'],
+            'password' => ['required', 'min:6', 'confirmed'],
+        ]);
+        if (!Hash::check($validated['current_password'], auth()->user()->password)) {
             throw ValidationException::withMessages([
                 'message' => 'La contraseña actual es incorrecta'
             ]);
         }
-        if (Hash::check($request->password, auth()->user()->password)) {
+        if (Hash::check($validated['password'], auth()->user()->password)) {
             throw ValidationException::withMessages([
                 'message' => 'La nueva contraseña no puede ser igual a la anterior'
             ]);
         }
-        if ($request->password !== $request->retypePassword) {
-            throw ValidationException::withMessages([
-                'message' => 'Las contraseñas no coinciden'
-            ]);
-        }
-        $user = auth()->user();
-        $user->password = $request->password;
-        $user->requirePassChange = false;
-        $user->save();
+
+        auth()->user()->update([
+            'password' => Hash::make($validated['password']),
+            'requirePassChange' => false
+        ]);
     }
 }

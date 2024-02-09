@@ -3,15 +3,17 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
+use LaravelPropertyBag\Settings\HasSettings;
 use Staudenmeir\LaravelAdjacencyList\Eloquent\HasRecursiveRelationships;
+use Illuminate\Foundation\Auth\User as Authenticatable;
 
-class User extends Model
+
+class User extends Authenticatable
 {
-    use HasApiTokens, HasFactory, Notifiable, HasRecursiveRelationships;
+    use HasApiTokens, HasFactory, Notifiable, HasRecursiveRelationships, HasSettings;
 
     /**
      * The attributes that are mass assignable.

@@ -9,6 +9,7 @@ use App\Http\Controllers\api\RoleController;
 use App\Http\Controllers\api\UserController;
 use App\Http\Controllers\api\BenefitUserController;
 use App\Http\Controllers\api\DependencyController;
+use App\Http\Controllers\api\PreferencesController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -135,6 +136,12 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::controller(AdminController::class)->group(function () {
         Route::get('/admin/getAllBenefitUser', 'getAllBenefitUser')->name('admin.getAllBenefitUser');
         Route::get('/admin/getAllGroupedBenefits', 'getAllGroupedBenefits')->name('admin.getAllGroupedBenefits');
+    });
+
+    Route::controller(PreferencesController::class)->group(function () {
+        Route::get('/user-preferences', 'index')->name('preferences.index');
+        Route::get('/user-preferences/{id}', 'show')->name('preferences.show');
+        Route::put('/user-preferences/{id}', 'store')->name('preferences.store');
     });
 
 });
