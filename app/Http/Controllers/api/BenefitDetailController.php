@@ -75,9 +75,7 @@ class BenefitDetailController extends Controller
                     break;
             }
         }
-        // broadcast(new DirectorioUpdate($benefitdetail));
     }
-
 
     public function destroy(BenefitDetail $benefitdetail): JsonResponse
     {

@@ -1,6 +1,5 @@
 <?php
 
-use App\Http\Controllers\AngularController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -14,4 +13,6 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('{any}', [AngularController::class, 'index'])->where('any', '^(?!api).*$');
+Route::get('{any}', function () {
+    abort(404);
+})->where('any', '^(?!api).*$');
