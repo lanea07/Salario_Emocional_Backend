@@ -31,21 +31,21 @@ class Cron extends Model
      * @param CarbonTimePeriodsInterval $period Period of time in which interval will be incremented
      * @param string $nextTimeRun (optional) Used to set next time run will take place, default 08:00:00
      */
-    public static function shouldIRun(string $command, int $interval, CarbonTimePeriodsEnum $period, string $beginDate = '', string $nextTimeRun = '08:00:00'): bool
+    public static function shouldIRun(string $command, int $interval, CarbonTimePeriodsEnum $period, string $beginDate = ''): bool
     {
         $cron = Cron::find($command);
         $now  = Carbon::now();
         $carbonMethod = $period->value;
-        $futureRun = new Carbon($now->toDateString() . ' ' . $nextTimeRun);
+        $futureRun = new Carbon($now->toDateString());
         if ($cron && $cron->next_run > $now->timestamp) {
             return false;
         }
         if (!$cron && $beginDate) {
-            $futureRun = new Carbon($beginDate . ' ' . $nextTimeRun);
+            $futureRun = new Carbon($beginDate);
             Cron::updateOrCreate(
-                ['command'  => $command],
                 [
-                    'next_run' => $futureRun->timestamp,
+                    'command'  => $command,
+                    'next_run' => $futureRun->startOfMonth()->addHours(8)->timestamp,
                     'last_run' => Carbon::now()->timestamp
                 ]
             );
@@ -54,7 +54,7 @@ class Cron extends Model
         Cron::updateOrCreate(
             ['command'  => $command],
             [
-                'next_run' => $futureRun->$carbonMethod($interval)->timestamp,
+                'next_run' => $futureRun->$carbonMethod($interval)->startOfMonth()->addHours(8)->timestamp,
                 'last_run' => Carbon::now()->timestamp
             ]
         );

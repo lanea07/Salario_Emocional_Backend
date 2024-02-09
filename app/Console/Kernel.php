@@ -17,7 +17,7 @@ class Kernel extends ConsoleKernel
     {
         // $schedule->command('inspire')->hourly();
         $schedule->command('birthday:check')->everyMinute()->when(function () {
-            $initialDate = new Carbon('first day of october');
+            $initialDate = new Carbon();
             return Cron::shouldIRun('birthday:check', 1, CarbonTimePeriodsEnum::addMonths, $initialDate->toDateString());
         });
     }
