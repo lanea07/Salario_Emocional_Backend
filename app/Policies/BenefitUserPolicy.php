@@ -10,7 +10,7 @@ class BenefitUserPolicy
 
     public function show(User $user, BenefitUser $benefitUser)
     {
-        return $user->id === $benefitUser->user->leader || $user->id === $benefitUser->user->id;
+        return $user->id === $benefitUser->user->leader || $user->id === $benefitUser->user->id || $user->isAdmin();
     }
 
     public function store(User $user)
