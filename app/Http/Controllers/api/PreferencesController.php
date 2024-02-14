@@ -36,7 +36,7 @@ class PreferencesController extends Controller
      */
     public function show(Request $request): JsonResponse
     {
-        $user = auth()->user();
+        $user = User::find($request->id);
         return response()->json($this->preferencesService->userPreferences($user), 200);
     }
 
