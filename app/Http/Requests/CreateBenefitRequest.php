@@ -24,7 +24,30 @@ class CreateBenefitRequest extends FormRequest
         return [
             'name' => 'required',
             'benefitDetailFormGroup' => 'required',
-            'filePoliticas' => 'required_unless:filePoliticas,null'
+            'filePoliticas' => 'required_unless:filePoliticas,null',
+            'valid_id' => 'required'
         ];
+    }
+
+    /**
+     * Prepare the data for validation.
+     * 
+     */
+    protected function prepareForValidation()
+    {
+        $this->merge([
+            'valid_id' => $this->toBoolean($this->valid_id),
+        ]);
+    }
+
+    /**
+     * Convert to boolean
+     *
+     * @param $booleable
+     * @return boolean
+     */
+    private function toBoolean($booleable)
+    {
+        return filter_var($booleable, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE);
     }
 }
