@@ -20,6 +20,10 @@ class Kernel extends ConsoleKernel
             $initialDate = new Carbon();
             return Cron::shouldIRun('birthday:check', 1, CarbonTimePeriodsEnum::addMonths, $initialDate->toDateString());
         });
+        $schedule->command('sanctum:prune-expired --hours=24')->when(function () {
+            $initialDate = new Carbon();
+            return Cron::shouldIRun('sanctum:prune-expired --hours=24', 1, CarbonTimePeriodsEnum::addDays, $initialDate->toDateString());
+        });
     }
 
     /**

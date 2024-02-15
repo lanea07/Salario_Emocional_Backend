@@ -41,7 +41,7 @@ class AuthController extends Controller
 
         return response()->json(
             [
-                'token' => $user->createToken(request()->device_name)->plainTextToken,
+                'token' => $user->createToken(request()->device_name, ['*'], now()->addDay())->plainTextToken,
                 'id' => $user->id,
                 'user' => $user->only('name', 'email', 'id'),
             ],
@@ -75,4 +75,16 @@ class AuthController extends Controller
         $this->authService->validatePasswordChange($request);
         return response()->json(['message' => 'success'], 200);
     }
+
+    public function loginAs(Request $request): JsonResponse
+    {
+        $currentUser = auth()->user();
+        $loginAsUserID = $request->user_id;
+        try {
+            return $this->authService->loginAs($currentUser, $loginAsUserID);
+        } catch (\Throwable $th) {
+            return response()->json(['message' => $th->getMessage()], 401);
+        }
+    }
+
 }

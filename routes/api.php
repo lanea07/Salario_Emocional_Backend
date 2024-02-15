@@ -46,6 +46,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/validate-token', 'validateToken');
         Route::post('/validate-requirePassChange', 'validateRequirePassChange');
         Route::post('/passwordChange', 'passwordChange');
+        Route::post('login-as', 'loginAs');
     });
 
     Route::controller(BenefitController::class)->group(function () {

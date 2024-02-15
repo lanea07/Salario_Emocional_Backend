@@ -44,4 +44,21 @@ class AuthService
             'requirePassChange' => false
         ]);
     }
+
+    public function loginAs(User $currentUser, int $loginAsUser): JsonResponse
+    {
+        if (!$currentUser->isAdmin()) {
+            throw new \Exception('No tienes permisos para realizar esta acción');
+        }
+        $user = User::find($loginAsUser);
+        return response()->json(
+            [
+                'token' => $user->createToken(request()->device_name, ['*'], now()->addDay())->plainTextToken,
+                'id' => $user->id,
+                'user' => $user->only('name', 'email', 'id'),
+                'simulated' => true,
+            ],
+            200
+        );
+    }
 }
