@@ -9,20 +9,12 @@ use App\Mail\BenefitUserExcelExport;
 use App\Mail\NotifyNewBenefitRequestToLeader;
 use App\Models\Benefit;
 use App\Models\BenefitUser;
-use App\Models\DiaDeLaFamilia;
-use App\Models\MiBancoDeHoras;
-use App\Models\MiCumpleanos;
-use App\Models\MiHorarioFlexible;
-use App\Models\MisVacaciones;
-use App\Models\MiViernes;
-use App\Models\TrabajoHibrido;
 use App\Models\User;
 use Carbon\Carbon;
 use DateTime;
 use DateTimeZone;
 use Exception;
 use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Database\Query\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 use Spatie\IcalendarGenerator\Components\Calendar;
@@ -70,43 +62,11 @@ class BenefitUserService
         $requestedBenefit = Benefit::find($benefitUserData['benefit_id']);
         $bancoHoras = new Collection();
         $miViernes = new Collection();
-
-        switch ($requestedBenefit->name) {
-            case 'Día de la Familia':
-                $requestedBenefit = DiaDeLaFamilia::find($requestedBenefit->toArray())->first();
-                break;
-
-            case 'Mi Banco de Horas':
-                $requestedBenefit = MiBancoDeHoras::find($requestedBenefit->toArray())->first();
-                break;
-
-            case 'Mi Cumpleaños':
-                $requestedBenefit = MiCumpleanos::find($requestedBenefit->toArray())->first();
-                break;
-
-            case 'Mi Horario Flexible':
-                $requestedBenefit = MiHorarioFlexible::find($requestedBenefit->toArray())->first();
-                break;
-
-            case 'Mi Viernes':
-                $requestedBenefit = MiViernes::find($requestedBenefit->toArray())->first();
-                break;
-
-            case 'Mis Vacaciones':
-                $requestedBenefit = MisVacaciones::find($requestedBenefit->toArray())->first();
-                break;
-
-            case 'Trabajo Híbrido':
-                $requestedBenefit = TrabajoHibrido::find($requestedBenefit->toArray())->first();
-                break;
-
-            default:
-                throw new Exception("El beneficio que está intentando registrar no existe o no está disponible.", 1);
-                break;
-        }
-
+        $className = str_replace([' ', 'ñ', 'Ñ'], ['', 'n', 'N'], $requestedBenefit->name);
+        $className = iconv('UTF-8', 'ASCII//TRANSLIT//IGNORE', $className);
+        $className = '\\App\\Models\\' . $className;
+        $requestedBenefit = (new $className)->first();
         $requestedBenefit->canCreate($benefitUserData);
-
         $benefitUserData = BenefitUser::create($benefitUserData);
         $benefitUserData = $benefitUserData->load(['user', 'benefits', 'benefit_detail', 'user.leader_user']);
 
@@ -197,43 +157,11 @@ class BenefitUserService
     public function updateBenefitUser(array $benefitUserData, BenefitUser $benefitUser): BenefitUser
     {
         $requestedBenefit = Benefit::find($benefitUserData['benefit_id']);
-
-        switch ($requestedBenefit->name) {
-            case 'Día de la Familia':
-                $requestedBenefit =  DiaDeLaFamilia::find($requestedBenefit->toArray())->first();
-                break;
-
-            case 'Mi Banco de Horas':
-                $requestedBenefit =  MiBancoDeHoras::find($requestedBenefit->toArray())->first();
-                break;
-
-            case 'Mi Cumpleaños':
-                $requestedBenefit =  MiCumpleanos::find($requestedBenefit->toArray())->first();
-                break;
-
-            case 'Mi Horario Flexible':
-                $requestedBenefit =  MiHorarioFlexible::find($requestedBenefit->toArray())->first();
-                break;
-
-            case 'Mi Viernes':
-                $requestedBenefit =  MiViernes::find($requestedBenefit->toArray())->first();
-                break;
-
-            case 'Mis Vacaciones':
-                $requestedBenefit =  MisVacaciones::find($requestedBenefit->toArray())->first();
-                break;
-
-            case 'Trabajo Híbrido':
-                $requestedBenefit =  TrabajoHibrido::find($requestedBenefit->toArray())->first();
-                break;
-
-            default:
-                throw new Exception("El beneficio que está intentando registrar no existe o no está disponible.", 1);
-                break;
-        }
-
+        $className = str_replace([' ', 'ñ', 'Ñ'], ['', 'n', 'N'], $requestedBenefit->name);
+        $className = iconv('UTF-8', 'ASCII//TRANSLIT//IGNORE', $className);
+        $className = '\\App\\Models\\' . $className;
+        $requestedBenefit = (new $className)->first();
         $requestedBenefit->canUpdate($benefitUserData, $benefitUser);
-
         $benefitUser->update($benefitUserData);
         return $benefitUser;
     }
