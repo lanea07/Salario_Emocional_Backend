@@ -34,7 +34,7 @@ class BenefitService
         $benefitsToAsign = BenefitDetail::whereIn('id', $benefitsToAsign)->get();
         $benefit = Benefit::create([
             'name' => $benefitData['name'],
-            'politicas_path' => $benefitData['politicas_path']
+            'politicas_path' => isset($benefitData['politicas_path']) ?  $benefitData['politicas_path'] : null,
         ]);
         $benefit->benefit_detail()->attach($benefitsToAsign);
         return $benefit;

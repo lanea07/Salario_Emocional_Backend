@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\CarbonBoundariesEnum;
 use App\Enums\CarbonTimePeriodsEnum;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
@@ -32,12 +33,21 @@ class Cron extends Model
      * 
      * @return bool Returns true if the command should run, false otherwise
      */
-    public static function shouldIRun(string $command, int $interval, CarbonTimePeriodsEnum $period, string $beginDate = '', int $beginTime = 0): bool
+    public static function shouldIRun(
+        string $command,
+        CarbonTimePeriodsEnum $period,
+        int $periodInterval,
+        CarbonBoundariesEnum $boundary,
+        string $beginDate = '',
+        int $beginTime = 0,
+    ): bool
     {
         $cron = Cron::find($command);
         $now  = Carbon::now();
-        $carbonMethod = $period->value;
+        $carbonTimePeriod = $period->value;
+        $carbonBoundary = $boundary->value;
         $futureRun = new Carbon($now->toDateString());
+        $futureRun = $futureRun->$carbonTimePeriod($periodInterval)->$carbonBoundary()->addHours($beginTime);
         if ($cron && $cron->next_run > $now->timestamp) {
             return false;
         }
@@ -46,7 +56,7 @@ class Cron extends Model
             Cron::updateOrCreate(
                 [
                     'command'  => $command,
-                    'next_run' => $futureRun->startOfMonth()->addHours($beginTime)->timestamp,
+                    'next_run' => $futureRun->timestamp,
                     'last_run' => Carbon::now()->timestamp
                 ]
             );
@@ -55,7 +65,7 @@ class Cron extends Model
         Cron::updateOrCreate(
             ['command'  => $command],
             [
-                'next_run' => $futureRun->$carbonMethod($interval)->startOfMonth()->addHours(8)->timestamp,
+                'next_run' => $futureRun->timestamp,
                 'last_run' => Carbon::now()->timestamp
             ]
         );

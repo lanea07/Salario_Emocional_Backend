@@ -11,7 +11,7 @@ class ResetRequiredEmailTasks extends Command
      *
      * @var string
      */
-    protected $signature = 'cx:resetEmails';
+    protected $signature = 'cx:clear';
 
     /**
      * The console command description.

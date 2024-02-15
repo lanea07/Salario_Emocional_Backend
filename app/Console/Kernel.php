@@ -2,6 +2,7 @@
 
 namespace App\Console;
 
+use App\Enums\CarbonBoundariesEnum;
 use App\Enums\CarbonTimePeriodsEnum;
 use App\Models\Cron;
 use Carbon\Carbon;
@@ -17,11 +18,11 @@ class Kernel extends ConsoleKernel
     {
         $schedule->command('birthday:check')->everyMinute()->when(function () {
             $initialDate = new Carbon();
-            return Cron::shouldIRun('birthday:check', 1, CarbonTimePeriodsEnum::addMonths, $initialDate->toDateString(), 8);
+            return Cron::shouldIRun('birthday:check', CarbonTimePeriodsEnum::addMonths, 1, CarbonBoundariesEnum::startOfMonth, $initialDate->toDateString(), 8);
         });
         $schedule->command('sanctum:prune-expired --hours=24')->when(function () {
             $initialDate = new Carbon();
-            return Cron::shouldIRun('sanctum:prune-expired --hours=24', 1, CarbonTimePeriodsEnum::addDays, $initialDate->toDateString());
+            return Cron::shouldIRun('sanctum:prune-expired --hours=24', CarbonTimePeriodsEnum::addDays, 1, CarbonBoundariesEnum::startOfDay, $initialDate->toDateString());
         });
     }
 
