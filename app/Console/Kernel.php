@@ -15,10 +15,9 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule): void
     {
-        // $schedule->command('inspire')->hourly();
         $schedule->command('birthday:check')->everyMinute()->when(function () {
             $initialDate = new Carbon();
-            return Cron::shouldIRun('birthday:check', 1, CarbonTimePeriodsEnum::addMonths, $initialDate->toDateString());
+            return Cron::shouldIRun('birthday:check', 1, CarbonTimePeriodsEnum::addMonths, $initialDate->toDateString(), 8);
         });
         $schedule->command('sanctum:prune-expired --hours=24')->when(function () {
             $initialDate = new Carbon();

@@ -27,11 +27,12 @@ class Cron extends Model
      * 
      * @param string $command The command to execute
      * @param int $interval Units to be added to next execution
+     * @param CarbonTimePeriodsEnum $period Period of time in which interval will be incremented
      * @param string $beginDate Sets initial date job must run
-     * @param CarbonTimePeriodsInterval $period Period of time in which interval will be incremented
-     * @param string $nextTimeRun (optional) Used to set next time run will take place, default 08:00:00
+     * 
+     * @return bool Returns true if the command should run, false otherwise
      */
-    public static function shouldIRun(string $command, int $interval, CarbonTimePeriodsEnum $period, string $beginDate = ''): bool
+    public static function shouldIRun(string $command, int $interval, CarbonTimePeriodsEnum $period, string $beginDate = '', int $beginTime = 0): bool
     {
         $cron = Cron::find($command);
         $now  = Carbon::now();
@@ -45,7 +46,7 @@ class Cron extends Model
             Cron::updateOrCreate(
                 [
                     'command'  => $command,
-                    'next_run' => $futureRun->startOfMonth()->addHours(8)->timestamp,
+                    'next_run' => $futureRun->startOfMonth()->addHours($beginTime)->timestamp,
                     'last_run' => Carbon::now()->timestamp
                 ]
             );
