@@ -1878,7 +1878,7 @@
                     <tbody>
                       <tr>
                         <th class="small-12 large-12 columns first last">
-                          Puedes aprobar o rechazar esta solicitud en el siguiente <a href="{{ env('APP_URL') }}/benefit-employee/index">enlace</a>, en la pestaña de "Mi Equipo" > "Aprobaciones Pendientes"
+                          Puedes aprobar o rechazar esta solicitud en el siguiente <a href="{{ env('APP_URL') }}/basic/benefit-employee/index">enlace</a>, en la pestaña de "Mi Equipo" > "Aprobaciones Pendientes"
                         </th>
                       </tr>
                     </tbody>
