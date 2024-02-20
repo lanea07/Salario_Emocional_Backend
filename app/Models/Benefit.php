@@ -27,11 +27,6 @@ class Benefit extends Model
         return $this->belongsToMany(BenefitDetail::class)->withTimestamps();
     }
 
-    // public function benefit_detail_of_user()
-    // {
-    //     return $this->belongsToMany(BenefitDetail::class, 'benefit_user');
-    // }
-
     public function resolveRouteBinding($value, $field = null)
     {
         try {

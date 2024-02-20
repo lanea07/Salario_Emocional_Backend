@@ -62,45 +62,24 @@ class BenefitUserService
         $requestedBenefit = Benefit::find($benefitUserData['benefit_id']);
         $bancoHoras = new Collection();
         $miViernes = new Collection();
+
+        // Get the class name of the requested benefit
         $className = str_replace([' ', 'ñ', 'Ñ'], ['', 'n', 'N'], $requestedBenefit->name);
         $className = '\\App\\Models\\' . $this->remove_accents($className);
+
         $requestedBenefit = (new $className)->first();
         $requestedBenefit->canCreate($benefitUserData);
         $benefitUserData = BenefitUser::create($benefitUserData);
         $benefitUserData = $benefitUserData->load(['user', 'benefits', 'benefit_detail', 'user.leader_user']);
 
+        //Get additional benefits info
         if ($requestedBenefit->name === 'Mi Banco de Horas') {
-            $bancoHoras = BenefitUser::with(['benefit_detail'])->where(
-                function ($q) use ($benefitUserData) {
-                    $q->where('user_id', $benefitUserData->user_id);
-                    $q->where('benefit_id', $benefitUserData->benefit_id);
-                    $q->where('id', '<>', $benefitUserData->id);
-                    $q->whereYear('benefit_begin_time', date("Y", strtotime($benefitUserData['benefit_begin_time'])));
-                    $q->is_Approved();
-                }
-            )
-            ->orderBy('benefit_begin_time')
-            ->get();
+            $bancoHoras = $this->getAdditionalBancoHoras($benefitUserData);
         }
         if ($requestedBenefit->name === 'Mi Viernes') {
-            $miViernes = BenefitUser::where(
-                function ($q) use ($benefitUserData) {
-                    $q->where('user_id', $benefitUserData->user_id);
-                    $q->where('benefit_id', $benefitUserData->benefit_id);
-                    $q->where('id', '<>', $benefitUserData->id);
-                    $q->whereYear('benefit_begin_time', date("Y", strtotime($benefitUserData['benefit_begin_time'])));
-                    $q->is_Approved();
-                }
-            )
-            ->orderBy('benefit_begin_time')
-            ->get();
+            $miViernes = $this->getAdditionalMiViernes($benefitUserData);
         }
-
-        $data = [
-            $benefitUserData,
-            $bancoHoras,
-            $miViernes
-        ];
+        $data = [$benefitUserData, $bancoHoras, $miViernes];
 
         if ($benefitUserData->user->leader_user !== null) {
             $leader = $benefitUserData->user->leader_user;
@@ -156,6 +135,8 @@ class BenefitUserService
     public function updateBenefitUser(array $benefitUserData, BenefitUser $benefitUser): BenefitUser
     {
         $requestedBenefit = Benefit::find($benefitUserData['benefit_id']);
+        
+        // Get the class name of the requested benefit
         $className = str_replace([' ', 'ñ', 'Ñ'], ['', 'n', 'N'], $requestedBenefit->name);
         $className = '\\App\\Models\\' . $this->remove_accents($className);
         $requestedBenefit = (new $className)->first();
@@ -314,6 +295,13 @@ class BenefitUserService
         Mail::to(auth()->user()->email)->queue(new BenefitUserExcelExport($data));
     }
 
+    /**
+     * Removes accents from a string
+     * 
+     * @param string $string
+     * 
+     * @return string
+     */
     private function remove_accents($string)
     {
         if (!preg_match('/[\x80-\xff]/', $string))
@@ -419,5 +407,49 @@ class BenefitUserService
         $string = strtr($string, $chars);
 
         return $string;
+    }
+
+    /**
+     * Returns all the additional Banco de Horas benefits of a user
+     * 
+     * @param BenefitUser $benefitUserData
+     * 
+     * @return Collection
+     */
+    private function getAdditionalBancoHoras(BenefitUser $benefitUserData): Collection
+    {
+        return BenefitUser::with(['benefit_detail'])->where(
+            function ($q) use ($benefitUserData) {
+                $q->where('user_id', $benefitUserData->user_id);
+                $q->where('benefit_id', $benefitUserData->benefit_id);
+                $q->where('id', '<>', $benefitUserData->id);
+                $q->whereYear('benefit_begin_time', date("Y", strtotime($benefitUserData['benefit_begin_time'])));
+                $q->is_Approved();
+            }
+        )
+            ->orderBy('benefit_begin_time')
+            ->get();
+    }
+
+    /**
+     * Returns all the additional Mi Viernes benefits of a user
+     * 
+     * @param BenefitUser $benefitUserData
+     * 
+     * @return Collection
+     */
+    private function getAdditionalMiViernes(BenefitUser $benefitUserData): Collection
+    {
+        return BenefitUser::where(
+            function ($q) use ($benefitUserData) {
+                $q->where('user_id', $benefitUserData->user_id);
+                $q->where('benefit_id', $benefitUserData->benefit_id);
+                $q->where('id', '<>', $benefitUserData->id);
+                $q->whereYear('benefit_begin_time', date("Y", strtotime($benefitUserData['benefit_begin_time'])));
+                $q->is_Approved();
+            }
+        )
+            ->orderBy('benefit_begin_time')
+            ->get();
     }
 }

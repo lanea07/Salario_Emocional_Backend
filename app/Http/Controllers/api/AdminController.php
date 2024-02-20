@@ -16,7 +16,9 @@ class AdminController extends Controller
     }
 
     /**
-     * Display a listing of the resource.
+     * Return all users benefits using the filters in the request
+     * 
+     * @param Request $request
      * 
      * @return \Illuminate\Http\JsonResponse
      */
@@ -29,6 +31,13 @@ class AdminController extends Controller
         }
     }
 
+    /**
+     * Returns users benefits grouped by benefit
+     * 
+     * @param Request $request
+     * 
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function getAllGroupedBenefits(Request $request): JsonResponse
     {
         try {

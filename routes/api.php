@@ -23,24 +23,10 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-// Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-//     return $request->user();
-// });
-
-/** PERSONAL API TOKENS WITH SANCTUM! */
-
-// Route::post('/usercreate', function () {
-//     User::create([
-//         'name' => 'any',
-//         'email' => 'test@example.com',
-//         'password' => 'password'
-//     ]);
-// });
-
-Route::post('/login', [AuthController::class, 'login']);
 Route::middleware('auth:sanctum')->group(function () {
-
+    
     Route::controller(AuthController::class)->group(function () {
+        Route::post('/login', 'login')->withoutMiddleware('auth:sanctum');
         Route::post('/logout', 'logout');
         Route::post('/validate-roles', 'validateAdmin');
         Route::post('/validate-token', 'validateToken');

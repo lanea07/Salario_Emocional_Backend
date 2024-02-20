@@ -10,6 +10,11 @@ use Illuminate\Support\Facades\Storage;
 class BenefitService
 {
 
+    /**
+     * Return all benefits
+     * 
+     * @return \Illuminate\Database\Eloquent\Collection
+     */
     public function getAllBenefits(): Collection
     {
         return Benefit::with('benefit_detail')
@@ -17,7 +22,14 @@ class BenefitService
         ->get();
     }
 
-    public function saveBenefit(array $benefitData)//: Benefit
+    /**
+     * Store a new benefit
+     * 
+     * @param array $benefitData
+     * 
+     * @return Benefit
+     */
+    public function saveBenefit(array $benefitData): Benefit
     {
         // Convert BenefitDetailFormGroup to array
         $benefitData['benefitDetailFormGroup'] = json_decode($benefitData['benefitDetailFormGroup'], true);
@@ -40,11 +52,26 @@ class BenefitService
         return $benefit;
     }
 
+    /**
+     * Return a benefit by ID
+     * 
+     * @param Benefit $benefit
+     * 
+     * @return \Illuminate\Database\Eloquent\Collection
+     */
     public function getBenefitByID(Benefit $benefit): Collection
     {
         return $benefit->with(['benefit_detail'])->where('id', $benefit->id)->get();
     }
 
+    /**
+     * Update a benefit
+     * 
+     * @param array $benefitData
+     * @param Benefit $benefit
+     * 
+     * @return Benefit
+     */
     public function updateBenefit(array $benefitData, Benefit $benefit): Benefit
     {
         // Convert BenefitDetailFormGroup to array
@@ -68,11 +95,23 @@ class BenefitService
         return $benefit;
     }
 
+    /**
+     * Delete a benefit
+     * 
+     * @param Benefit $benefit
+     * 
+     * @return void
+     */
     public function deleteBenefit(Benefit $benefit): void
     {
-        $benefit->delete();
+        throw new \Exception('No se puede eliminar un beneficio');
     }
 
+    /**
+     * Return all valid benefits
+     * 
+     * @return \Illuminate\Database\Eloquent\Collection
+     */
     public function getAllEnabledBenefits(): Collection
     {
         return Benefit::with('benefit_detail')

@@ -11,17 +11,36 @@ use Illuminate\Validation\ValidationException;
 class AuthService
 {
 
-    public function validateUserLogin(string $email, string $password): User | null
+    /**
+     * Validate user login
+     * 
+     * @param string $email
+     * 
+     * @return User|null
+     */
+    public function validateUserLogin(string $email): User | null
     {
         $user = User::where('email', $email)->first();
         return $user;
     }
 
+    /**
+     * Log out a user
+     * 
+     * @return void
+     */
     public function logoutUser(): void
     {
         auth()->user()->tokens()->delete();
     }
 
+    /**
+     * Change user password
+     * 
+     * @param Request $request
+     * 
+     * @return void
+     */
     public function validatePasswordChange(Request $request): void
     {
         $validated = $request->validate([
@@ -45,6 +64,14 @@ class AuthService
         ]);
     }
 
+    /**
+     * Log in as another user
+     * 
+     * @param User $currentUser
+     * @param int $loginAsUser
+     * 
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function loginAs(User $currentUser, int $loginAsUser): JsonResponse
     {
         if (!$currentUser->isAdmin()) {

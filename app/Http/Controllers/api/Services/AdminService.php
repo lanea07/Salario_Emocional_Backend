@@ -8,6 +8,13 @@ use Illuminate\Http\Request;
 
 class AdminService
 {
+    /**
+     * Return all users benefits using the filters in the request
+     * 
+     * @param Request $request
+     * 
+     * @return \Illuminate\Database\Eloquent\Collection
+     */
     public function getAllBenefits(Request $request): Collection
     {
         return BenefitUser::with(['user', 'user.dependency', 'benefits', 'benefit_detail'])
@@ -31,6 +38,13 @@ class AdminService
             ->get();
     }
 
+    /**
+     * Returns users benefits grouped by benefit
+     * 
+     * @param Request $request
+     * 
+     * @return \Illuminate\Database\Eloquent\Collection
+     */
     public function getAllGroupedBenefits(Request $request)
     {
         return BenefitUser::with([

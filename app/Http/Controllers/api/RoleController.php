@@ -19,12 +19,23 @@ class RoleController extends Controller
         $this->middleware('checkroles:Admin');
     }
 
+    /**
+     * Display a listing of the resource.
+     *
+     * @return Illuminate\Http\JsonResponse
+     */
     public function index(): JsonResponse
     {
         $this->authorize('index', auth()->user());
         return response()->json($this->roleService->getAllRoles(), 200);
     }
 
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @param  \App\Http\Requests\CreateRoleRequest  $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function store(CreateRoleRequest $request): JsonResponse
     {
         try {
@@ -48,11 +59,24 @@ class RoleController extends Controller
         }
     }
 
+    /**
+     * Display the specified resource.
+     *
+     * @param  \App\Models\Role  $role
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function show(Role $role): JsonResponse
     {
         return response()->json($this->roleService->getRoleById($role), 200);
     }
 
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param  \App\Http\Requests\CreateRoleRequest  $request
+     * @param  \App\Models\Role  $role
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function update(CreateRoleRequest $request, Role $role): JsonResponse
     {
         try {
@@ -74,9 +98,14 @@ class RoleController extends Controller
                     break;
             }
         }
-        // broadcast(new DirectorioUpdate($role));
     }
 
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param  \App\Models\Role  $role
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function destroy(Role $role): JsonResponse
     {
         try {

@@ -19,12 +19,24 @@ class BenefitDetailController extends Controller
         $this->middleware('checkroles:Admin');
     }
 
+    /**
+     * Return all benefit details
+     * 
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function index(): JsonResponse
     {
         $this->authorize('index', auth()->user());
         return response()->json($this->benefitDetailService->getAllBenefitDetail(), 200);
     }
 
+    /**
+     * Store a new benefit detail
+     * 
+     * @param \App\Http\Requests\CreateBenefitDetailRequest $request
+     * 
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function store(CreateBenefitDetailRequest $request): JsonResponse
     {
         try {
@@ -48,12 +60,26 @@ class BenefitDetailController extends Controller
         }
     }
 
+    /**
+     * Return a benefit detail by ID
+     * 
+     * @param BenefitDetail $benefitdetail
+     * 
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function show(BenefitDetail $benefitdetail): JsonResponse
     {
         return response()->json($this->benefitDetailService->getBenefitDetailByID($benefitdetail), 200);
     }
 
-
+    /**
+     * Update a benefit detail
+     * 
+     * @param \App\Http\Requests\CreateBenefitDetailRequest $request
+     * @param BenefitDetail $benefitdetail
+     * 
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function update(CreateBenefitDetailRequest $request, BenefitDetail $benefitdetail): JsonResponse
     {
         try {
@@ -77,6 +103,13 @@ class BenefitDetailController extends Controller
         }
     }
 
+    /**
+     * Delete a benefit detail
+     * 
+     * @param BenefitDetail $benefitdetail
+     * 
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function destroy(BenefitDetail $benefitdetail): JsonResponse
     {
         try {

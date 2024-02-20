@@ -19,6 +19,11 @@ class AuthController extends Controller
         $this->authService = $authService;
     }
 
+    /**
+     * Log in a user
+     * 
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function login(): JsonResponse
     {
         request()->validate([
@@ -49,33 +54,67 @@ class AuthController extends Controller
         );
     }
 
+    /**
+     * Log out a user
+     * 
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function logout(): JsonResponse
     {
         $this->authService->logoutUser();
-        return response()->json(['message' => 'Logged out'], 200);
+        return response()->json(['message' => 'Logged out']);
     }
 
+    /**
+     * Validate if the token is valid
+     * 
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function validateToken(): JsonResponse
     {
-        return response()->json(['valid' => auth('sanctum')->check()], 200);
+        return response()->json(['valid' => auth('sanctum')->check()]);
     }
 
+    /**
+     * Validate if the user is admin
+     * 
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function validateAdmin(): JsonResponse
     {
-        return response()->json(['admin' => auth('sanctum')->user()->isAdmin()], 200);
+        return response()->json(['admin' => auth('sanctum')->user()->isAdmin()]);
     }
 
+    /**
+     * Validate if the user needs to change the password
+     * 
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function validateRequirePassChange(): JsonResponse
     {
         return response()->json(auth()->user()->requirePassChange());
     }
 
+    /**
+     * Change the password of the user
+     * 
+     * @param Request $request
+     * 
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function passwordChange(Request $request): JsonResponse
     {
         $this->authService->validatePasswordChange($request);
-        return response()->json(['message' => 'success'], 200);
+        return response()->json(['message' => 'success']);
     }
 
+    /**
+     * Log in as another user
+     * 
+     * @param Request $request
+     * 
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function loginAs(Request $request): JsonResponse
     {
         $currentUser = auth()->user();

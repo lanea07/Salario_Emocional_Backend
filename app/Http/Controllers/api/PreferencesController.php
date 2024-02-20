@@ -40,6 +40,12 @@ class PreferencesController extends Controller
         return response()->json($this->preferencesService->userPreferences($user), 200);
     }
 
+    /**
+     * Store a set of settings for a user
+     *
+     * @param  Request  $request
+     * @return JsonResponse
+     */
     public function store(Request $request): JsonResponse
     {
         $user = User::find($request->id);

@@ -2,7 +2,6 @@
 
 namespace App\Exports;
 
-use App\Enums\BenefitDecision;
 use App\Models\User;
 use Illuminate\Support\Arr;
 use Maatwebsite\Excel\Concerns\FromCollection;
@@ -20,6 +19,11 @@ class BenefitUserExport implements FromCollection, WithMapping, WithHeadings
         $this->user_id = $data['user_id'];
     }
 
+    /**
+     * Sets the headings for the excel file
+     * 
+     * @return array
+     */
     public function headings(): array
     {
         return [
@@ -33,6 +37,8 @@ class BenefitUserExport implements FromCollection, WithMapping, WithHeadings
     }
 
     /**
+     * Returns the data to be exported including descendants if exists
+     * 
      * @return \Illuminate\Support\Collection
      */
     public function collection()
@@ -51,6 +57,13 @@ class BenefitUserExport implements FromCollection, WithMapping, WithHeadings
             )->get();
     }
 
+    /**
+     * Maps the data to be exported
+     * 
+     * @param mixed $user
+     * 
+     * @return array
+     */
     public function map($user): array
     {
         $data = [];

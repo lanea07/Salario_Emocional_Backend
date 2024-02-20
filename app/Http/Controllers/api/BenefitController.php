@@ -19,11 +19,23 @@ class BenefitController extends Controller
         $this->middleware('checkroles:Admin', ['except' => ['index', 'indexAvailable', 'show']]);
     }
 
+    /**
+     * Return all benefits
+     * 
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function index(): JsonResponse
     {
         return response()->json($this->benefitService->getAllBenefits(), 200);
     }
 
+    /**
+     * Store a new benefit
+     * 
+     * @param CreateBenefitRequest $request
+     * 
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function store(CreateBenefitRequest $request): JsonResponse
     {
         try {
@@ -47,12 +59,26 @@ class BenefitController extends Controller
         }
     }
 
-
+    /**
+     * Return a benefit by id
+     * 
+     * @param Benefit $benefit
+     * 
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function show(Benefit $benefit): JsonResponse
     {
         return response()->json($this->benefitService->getBenefitByID($benefit), 200);
     }
 
+    /**
+     * Update a benefit
+     * 
+     * @param CreateBenefitRequest $request
+     * @param Benefit $benefit
+     * 
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function update(CreateBenefitRequest $request, Benefit $benefit): JsonResponse
     {
         try {
@@ -74,9 +100,15 @@ class BenefitController extends Controller
                     break;
             }
         }
-        // broadcast(new DirectorioUpdate($benefit));
     }
 
+    /**
+     * Delete a benefit
+     * 
+     * @param Benefit $benefit
+     * 
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function destroy(Benefit $benefit): JsonResponse
     {
         try {
@@ -88,6 +120,11 @@ class BenefitController extends Controller
         }
     }
 
+    /**
+     * Return all valid benefits
+     * 
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function indexAvailable(): JsonResponse
     {
         return response()->json($this->benefitService->getAllEnabledBenefits(), 200);

@@ -21,6 +21,13 @@ class BenefitUserController extends Controller
         $this->middleware('checkroles:Admin', ['only' => ['destroy']]);
     }
 
+    /**
+     * Return all benefit users
+     * 
+     * @param \Illuminate\Http\Request $request
+     * 
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function index(Request $request): JsonResponse
     {
         $userId = $request->userId;
@@ -28,6 +35,13 @@ class BenefitUserController extends Controller
         return response()->json($this->benefitUserService->getAllBenefitUser($userId, $year), 200);
     }
 
+    /**
+     * Store a new benefit user
+     * 
+     * @param \App\Http\Requests\CreateBenefitUserRequest $request
+     * 
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function store(CreateBenefitUserRequest $request): JsonResponse
     {
         try {
@@ -60,6 +74,13 @@ class BenefitUserController extends Controller
         }
     }
 
+    /**
+     * Return a benefit user by ID
+     * 
+     * @param \App\Models\BenefitUser $benefituser
+     * 
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function show(BenefitUser $benefituser): JsonResponse
     {
         try {
@@ -70,6 +91,14 @@ class BenefitUserController extends Controller
         }
     }
 
+    /**
+     * Update a benefit user
+     * 
+     * @param \App\Http\Requests\CreateBenefitUserRequest $request
+     * @param \App\Models\BenefitUser $benefituser
+     * 
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function update(CreateBenefitUserRequest $request, BenefitUser $benefituser): JsonResponse
     {
         try {
@@ -89,6 +118,13 @@ class BenefitUserController extends Controller
         }
     }
 
+    /**
+     * Delete a benefit user
+     * 
+     * @param \App\Models\BenefitUser $benefituser
+     * 
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function destroy(BenefitUser $benefituser): JsonResponse
     {
         try {
@@ -100,27 +136,58 @@ class BenefitUserController extends Controller
         }
     }
 
+    /**
+     * Generates a mail with user benefits data
+     * 
+     * @param \Illuminate\Http\Request $request
+     * 
+     * @return void
+     */
     public function exportDetail(Request $request): void
     {
         $this->benefitUserService->exportBenefits($request);
     }
 
+    /**
+     * Return all users benefits non approved
+     * 
+     * @param \Illuminate\Http\Request $request
+     * 
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function indexNonApproved(Request $request): JsonResponse
     {
         $userId = $request->userId;
         return response()->json($this->benefitUserService->getAllBenefitUserNonApproved($userId), 200);
     }
 
+    /**
+     * Return all benefit collaborators non approved
+     * 
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function indexCollaboratorsNonApproved(): JsonResponse
     {
         return response()->json($this->benefitUserService->getAllBenefitCollaboratorsNonApproved(request()), 200);
     }
 
+    /**
+     * Return all benefit collaborators
+     * 
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function indexCollaborators(): JsonResponse
     {
         return response()->json($this->benefitUserService->getAllBenefitCollaborators(request()), 200);
     }
 
+    /**
+     * Applies a decision to a benefit user
+     * 
+     * @param \Illuminate\Http\Request $request
+     * 
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function decideBenefitUser(Request $request): JsonResponse
     {
         try {

@@ -20,11 +20,23 @@ class UserController extends Controller
         $this->middleware('checkroles:Admin', ['except' => ['index', 'show']]);
     }
 
+    /**
+     * Return all users
+     * 
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function index(): JsonResponse
     {
         return response()->json($this->userService->getAllUsers(), 200);
     }
 
+    /**
+     * Store a new user
+     * 
+     * @param \App\Http\Requests\CreateUserRequest $request
+     * 
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function store(CreateUserRequest $request): JsonResponse
     {
         try {
@@ -48,11 +60,26 @@ class UserController extends Controller
         }
     }
 
+    /**
+     * Return a user by ID
+     * 
+     * @param \App\Models\User $user
+     * 
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function show(User $user): JsonResponse
     {
         return response()->json($this->userService->getUserById($user), 200);
     }
 
+    /**
+     * Update a user
+     * 
+     * @param \App\Http\Requests\CreateUserRequest $request
+     * @param \App\Models\User $user
+     * 
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function update(CreateUserRequest $request, User $user): JsonResponse
     {
         try {
@@ -74,9 +101,15 @@ class UserController extends Controller
                     break;
             }
         }
-        // broadcast(new DirectorioUpdate($user));
     }
 
+    /**
+     * Delete a user
+     * 
+     * @param \App\Models\User $user
+     * 
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function destroy(User $user): JsonResponse
     {
         try {

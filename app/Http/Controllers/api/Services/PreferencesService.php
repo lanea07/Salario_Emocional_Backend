@@ -8,7 +8,7 @@ use Illuminate\Support\Collection;
 class PreferencesService
 {
     /**
-     * Returns all available preferences for User model
+     * Returns all available preferences for a default User model
      * 
      * @return Collection
      */
