@@ -135,7 +135,18 @@ class BenefitUserTest extends TestCase
         Sanctum::actingAs(
             $user = User::findOrFail(1)
         );
-        $response = $this->get('/api/benefituser/1');
+        $response = $this->post(
+            '/api/benefituser',
+            [
+                'benefit_id' => 1,
+                'benefit_detail_id' => 1,
+                'user_id' => 1,
+                'benefit_begin_time' => Carbon::now(),
+                'benefit_end_time' => Carbon::now()->addHours(1),
+            ]
+        );
+        $content = $response->getOriginalContent();
+        $response = $this->get("/api/benefituser/{$content['id']}");
         $response->assertOk();
         $response->assertJsonStructure([
             '*' => [
@@ -213,8 +224,19 @@ class BenefitUserTest extends TestCase
         Sanctum::actingAs(
             $user = User::findOrFail(1)
         );
+        $response = $this->post(
+            '/api/benefituser',
+            [
+                'benefit_id' => 1,
+                'benefit_detail_id' => 1,
+                'user_id' => 1,
+                'benefit_begin_time' => Carbon::now(),
+                'benefit_end_time' => Carbon::now()->addHours(1),
+            ]
+        );
+        $content = $response->getOriginalContent();
         $response = $this->put(
-            '/api/benefituser/1',
+            "/api/benefituser/{$content['id']}",
             [
                 'benefit_id' => 2,
                 'benefit_detail_id' => 2,
@@ -231,7 +253,18 @@ class BenefitUserTest extends TestCase
         Sanctum::actingAs(
             $user = User::findOrFail(1)
         );
-        $response = $this->delete('/api/benefituser/1');
+        $response = $this->post(
+            '/api/benefituser',
+            [
+                'benefit_id' => 1,
+                'benefit_detail_id' => 1,
+                'user_id' => 1,
+                'benefit_begin_time' => Carbon::now(),
+                'benefit_end_time' => Carbon::now()->addHours(1),
+            ]
+        );
+        $content = $response->getOriginalContent();
+        $response = $this->delete("/api/benefituser/{$content['id']}");
         $response->assertOk();
     }
 }
