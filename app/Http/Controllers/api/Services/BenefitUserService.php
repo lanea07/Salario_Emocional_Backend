@@ -64,7 +64,7 @@ class BenefitUserService
         $miViernes = new Collection();
 
         // Get the class name of the requested benefit
-        $className = str_replace([' ', 'ñ', 'Ñ'], ['', 'n', 'N'], $requestedBenefit->name);
+        $className = str_replace([' ', 'ñ', 'Ñ'], ['', 'n', 'N'], ucwords($requestedBenefit->name));
         $className = '\\App\\Models\\' . $this->remove_accents($className);
 
         $requestedBenefit = (new $className)->first();
@@ -135,9 +135,9 @@ class BenefitUserService
     public function updateBenefitUser(array $benefitUserData, BenefitUser $benefitUser): BenefitUser
     {
         $requestedBenefit = Benefit::find($benefitUserData['benefit_id']);
-        
+
         // Get the class name of the requested benefit
-        $className = str_replace([' ', 'ñ', 'Ñ'], ['', 'n', 'N'], $requestedBenefit->name);
+        $className = str_replace([' ', 'ñ', 'Ñ'], ['', 'n', 'N'], ucwords($requestedBenefit->name));
         $className = '\\App\\Models\\' . $this->remove_accents($className);
         $requestedBenefit = (new $className)->first();
         $requestedBenefit->canUpdate($benefitUserData, $benefitUser);
