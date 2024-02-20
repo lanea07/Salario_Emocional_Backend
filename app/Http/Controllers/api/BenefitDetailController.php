@@ -41,7 +41,7 @@ class BenefitDetailController extends Controller
     {
         try {
             $this->authorize('store', BenefitDetail::class);
-            return response()->json($this->benefitDetailService->saveBenefitDetail($request->validated()), 200);
+            return response()->json($this->benefitDetailService->saveBenefitDetail($request->validated()), 201);
         } catch (\Illuminate\Database\QueryException $th) {
             switch ($th->errorInfo[1]) {
                 case 1062:
