@@ -2,8 +2,6 @@
 
 namespace App\Providers;
 
-use App\Models\User;
-use App\Repositories\UserRepository;
 use App\Services\AdminService;
 use App\Services\AuthService;
 use App\Services\BenefitDetailService;

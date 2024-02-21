@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Throwable;
 
 class Role extends Model
 {
@@ -26,7 +27,7 @@ class Role extends Model
     {
         try {
             return $this->where('id', $value)->firstOrFail();
-        } catch (\Throwable $th) {
+        } catch (Throwable $th) {
             throw new ModelNotFoundException('Rol no encontrado');
         }
     }

@@ -9,6 +9,7 @@ use App\Models\BenefitUser;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Throwable;
 
 class BenefitUserController extends Controller
 {
@@ -22,7 +23,6 @@ class BenefitUserController extends Controller
      * Return all benefit users
      * 
      * @param \Illuminate\Http\Request $request
-     * 
      * @return \Illuminate\Http\JsonResponse
      */
     public function index(Request $request): JsonResponse
@@ -36,7 +36,6 @@ class BenefitUserController extends Controller
      * Store a new benefit user
      * 
      * @param \App\Http\Requests\CreateBenefitUserRequest $request
-     * 
      * @return \Illuminate\Http\JsonResponse
      */
     public function store(CreateBenefitUserRequest $request): JsonResponse
@@ -44,30 +43,8 @@ class BenefitUserController extends Controller
         try {
             $this->authorize('store', BenefitUser::class);
             return response()->json($this->benefitUserService->saveBenefitUser($request->validated()), 201);
-        } catch (\Illuminate\Database\QueryException $th) {
-            switch ($th->errorInfo[1]) {
-                case 1062:
-                    return response()->json(['message' => 'No se puede guardar el beneficio porque ya existe un beneficio igual registrado.'], 400);
-                    break;
-                case 4025:
-                    return response()->json(['message' => $th->errorInfo[2]], 400);
-                    break;
-                case 1:
-                    return response()->json(['message' => $th->errorInfo[2]], 400);
-                    break;
-                default:
-                    return response()->json(['message' => 'Ha ocurrido un error interno, contacte con el administrador'], 400);
-                    break;
-            }
-        } catch (Exception $e) {
-            switch ($e->getCode()) {
-                case 1:
-                    return response()->json(['message' => $e->getMessage()], 400);
-                    break;
-                default:
-                    return response()->json(['message' => 'Ha ocurrido un error interno, contacte con el administrador'], 400);
-                    break;
-            }
+        } catch (Throwable $th) {
+            return response()->json(['message' => $th->getMessage()], 400);
         }
     }
 
@@ -75,7 +52,6 @@ class BenefitUserController extends Controller
      * Return a benefit user by ID
      * 
      * @param \App\Models\BenefitUser $benefituser
-     * 
      * @return \Illuminate\Http\JsonResponse
      */
     public function show(BenefitUser $benefituser): JsonResponse
@@ -83,8 +59,8 @@ class BenefitUserController extends Controller
         try {
             $this->authorize('show', $benefituser);
             return response()->json($this->benefitUserService->getBenefitUserByID($benefituser), 200);
-        } catch (\Throwable $th) {
-            return response()->json(['message', 'El beneficio solicitado no se puede mostrar porque no está asociado al usuario actual'], 403);
+        } catch (Throwable $th) {
+            return response()->json(['message' => $th->getMessage()], 400);
         }
     }
 
@@ -93,7 +69,6 @@ class BenefitUserController extends Controller
      * 
      * @param \App\Http\Requests\CreateBenefitUserRequest $request
      * @param \App\Models\BenefitUser $benefituser
-     * 
      * @return \Illuminate\Http\JsonResponse
      */
     public function update(CreateBenefitUserRequest $request, BenefitUser $benefituser): JsonResponse
@@ -101,17 +76,8 @@ class BenefitUserController extends Controller
         try {
             $this->authorize('update', $benefituser);
             return response()->json($this->benefitUserService->updateBenefitUser($request->validated(), $benefituser), 200);
-        } catch (\Illuminate\Database\QueryException $th) {
-            return response()->json(['message' => 'Ha ocurrido un error interno, contacte con el administrador'], 400);
-        } catch (Exception $e) {
-            switch ($e->getCode()) {
-                case 1:
-                    return response()->json(['message' => $e->getMessage()], 400);
-                    break;
-                default:
-                    return response()->json(['message' => 'Ha ocurrido un error interno, contacte con el administrador'], 400);
-                    break;
-            }
+        } catch (Throwable $th) {
+            return response()->json(['message' => $th->getMessage()], 400);
         }
     }
 
@@ -119,7 +85,6 @@ class BenefitUserController extends Controller
      * Delete a benefit user
      * 
      * @param \App\Models\BenefitUser $benefituser
-     * 
      * @return \Illuminate\Http\JsonResponse
      */
     public function destroy(BenefitUser $benefituser): JsonResponse
@@ -128,8 +93,8 @@ class BenefitUserController extends Controller
             $this->authorize('destroy', $benefituser);
             $this->benefitUserService->deleteBenefitUser($benefituser);
             return response()->json(['message' => 'Beneficio del empleado eliminado'], 200);
-        } catch (\Illuminate\Database\QueryException $th) {
-            return response()->json($th, 500);
+        } catch (Throwable $th) {
+            return response()->json(['message' => $th->getMessage()], 500);
         }
     }
 
@@ -137,7 +102,6 @@ class BenefitUserController extends Controller
      * Generates a mail with user benefits data
      * 
      * @param \Illuminate\Http\Request $request
-     * 
      * @return void
      */
     public function exportDetail(Request $request): void
@@ -149,7 +113,6 @@ class BenefitUserController extends Controller
      * Return all users benefits non approved
      * 
      * @param \Illuminate\Http\Request $request
-     * 
      * @return \Illuminate\Http\JsonResponse
      */
     public function indexNonApproved(Request $request): JsonResponse
@@ -182,7 +145,6 @@ class BenefitUserController extends Controller
      * Applies a decision to a benefit user
      * 
      * @param \Illuminate\Http\Request $request
-     * 
      * @return \Illuminate\Http\JsonResponse
      */
     public function decideBenefitUser(Request $request): JsonResponse
@@ -191,17 +153,8 @@ class BenefitUserController extends Controller
             $benefitUser = BenefitUser::find($request->data['id']);
             $this->authorize('decideBenefitUser', $benefitUser);
             return response()->json($this->benefitUserService->decideBenefitUser($request->cmd, $benefitUser), 200);
-        } catch (\Illuminate\Database\QueryException $th) {
-            return response()->json(['message' => 'Ha ocurrido un error interno, contacte con el administrador'], 400);
-        } catch (Exception $e) {
-            switch ($e->getCode()) {
-                case 1:
-                    return response()->json(['message' => $e->getMessage()], 400);
-                    break;
-                default:
-                    return response()->json(['message' => 'Ha ocurrido un error interno, contacte con el administrador'], 400);
-                    break;
-            }
+        } catch (Throwable $th) {
+            return response()->json(['message' => $th->getMessage()], 400);
         }
     }
 }

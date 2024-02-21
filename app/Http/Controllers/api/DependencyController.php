@@ -9,6 +9,7 @@ use App\Http\Requests\StoreDependencyRequest;
 use App\Http\Requests\UpdateDependencyRequest;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Throwable;
 
 class DependencyController extends Controller
 {
@@ -30,7 +31,6 @@ class DependencyController extends Controller
      * Store a newly created resource in storage.
      * 
      * @param  \Illuminate\Http\Request  $request
-     * 
      * @return \Illuminate\Http\JsonResponse
      */
     public function store(StoreDependencyRequest $request): JsonResponse
@@ -38,21 +38,8 @@ class DependencyController extends Controller
         try {
             $this->authorize('create', Dependency::class);
             return response()->json($this->dependencyService->saveDependency($request->validated()), 201);
-        } catch (\Illuminate\Database\QueryException $th) {
-            switch ($th->errorInfo[1]) {
-                case 1062:
-                    return response()->json(['message' => 'No se puede guardar el beneficio porque ya existe un beneficio con el mismo nombre registrado.'], 400);
-                    break;
-                case 4025:
-                    return response()->json(['message' => $th->errorInfo[2]], 400);
-                    break;
-                case 1:
-                    return response()->json(['message' => $th->errorInfo[2]], 400);
-                    break;
-                default:
-                    return response()->json(['message' => 'Ha ocurrido un error interno, contacte con el administrador'], 400);
-                    break;
-            }
+        } catch (Throwable $th) {
+            return response()->json(['message' => $th->getMessage()], 400);
         }
     }
 
@@ -60,7 +47,6 @@ class DependencyController extends Controller
      * Display the specified resource.
      * 
      * @param  \App\Models\Dependency  $dependency
-     * 
      * @return \Illuminate\Http\JsonResponse
      */
     public function show(Dependency $dependency): JsonResponse
@@ -72,7 +58,6 @@ class DependencyController extends Controller
      * Update the specified resource in storage.
      * 
      * @param  \Illuminate\Http\Request  $request
-     * 
      * @param  \App\Models\Dependency  $dependency
      */
     public function update(UpdateDependencyRequest $request, Dependency $dependency): JsonResponse
@@ -80,21 +65,8 @@ class DependencyController extends Controller
         try {
             $this->authorize('update', $dependency);
             return response()->json($this->dependencyService->updatedependency($request->validated(), $dependency), 200);
-        } catch (\Illuminate\Database\QueryException $th) {
-            switch ($th->errorInfo[1]) {
-                case 1062:
-                    return response()->json(['message' => 'No se puede actualizar el cargo porque ya existe un cargo con el mismo nombre registrado.'], 400);
-                    break;
-                case 4025:
-                    return response()->json(['message' => $th->errorInfo[2]], 400);
-                    break;
-                case 1:
-                    return response()->json(['message' => $th->errorInfo[2]], 400);
-                    break;
-                default:
-                    return response()->json(['message' => 'Ha ocurrido un error interno, contacte con el administrador'], 400);
-                    break;
-            }
+        } catch (Throwable $th) {
+            return response()->json(['message' => $th->getMessage()], 400);
         }
     }
 
@@ -111,8 +83,8 @@ class DependencyController extends Controller
             $this->authorize('destroy', $dependency);
             $this->dependencyService->deleteDependency($dependency);
             return response()->json(['message' => 'Dependencia eliminada'], 200);
-        } catch (\Throwable $th) {
-            return response()->json($th, 500);
+        } catch (Throwable $th) {
+            return response()->json(['message' => $th->getMessage()], 500);
         }
     }
 
@@ -120,7 +92,6 @@ class DependencyController extends Controller
      * Return all ancestors of a dependency
      * 
      * @param  \Illuminate\Http\Request  $request
-     * 
      * @return \Illuminate\Http\JsonResponse
      */
     public function indexAncestors(Request $request)
@@ -132,7 +103,6 @@ class DependencyController extends Controller
      * Return all dependencies in flat format
      * 
      * @param  \Illuminate\Http\Request  $request
-     * 
      * @return \Illuminate\Http\JsonResponse
      */
     public function getNonTreeValidDependencies()

@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\CreatePositionRequest;
 use App\Models\Position;
 use Illuminate\Http\JsonResponse;
+use Throwable;
 
 class PositionController extends Controller
 {
@@ -38,21 +39,8 @@ class PositionController extends Controller
         try {
             $this->authorize('store', Position::class);
             return response()->json($this->positionService->savePosition($request->validated()), 201);
-        } catch (\Illuminate\Database\QueryException $th) {
-            switch ($th->errorInfo[1]) {
-                case 1062:
-                    return response()->json(['message' => 'No se puede guardar el cargo porque ya existe un cargo con el mismo nombre registrado.'], 400);
-                    break;
-                case 4025:
-                    return response()->json(['message' => $th->errorInfo[2]], 400);
-                    break;
-                case 1:
-                    return response()->json(['message' => $th->errorInfo[2]], 400);
-                    break;
-                default:
-                    return response()->json(['message' => 'Ha ocurrido un error interno, contacte con el administrador'], 400);
-                    break;
-            }
+        } catch (Throwable $th) {
+            return response()->json(['message' => $th->getMessage()], 400);
         }
     }
 
@@ -72,21 +60,8 @@ class PositionController extends Controller
         try {
             $this->authorize('update', $position);
             return response()->json($this->positionService->updatePosition($request->validated(), $position), 200);
-        } catch (\Illuminate\Database\QueryException $th) {
-            switch ($th->errorInfo[1]) {
-                case 1062:
-                    return response()->json(['message' => 'No se puede actualizar el cargo porque ya existe un cargo con el mismo nombre registrado.'], 400);
-                    break;
-                case 4025:
-                    return response()->json(['message' => $th->errorInfo[2]], 400);
-                    break;
-                case 1:
-                    return response()->json(['message' => $th->errorInfo[2]], 400);
-                    break;
-                default:
-                    return response()->json(['message' => 'Ha ocurrido un error interno, contacte con el administrador'], 400);
-                    break;
-            }
+        } catch (Throwable $th) {
+            return response()->json(['message' => $th->getMessage()], 400);        
         }
     }
 
@@ -102,7 +77,7 @@ class PositionController extends Controller
             $this->authorize('destroy', $position);
             $this->positionService->deletePosition($position);
             return response()->json(['message' => 'Posición eliminada'], 200);
-        } catch (\Throwable $th) {
+        } catch (Throwable $th) {
             return response()->json($th, 500);
         }
     }

@@ -19,14 +19,13 @@ class AdminController extends Controller
      * Return all users benefits using the filters in the request
      * 
      * @param Request $request
-     * 
      * @return \Illuminate\Http\JsonResponse
      */
     public function getAllBenefitUser(Request $request): JsonResponse
     {
         try {
             return response()->json($this->adminService->getAllBenefits($request));
-        } catch (\Throwable $th) {
+        } catch (Throwable $th) {
             return response()->json(['message' => $th->getMessage()], 400);
         }
     }
@@ -35,14 +34,13 @@ class AdminController extends Controller
      * Returns users benefits grouped by benefit
      * 
      * @param Request $request
-     * 
      * @return \Illuminate\Http\JsonResponse
      */
     public function getAllGroupedBenefits(Request $request): JsonResponse
     {
         try {
             return response()->json($this->adminService->getAllGroupedBenefits($request));
-        } catch (\Throwable $th) {
+        } catch (Throwable $th) {
             return response()->json(['message' => $th->getMessage()], 400);
         }
     }
