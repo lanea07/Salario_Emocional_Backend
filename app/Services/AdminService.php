@@ -12,7 +12,6 @@ class AdminService
      * Return all users benefits using the filters in the request
      * 
      * @param Request $request
-     * 
      * @return \Illuminate\Database\Eloquent\Collection
      */
     public function getAllBenefits(Request $request): Collection
@@ -42,7 +41,6 @@ class AdminService
      * Returns users benefits grouped by benefit
      * 
      * @param Request $request
-     * 
      * @return \Illuminate\Database\Eloquent\Collection
      */
     public function getAllGroupedBenefits(Request $request)

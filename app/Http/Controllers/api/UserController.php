@@ -7,7 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\CreateUserRequest;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
-
+use Throwable;
 
 class UserController extends Controller
 {
@@ -113,7 +113,7 @@ class UserController extends Controller
             $this->authorize('destroy', $user);
             $this->userService->deleteUser($user);
             return response()->json(['message' => 'Usuario eliminado'], 200);
-        } catch (\Throwable $th) {
+        } catch (Throwable $th) {
             return response()->json($th, 500);
         }
     }

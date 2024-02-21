@@ -78,6 +78,7 @@ class DependencyService
      * Delete a dependency
      *
      * @param Dependency $dependency
+     * @throws \Exception
      */
     public function deleteDependency(Dependency $dependency): void
     {

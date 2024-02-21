@@ -6,6 +6,7 @@ use App\Enums\BenefitDecision;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Throwable;
 
 class BenefitUser extends Model
 {
@@ -45,7 +46,7 @@ class BenefitUser extends Model
     {
         try {
             return $this->where('id', $value)->firstOrFail();
-        } catch (\Throwable $th) {
+        } catch (Throwable $th) {
             throw new ModelNotFoundException('Beneficio de Colaborador no encontrado');
         }
     }

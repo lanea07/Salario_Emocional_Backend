@@ -58,6 +58,7 @@ class RoleService
      *
      * @param  Role $role
      * @return void
+     * @throws \Exception
      */
     public function deleteRole(Role $role): void
     {

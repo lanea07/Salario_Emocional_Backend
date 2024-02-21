@@ -31,7 +31,7 @@ class AuthController extends Controller
 
         try {
             $user = $this->authService->validateUserLogin(request()->email, request()->password);
-        } catch (\Throwable $th) {
+        } catch (Throwable $th) {
             return response()->json(['message' => 'Ha ocurrido un error interno, contacte con el administrador'], 500);
         }
 
@@ -96,7 +96,6 @@ class AuthController extends Controller
      * Change the password of the user
      * 
      * @param Request $request
-     * 
      * @return \Illuminate\Http\JsonResponse
      */
     public function passwordChange(Request $request): JsonResponse
@@ -109,7 +108,6 @@ class AuthController extends Controller
      * Log in as another user
      * 
      * @param Request $request
-     * 
      * @return \Illuminate\Http\JsonResponse
      */
     public function loginAs(Request $request): JsonResponse
@@ -118,7 +116,7 @@ class AuthController extends Controller
         $loginAsUserID = $request->user_id;
         try {
             return $this->authService->loginAs($currentUser, $loginAsUserID);
-        } catch (\Throwable $th) {
+        } catch (Throwable $th) {
             return response()->json(['message' => $th->getMessage()], 401);
         }
     }

@@ -6,6 +6,7 @@ use App\Casts\GooglePath;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Throwable;
 
 class Benefit extends Model
 {
@@ -31,7 +32,7 @@ class Benefit extends Model
     {
         try {
             return $this->where('id', $value)->firstOrFail();
-        } catch (\Throwable $th) {
+        } catch (Throwable $th) {
             throw new ModelNotFoundException('Beneficio no encontrado');
         }
     }

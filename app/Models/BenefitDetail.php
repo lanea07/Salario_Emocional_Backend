@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Throwable;
 
 class BenefitDetail extends Model
 {
@@ -27,7 +28,7 @@ class BenefitDetail extends Model
     {
         try {
             return $this->where('id', $value)->firstOrFail();
-        } catch (\Throwable $th) {
+        } catch (Throwable $th) {
             throw new ModelNotFoundException('Detalle de Beneficio no encontrado');
         }
     }

@@ -9,7 +9,7 @@ use Laravel\Sanctum\HasApiTokens;
 use LaravelPropertyBag\Settings\HasSettings;
 use Staudenmeir\LaravelAdjacencyList\Eloquent\HasRecursiveRelationships;
 use Illuminate\Foundation\Auth\User as Authenticatable;
-
+use Throwable;
 
 class User extends Authenticatable
 {
@@ -108,7 +108,7 @@ class User extends Authenticatable
     {
         try {
             return $this->where('id', $value)->firstOrFail();
-        } catch (\Throwable $th) {
+        } catch (Throwable $th) {
             throw new ModelNotFoundException('Usuario no encontrado');
         }
     }

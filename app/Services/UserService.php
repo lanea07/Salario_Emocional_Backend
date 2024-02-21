@@ -27,7 +27,6 @@ class UserService
      * Store a new user
      * 
      * @param array $userData
-     * 
      * @return \App\Models\User
      */
     public function saveUser(array $userData): User
@@ -36,25 +35,19 @@ class UserService
             $password = Str::password(10, true, true, false, false);
             $userData['password'] = $password;
         }
-
         $rolesToAsign = array_filter($userData['rolesFormGroup'], function ($role) {
             return $role === true;
         });
         $rolesToAsign = array_keys($rolesToAsign);
         $rolesToAsign = Role::whereIn('name', $rolesToAsign)->get();
-
         $userData['requirePassChange'] = true;
-
         $user = User::create($userData);
-
         $user->roles()->sync($rolesToAsign);
-
         $data = [
             $user,
             $password
         ];
         Mail::to($user->email)->queue(new NewUserCreated($data));
-
         return $user;
     }
 
@@ -62,7 +55,6 @@ class UserService
      * Return a user by id
      * 
      * @param User $user
-     * 
      * @return \App\Models\User
      */
     public function getUserById(User $user)
@@ -76,7 +68,6 @@ class UserService
      * 
      * @param array $userData
      * @param User $user
-     * 
      * @return \App\Models\User
      */
     public function updateUser(array $userData, User $user): User
@@ -84,7 +75,6 @@ class UserService
         if (!$userData['password']) {
             $userData['password'] = $user->password;
         }
-
         $rolesToAsign = array_filter($userData['rolesFormGroup'], function ($role) {
             return $role === true;
         });
@@ -102,8 +92,8 @@ class UserService
      * Delete a user
      * 
      * @param User $user
-     * 
      * @return void
+     * @throws \Exception
      */
     public function deleteUser(User $user): void
     {

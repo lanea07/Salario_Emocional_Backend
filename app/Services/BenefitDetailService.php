@@ -22,7 +22,6 @@ class BenefitDetailService
      * Store a new benefit detail
      * 
      * @param array $benefitDetailData
-     * 
      * @return \App\Models\BenefitDetail
      */
     public function saveBenefitDetail(array $benefitDetailData): BenefitDetail
@@ -33,8 +32,7 @@ class BenefitDetailService
     /**
      * Return a benefit detail by id
      * 
-     * @param \App\Models\BenefitDetail $benefitDetail
-     * 
+     * @param \App\Models\BenefitDetail $benefitDetail* 
      * @return \Illuminate\Database\Eloquent\Collection
      */
     public function getBenefitDetailByID(BenefitDetail $benefitDetail): Collection
@@ -47,7 +45,6 @@ class BenefitDetailService
      * 
      * @param array $benefitDetailData
      * @param \App\Models\BenefitDetail $benefitdetail
-     * 
      * @return \App\Models\BenefitDetail
      */
     public function updateBenefitDetail(array $benefitDetailData, BenefitDetail $benefitdetail): BenefitDetail
@@ -60,8 +57,8 @@ class BenefitDetailService
      * Delete a benefit detail
      * 
      * @param \App\Models\BenefitDetail $benefitDetail
-     * 
      * @return void
+     * @throws \Exception
      */
     public function deleteBenefitDetail(BenefitDetail $benefitDetail): void
     {
