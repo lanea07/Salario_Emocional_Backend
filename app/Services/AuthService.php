@@ -15,7 +15,6 @@ class AuthService
      * Validate user login
      * 
      * @param string $email
-     * 
      * @return User|null
      */
     public function validateUserLogin(string $email): User | null
@@ -38,8 +37,8 @@ class AuthService
      * Change user password
      * 
      * @param Request $request
-     * 
      * @return void
+     * @throws ValidationException
      */
     public function validatePasswordChange(Request $request): void
     {
@@ -57,7 +56,6 @@ class AuthService
                 'message' => 'La nueva contraseña no puede ser igual a la anterior'
             ]);
         }
-
         auth()->user()->update([
             'password' => Hash::make($validated['password']),
             'requirePassChange' => false
@@ -69,8 +67,8 @@ class AuthService
      * 
      * @param User $currentUser
      * @param int $loginAsUser
-     * 
      * @return \Illuminate\Http\JsonResponse
+     * @throws \Exception
      */
     public function loginAs(User $currentUser, int $loginAsUser): JsonResponse
     {

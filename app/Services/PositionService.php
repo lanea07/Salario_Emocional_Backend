@@ -58,6 +58,7 @@ class PositionService
      *
      * @param  Position $position
      * @return void
+     * @throws \Exception
      */
     public function deletePosition(Position $position): void
     {

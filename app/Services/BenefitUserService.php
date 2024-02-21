@@ -29,7 +29,6 @@ class BenefitUserService
      * 
      * @param int $userId
      * @param int $year
-     * 
      * @return Collection
      */
     public function getAllBenefitUser(int $userId, int $year): Collection
@@ -54,7 +53,6 @@ class BenefitUserService
      * Saves a new benefit for a user
      * 
      * @param array $benefitUserData
-     * 
      * @return BenefitUser
      */
     public function saveBenefitUser(array $benefitUserData): BenefitUser
@@ -80,7 +78,6 @@ class BenefitUserService
             $miViernes = $this->getAdditionalMiViernes($benefitUserData);
         }
         $data = [$benefitUserData, $bancoHoras, $miViernes];
-
         if ($benefitUserData->user->leader_user !== null) {
             $leader = $benefitUserData->user->leader_user;
             if ($leader->settings()->get('Auto Aprobar Beneficios de mis Colaboradores') === 'Sí') {
@@ -103,7 +100,6 @@ class BenefitUserService
      * Returns a benefit by its ID
      * 
      * @param BenefitUser $benefitUser
-     * 
      * @return Collection
      */
     public function getBenefitUserByID(BenefitUser $benefitUser): Collection
@@ -129,7 +125,6 @@ class BenefitUserService
      * 
      * @param array $benefitUserData
      * @param BenefitUser $benefitUser
-     * 
      * @return BenefitUser
      */
     public function updateBenefitUser(array $benefitUserData, BenefitUser $benefitUser): BenefitUser
@@ -149,7 +144,6 @@ class BenefitUserService
      * Deletes a benefit for a user
      * 
      * @param BenefitUser $benefitUser
-     * 
      * @return void
      */
     public function deleteBenefitUser(BenefitUser $benefitUser): void
@@ -161,7 +155,6 @@ class BenefitUserService
      * Returns all the benefits of a user that are not approved
      * 
      * @param int $userId
-     * 
      * @return Collection
      */
     public function getAllBenefitUserNonApproved(int $userId): Collection
@@ -185,7 +178,6 @@ class BenefitUserService
      * Returns all the benefits of users that are not approved
      * 
      * @param Request $request
-     * 
      * @return Collection
      */
     public function getAllBenefitCollaboratorsNonApproved(Request $request): Collection
@@ -206,7 +198,6 @@ class BenefitUserService
      * Returns all the benefits of user descendants and self
      * 
      * @param Request $request
-     * 
      * @return Collection
      */
     public function getAllBenefitCollaborators(Request $request)
@@ -232,7 +223,6 @@ class BenefitUserService
      * Returns an *.ics file to be attached to the new benefit
      * 
      * @param BenefitUser $benefitUser
-     * 
      * @return object
      */
     static function generateICS(BenefitUser $benefitUser)
@@ -255,7 +245,6 @@ class BenefitUserService
      * 
      * @param string $decision
      * @param BenefitUser $benefitUser
-     * 
      * @return BenefitUser
      */
     public function decideBenefitUser(
@@ -284,7 +273,6 @@ class BenefitUserService
      * Exports the benefits of a user and descendants to an Excel file and mails it
      * 
      * @param Request $request
-     * 
      * @return void
      */
     public function exportBenefits(Request $request)
@@ -299,7 +287,6 @@ class BenefitUserService
      * Removes accents from a string
      * 
      * @param string $string
-     * 
      * @return string
      */
     private function remove_accents($string)
@@ -403,9 +390,7 @@ class BenefitUserService
             chr(197) . chr(188) => 'z', chr(197) . chr(189) => 'Z',
             chr(197) . chr(190) => 'z', chr(197) . chr(191) => 's'
         );
-
         $string = strtr($string, $chars);
-
         return $string;
     }
 
@@ -413,7 +398,6 @@ class BenefitUserService
      * Returns all the additional Banco de Horas benefits of a user
      * 
      * @param BenefitUser $benefitUserData
-     * 
      * @return Collection
      */
     private function getAdditionalBancoHoras(BenefitUser $benefitUserData): Collection
@@ -435,7 +419,6 @@ class BenefitUserService
      * Returns all the additional Mi Viernes benefits of a user
      * 
      * @param BenefitUser $benefitUserData
-     * 
      * @return Collection
      */
     private function getAdditionalMiViernes(BenefitUser $benefitUserData): Collection

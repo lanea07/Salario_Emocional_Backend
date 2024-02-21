@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use App\Models\User;
+use App\Repositories\UserRepository;
 use App\Services\AdminService;
 use App\Services\AuthService;
 use App\Services\BenefitDetailService;
@@ -23,16 +25,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        $this->app->singleton(AdminService::class);
-        $this->app->singleton(AuthService::class);
-        $this->app->singleton(BenefitDetailService::class);
-        $this->app->singleton(BenefitService::class);
-        $this->app->singleton(BenefitUserService::class);
-        $this->app->singleton(DependencyService::class);
-        $this->app->singleton(PositionService::class);
-        $this->app->singleton(PreferencesService::class);
-        $this->app->singleton(RoleService::class);
-        $this->app->singleton(UserService::class);
+        //
     }
 
     /**
@@ -62,5 +55,17 @@ class AppServiceProvider extends ServiceProvider
         } catch (\Exception $e) {
             throw new Exception('An error has occurred:' . $e);
         }
+
+        // Services
+        $this->app->singleton(AdminService::class);
+        $this->app->singleton(AuthService::class);
+        $this->app->singleton(BenefitDetailService::class);
+        $this->app->singleton(BenefitService::class);
+        $this->app->singleton(BenefitUserService::class);
+        $this->app->singleton(DependencyService::class);
+        $this->app->singleton(PositionService::class);
+        $this->app->singleton(PreferencesService::class);
+        $this->app->singleton(RoleService::class);
+        $this->app->singleton(UserService::class);
     }
 }

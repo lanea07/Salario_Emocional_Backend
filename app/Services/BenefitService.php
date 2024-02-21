@@ -12,7 +12,6 @@ class BenefitService
 
     /**
      * Return all benefits
-     * 
      * @return \Illuminate\Database\Eloquent\Collection
      */
     public function getAllBenefits(): Collection
@@ -26,7 +25,6 @@ class BenefitService
      * Store a new benefit
      * 
      * @param array $benefitData
-     * 
      * @return Benefit
      */
     public function saveBenefit(array $benefitData): Benefit
@@ -56,7 +54,6 @@ class BenefitService
      * Return a benefit by ID
      * 
      * @param Benefit $benefit
-     * 
      * @return \Illuminate\Database\Eloquent\Collection
      */
     public function getBenefitByID(Benefit $benefit): Collection
@@ -69,7 +66,6 @@ class BenefitService
      * 
      * @param array $benefitData
      * @param Benefit $benefit
-     * 
      * @return Benefit
      */
     public function updateBenefit(array $benefitData, Benefit $benefit): Benefit
@@ -99,8 +95,8 @@ class BenefitService
      * Delete a benefit
      * 
      * @param Benefit $benefit
-     * 
      * @return void
+     * @throws \Exception
      */
     public function deleteBenefit(Benefit $benefit): void
     {
