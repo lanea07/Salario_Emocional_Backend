@@ -66,7 +66,15 @@ class PositionTest extends TestCase
         Sanctum::actingAs(
             $user = User::findOrFail(1)
         );
-        $response = $this->get('/api/position/1');
+        $response = $this->post(
+            '/api/position',
+            [
+                'name' => 'position Test',
+            ]
+        );
+        $response->assertCreated(201);
+        $createdResource = $response->getOriginalContent();
+        $response = $this->get("/api/position/{$createdResource->id}");
         $response->assertOk();
         $response->assertJsonStructure([
             "id",
@@ -82,8 +90,16 @@ class PositionTest extends TestCase
         Sanctum::actingAs(
             $user = User::findOrFail(1)
         );
+        $response = $this->post(
+            '/api/position',
+            [
+                'name' => 'position Test',
+            ]
+        );
+        $response->assertCreated(201);
+        $createdResource = $response->getOriginalContent();
         $response = $this->put(
-            '/api/position/1',
+            "/api/position/{$createdResource->id}",
             [
                 'name' => 'Sample Test',
             ]
@@ -96,7 +112,15 @@ class PositionTest extends TestCase
         Sanctum::actingAs(
             $user = User::findOrFail(1)
         );
-        $response = $this->delete('/api/position/1');
+        $response = $this->post(
+            '/api/position',
+            [
+                'name' => 'position Test',
+            ]
+        );
+        $response->assertCreated(201);
+        $createdResource = $response->getOriginalContent();
+        $response = $this->delete("/api/position/{$createdResource->id}");
         $response->assertInternalServerError();
     }
 }

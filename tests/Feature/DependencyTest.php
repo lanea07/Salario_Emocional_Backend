@@ -94,7 +94,16 @@ class DependencyTest extends TestCase
         Sanctum::actingAs(
             $user = User::findOrFail(1)
         );
-        $response = $this->get('/api/dependency/1');
+        $response = $this->post(
+            '/api/dependency',
+            [
+                'name' => 'Dependency Test',
+                'parent_id' => 1
+            ]
+        );
+        $response->assertCreated(201);
+        $createdResource = $response->getOriginalContent();
+        $response = $this->get("/api/dependency/{$createdResource->id}");
         $response->assertOk();
         $response->assertJsonStructure([
             '*' => [
@@ -139,8 +148,17 @@ class DependencyTest extends TestCase
         Sanctum::actingAs(
             $user = User::findOrFail(1)
         );
+        $response = $this->post(
+            '/api/dependency',
+            [
+                'name' => 'Dependency Test',
+                'parent_id' => 1
+            ]
+        );
+        $response->assertCreated(201);
+        $createdResource = $response->getOriginalContent();
         $response = $this->put(
-            '/api/dependency/1',
+            "/api/dependency/{$createdResource->id}",
             [
                 'name' => 'Sample Test',
                 'parent_id' => 1
@@ -154,7 +172,16 @@ class DependencyTest extends TestCase
         Sanctum::actingAs(
             $user = User::findOrFail(1)
         );
-        $response = $this->delete('/api/dependency/1');
+        $response = $this->post(
+            '/api/dependency',
+            [
+                'name' => 'Dependency Test',
+                'parent_id' => 1
+            ]
+        );
+        $response->assertCreated(201);
+        $createdResource = $response->getOriginalContent();
+        $response = $this->delete("/api/dependency/{$createdResource->id}");
         $response->assertInternalServerError();
     }
 }

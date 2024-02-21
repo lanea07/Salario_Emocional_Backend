@@ -66,7 +66,15 @@ class RoleTest extends TestCase
         Sanctum::actingAs(
             $user = User::findOrFail(1)
         );
-        $response = $this->get('/api/role/1');
+        $response = $this->post(
+            '/api/role',
+            [
+                'name' => 'role Test',
+            ]
+        );
+        $response->assertCreated(201);
+        $createdResource = $response->getOriginalContent();
+        $response = $this->get("/api/role/{$createdResource->id}");
         $response->assertOk();
         $response->assertJsonStructure([
             "id",
@@ -82,8 +90,16 @@ class RoleTest extends TestCase
         Sanctum::actingAs(
             $user = User::findOrFail(1)
         );
+        $response = $this->post(
+            '/api/role',
+            [
+                'name' => 'role Test',
+            ]
+        );
+        $response->assertCreated(201);
+        $createdResource = $response->getOriginalContent();
         $response = $this->put(
-            '/api/role/1',
+            "/api/role/{$createdResource->id}",
             [
                 'name' => 'Sample Test',
             ]
@@ -96,7 +112,15 @@ class RoleTest extends TestCase
         Sanctum::actingAs(
             $user = User::findOrFail(1)
         );
-        $response = $this->delete('/api/role/1');
+        $response = $this->post(
+            '/api/role',
+            [
+                'name' => 'role Test',
+            ]
+        );
+        $response->assertCreated(201);
+        $createdResource = $response->getOriginalContent();
+        $response = $this->delete("/api/role/{$createdResource->id}");
         $response->assertInternalServerError();
     }
 }

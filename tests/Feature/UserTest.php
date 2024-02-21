@@ -89,7 +89,21 @@ class UserTest extends TestCase
         Sanctum::actingAs(
             $user = User::findOrFail(1)
         );
-        $response = $this->get('/api/user/1');
+        $response = $this->post(
+            '/api/user',
+            [
+                'name' => 'root',
+                'email' => 'root@localhost.com',
+                'password' => '',
+                'dependency_id' => 1,
+                'position_id' => 1,
+                'valid_id' => 1,
+                'rolesFormGroup' => [[]]
+            ]
+        );
+        $response->assertCreated(201);
+        $createdResource = $response->getOriginalContent();
+        $response = $this->get("/api/user/{$createdResource->id}");
         $response->assertOk();
         $response->assertJsonStructure([
             '*' => [
@@ -118,8 +132,22 @@ class UserTest extends TestCase
         Sanctum::actingAs(
             $user = User::findOrFail(1)
         );
+        $response = $this->post(
+            '/api/user',
+            [
+                'name' => 'root',
+                'email' => 'root@localhost.com',
+                'password' => '',
+                'dependency_id' => 1,
+                'position_id' => 1,
+                'valid_id' => 1,
+                'rolesFormGroup' => [[]]
+            ]
+        );
+        $response->assertCreated(201);
+        $createdResource = $response->getOriginalContent();
         $response = $this->put(
-            '/api/user/1',
+            "/api/user/{$createdResource->id}",
             [
                 'name' => 'updated name',
                 'email' => 'updatedemail@localhost.com',
@@ -138,7 +166,21 @@ class UserTest extends TestCase
         Sanctum::actingAs(
             $user = User::findOrFail(1)
         );
-        $response = $this->delete('/api/user/1');
+        $response = $this->post(
+            '/api/user',
+            [
+                'name' => 'root',
+                'email' => 'root@localhost.com',
+                'password' => '',
+                'dependency_id' => 1,
+                'position_id' => 1,
+                'valid_id' => 1,
+                'rolesFormGroup' => [[]]
+            ]
+        );
+        $response->assertCreated(201);
+        $createdResource = $response->getOriginalContent();
+        $response = $this->delete("/api/user/{$createdResource->id}");
         $response->assertInternalServerError();
     }
     
