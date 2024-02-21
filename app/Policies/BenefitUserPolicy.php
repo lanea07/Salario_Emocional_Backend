@@ -20,7 +20,7 @@ class BenefitUserPolicy
 
     public function update(User $user, BenefitUser $benefitUser)
     {
-        return auth('sanctum')->check() && $user->id === $benefitUser->user->id;
+        return auth('sanctum')->check() && $user->id === $benefitUser->user->id || $user->isAdmin();
     }
 
     public function destroy(User $user, BenefitUser $benefitUser)
