@@ -12,9 +12,6 @@ class AuthTest extends TestCase
 
     use DatabaseTransactions;
 
-    /**
-     * A basic feature test example.
-     */
     public function test_user_can_login(): void
     {
         Sanctum::actingAs(

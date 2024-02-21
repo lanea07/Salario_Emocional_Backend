@@ -84,7 +84,16 @@ class BenefitDetailTest extends TestCase
         Sanctum::actingAs(
             $user = User::findOrFail(1)
         );
-        $response = $this->get('/api/benefitdetail/1');
+        $response = $this->post(
+            '/api/benefitdetail',
+            [
+                'name' => 'test benefit detail',
+                'time_hours' => 1
+            ]
+        );
+        $response->assertCreated(201);
+        $createdResource = $response->getOriginalContent();
+        $response = $this->get("/api/benefitdetail/{$createdResource->id}");
         $response->assertOk();
         $response->assertJsonStructure([
             '*' => [
@@ -119,8 +128,17 @@ class BenefitDetailTest extends TestCase
         Sanctum::actingAs(
             $user = User::findOrFail(1)
         );
+        $response = $this->post(
+            '/api/benefitdetail',
+            [
+                'name' => 'test benefit detail',
+                'time_hours' => 1
+            ]
+        );
+        $response->assertCreated(201);
+        $createdResource = $response->getOriginalContent();
         $response = $this->put(
-            '/api/benefitdetail/1',
+            "/api/benefitdetail/{$createdResource->id}",
             [
                 'name' => 'sample benefit detail',
                 'time_hours' => 1
@@ -134,7 +152,16 @@ class BenefitDetailTest extends TestCase
         Sanctum::actingAs(
             $user = User::findOrFail(1)
         );
-        $response = $this->delete('/api/benefitdetail/1');
+        $response = $this->post(
+            '/api/benefitdetail',
+            [
+                'name' => 'test benefit detail',
+                'time_hours' => 1
+            ]
+        );
+        $response->assertCreated(201);
+        $createdResource = $response->getOriginalContent();
+        $response = $this->delete("/api/benefitdetail/{$createdResource->id}");
         $response->assertInternalServerError();
     }
 }

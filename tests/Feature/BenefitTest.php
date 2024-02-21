@@ -88,7 +88,18 @@ class BenefitTest extends TestCase
         Sanctum::actingAs(
             $user = User::findOrFail(1)
         );
-        $response = $this->get('/api/benefit/1');
+        $response = $this->post(
+            '/api/benefit',
+            [
+                'name' => 'test benefit',
+                'politicas_path' => 'test.pdf',
+                'valid_id' => 1,
+                'benefitDetailFormGroup' => '[]'
+            ]
+        );
+        $response->assertCreated(201);
+        $createdResource = $response->getOriginalContent();
+        $response = $this->get("/api/benefit/{$createdResource->id}");
         $response->assertOk();
         $response->assertJsonStructure([
             '*' => [
@@ -123,8 +134,19 @@ class BenefitTest extends TestCase
         Sanctum::actingAs(
             $user = User::findOrFail(1)
         );
+        $response = $this->post(
+            '/api/benefit',
+            [
+                'name' => 'test benefit',
+                'politicas_path' => 'test.pdf',
+                'valid_id' => 1,
+                'benefitDetailFormGroup' => '[]'
+            ]
+        );
+        $response->assertCreated(201);
+        $createdResource = $response->getOriginalContent();
         $response = $this->put(
-            '/api/benefit/1',
+            "/api/benefit/{$createdResource->id}",
             [
                 'name' => 'sample benefit',
                 'politicas_path' => 'sample.pdf',
@@ -140,7 +162,18 @@ class BenefitTest extends TestCase
         Sanctum::actingAs(
             $user = User::findOrFail(1)
         );
-        $response = $this->delete('/api/benefit/1');
+        $response = $this->post(
+            '/api/benefit',
+            [
+                'name' => 'test benefit',
+                'politicas_path' => 'test.pdf',
+                'valid_id' => 1,
+                'benefitDetailFormGroup' => '[]'
+            ]
+        );
+        $response->assertCreated(201);
+        $createdResource = $response->getOriginalContent();
+        $response = $this->delete("/api/benefit/{$createdResource->id}");
         $response->assertInternalServerError();
     }
 }

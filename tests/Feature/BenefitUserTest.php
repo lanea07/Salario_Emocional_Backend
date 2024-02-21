@@ -2,9 +2,11 @@
 
 namespace Tests\Feature;
 
+use App\Mail\BenefitDecision;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
+use Illuminate\Support\Facades\Mail;
 use Laravel\Sanctum\Sanctum;
 use Tests\TestCase;
 
@@ -18,7 +20,7 @@ class BenefitUserTest extends TestCase
         Sanctum::actingAs(
             $user = User::findOrFail(1)
         );
-        $response = $this->get('/api/benefituser?userId=2&year=2024');
+        $response = $this->get('/api/benefituser?userId=2&year=2010');
         $response->assertOk();
         $response->assertJsonStructure([
             '*' => [
@@ -96,6 +98,7 @@ class BenefitUserTest extends TestCase
         Sanctum::actingAs(
             $user = User::findOrFail(1)
         );
+        Mail::fake();
         $response = $this->post(
             '/api/benefituser',
             [
@@ -106,7 +109,10 @@ class BenefitUserTest extends TestCase
                 'benefit_end_time' => Carbon::now()->addHours(1),
             ]
         );
+        $createdResource = $response->getOriginalContent();
+        Mail::assertQueued(BenefitDecision::class);
         $response->assertCreated(201);
+        return $createdResource;
     }
 
     /**
