@@ -2,7 +2,7 @@
 
 namespace App\Mail;
 
-use App\Http\Controllers\api\Services\BenefitUserService;
+use App\Services\BenefitUserService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailables\Attachment;

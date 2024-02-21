@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\api;
 
-use App\Http\Controllers\api\Services\BenefitUserService;
+use App\Services\BenefitUserService;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\CreateBenefitUserRequest;
 use App\Models\BenefitUser;
@@ -13,11 +13,8 @@ use Illuminate\Http\Request;
 class BenefitUserController extends Controller
 {
 
-    private BenefitUserService $benefitUserService;
-
-    public function __construct(BenefitUserService $benefitUserService)
+    public function __construct(private BenefitUserService $benefitUserService)
     {
-        $this->benefitUserService = $benefitUserService;
         $this->middleware('checkroles:Admin', ['only' => ['destroy']]);
     }
 

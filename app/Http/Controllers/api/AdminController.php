@@ -2,15 +2,15 @@
 
 namespace App\Http\Controllers\api;
 
-use App\Http\Controllers\api\Services\AdminService;
 use App\Http\Controllers\Controller;
+use App\Services\AdminService as ServicesAdminService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class AdminController extends Controller
 {
 
-    public function __construct(private AdminService $adminService)
+    public function __construct(private ServicesAdminService $adminService)
     {
         $this->middleware('checkroles:Admin');
     }

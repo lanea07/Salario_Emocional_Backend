@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\api\Services;
+namespace App\Services;
 
 use App\Enums\BenefitDecision;
 use App\Mail\BenefitDecision as MailBenefitDecision;
@@ -46,8 +46,8 @@ class BenefitUserService
                 'benefit_user.user.dependency'
             ]
         )
-        ->where('id', $userId)
-        ->get();
+            ->where('id', $userId)
+            ->get();
     }
 
     /**
@@ -213,19 +213,19 @@ class BenefitUserService
     {
         $user = $request->user();
         return User::where('id', '=', $user->id)
-        ->with(
-            [
-                'descendantsAndSelf.benefit_user' => function ($q) use ($request) {
-                    $q->whereYear('benefit_begin_time', $request->year);
-                    $q->is_approved();
-                },
-                'descendantsAndSelf.benefit_user.benefits',
-                'descendantsAndSelf.benefit_user.user',
-                'descendantsAndSelf.benefit_user.benefit_detail',
-            ]
-        )
-        ->oldest('name')
-        ->get();
+            ->with(
+                [
+                    'descendantsAndSelf.benefit_user' => function ($q) use ($request) {
+                        $q->whereYear('benefit_begin_time', $request->year);
+                        $q->is_approved();
+                    },
+                    'descendantsAndSelf.benefit_user.benefits',
+                    'descendantsAndSelf.benefit_user.user',
+                    'descendantsAndSelf.benefit_user.benefit_detail',
+                ]
+            )
+            ->oldest('name')
+            ->get();
     }
 
     /**

@@ -60,7 +60,7 @@ class BenefitTest extends TestCase
                 'benefitDetailFormGroup' => '[]'
             ]
         );
-        $response->assertCreated(201);
+        $response->assertCreated();
     }
 
     /**
@@ -80,7 +80,17 @@ class BenefitTest extends TestCase
                 'benefitDetailFormGroup' => '[]'
             ]
         );
-        $response->assertCreated(400);
+        $response->assertCreated();
+        $response = $this->post(
+            '/api/benefit',
+            [
+                'name' => 'test benefit',
+                'politicas_path' => 'test.pdf',
+                'valid_id' => 1,
+                'benefitDetailFormGroup' => '[]'
+            ]
+        );
+        $response->assertStatus(400);
     }
 
     public function test_can_get_benefit_by_id()
@@ -97,7 +107,7 @@ class BenefitTest extends TestCase
                 'benefitDetailFormGroup' => '[]'
             ]
         );
-        $response->assertCreated(201);
+        $response->assertCreated();
         $createdResource = $response->getOriginalContent();
         $response = $this->get("/api/benefit/{$createdResource->id}");
         $response->assertOk();
@@ -143,7 +153,7 @@ class BenefitTest extends TestCase
                 'benefitDetailFormGroup' => '[]'
             ]
         );
-        $response->assertCreated(201);
+        $response->assertCreated();
         $createdResource = $response->getOriginalContent();
         $response = $this->put(
             "/api/benefit/{$createdResource->id}",
@@ -171,7 +181,7 @@ class BenefitTest extends TestCase
                 'benefitDetailFormGroup' => '[]'
             ]
         );
-        $response->assertCreated(201);
+        $response->assertCreated();
         $createdResource = $response->getOriginalContent();
         $response = $this->delete("/api/benefit/{$createdResource->id}");
         $response->assertInternalServerError();

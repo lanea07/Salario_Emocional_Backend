@@ -41,7 +41,7 @@ class RoleTest extends TestCase
                 'name' => 'role Test',
             ]
         );
-        $response->assertCreated(201);
+        $response->assertCreated();
     }
 
     /**
@@ -58,7 +58,14 @@ class RoleTest extends TestCase
                 'name' => 'role Test',
             ]
         );
-        $response->assertCreated(400);
+        $response->assertCreated();
+        $response = $this->post(
+            '/api/role',
+            [
+                'name' => 'role Test',
+            ]
+        );
+        $response->assertStatus(400);
     }
 
     public function test_can_get_role_by_id()
@@ -72,7 +79,7 @@ class RoleTest extends TestCase
                 'name' => 'role Test',
             ]
         );
-        $response->assertCreated(201);
+        $response->assertCreated();
         $createdResource = $response->getOriginalContent();
         $response = $this->get("/api/role/{$createdResource->id}");
         $response->assertOk();
@@ -96,7 +103,7 @@ class RoleTest extends TestCase
                 'name' => 'role Test',
             ]
         );
-        $response->assertCreated(201);
+        $response->assertCreated();
         $createdResource = $response->getOriginalContent();
         $response = $this->put(
             "/api/role/{$createdResource->id}",
@@ -118,7 +125,7 @@ class RoleTest extends TestCase
                 'name' => 'role Test',
             ]
         );
-        $response->assertCreated(201);
+        $response->assertCreated();
         $createdResource = $response->getOriginalContent();
         $response = $this->delete("/api/role/{$createdResource->id}");
         $response->assertInternalServerError();

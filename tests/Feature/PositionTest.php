@@ -41,7 +41,7 @@ class PositionTest extends TestCase
                 'name' => 'position Test',
             ]
         );
-        $response->assertCreated(201);
+        $response->assertCreated();
     }
 
     /**
@@ -58,7 +58,14 @@ class PositionTest extends TestCase
                 'name' => 'position Test',
             ]
         );
-        $response->assertCreated(400);
+        $response->assertCreated();
+        $response = $this->post(
+            '/api/position',
+            [
+                'name' => 'position Test',
+            ]
+        );
+        $response->assertStatus(400);
     }
 
     public function test_can_get_position_by_id()
@@ -72,7 +79,7 @@ class PositionTest extends TestCase
                 'name' => 'position Test',
             ]
         );
-        $response->assertCreated(201);
+        $response->assertCreated();
         $createdResource = $response->getOriginalContent();
         $response = $this->get("/api/position/{$createdResource->id}");
         $response->assertOk();
@@ -96,7 +103,7 @@ class PositionTest extends TestCase
                 'name' => 'position Test',
             ]
         );
-        $response->assertCreated(201);
+        $response->assertCreated();
         $createdResource = $response->getOriginalContent();
         $response = $this->put(
             "/api/position/{$createdResource->id}",
@@ -118,7 +125,7 @@ class PositionTest extends TestCase
                 'name' => 'position Test',
             ]
         );
-        $response->assertCreated(201);
+        $response->assertCreated();
         $createdResource = $response->getOriginalContent();
         $response = $this->delete("/api/position/{$createdResource->id}");
         $response->assertInternalServerError();

@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\api;
 
-use App\Http\Controllers\api\Services\PreferencesService;
+use App\Services\PreferencesService;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
@@ -11,11 +11,8 @@ use Illuminate\Http\Request;
 class PreferencesController extends Controller
 {
 
-    private PreferencesService $preferencesService;
-
-    public function __construct(PreferencesService $preferencesService)
+    public function __construct(private PreferencesService $preferencesService)
     {
-        $this->preferencesService = $preferencesService;
     }
 
     /**
