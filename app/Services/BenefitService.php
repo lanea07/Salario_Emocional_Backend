@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\api\Services;
+namespace App\Services;
 
 use App\Models\Benefit;
 use App\Models\BenefitDetail;
@@ -18,8 +18,8 @@ class BenefitService
     public function getAllBenefits(): Collection
     {
         return Benefit::with('benefit_detail')
-        ->orderBy('name', 'asc')
-        ->get();
+            ->orderBy('name', 'asc')
+            ->get();
     }
 
     /**
@@ -119,5 +119,4 @@ class BenefitService
             ->orderBy('name', 'asc')
             ->get();
     }
-
 }

@@ -105,13 +105,13 @@ class BenefitUserTest extends TestCase
                 'benefit_id' => 1,
                 'benefit_detail_id' => 1,
                 'user_id' => 1,
-                'benefit_begin_time' => Carbon::now(),
-                'benefit_end_time' => Carbon::now()->addHours(1),
+                'benefit_begin_time' => Carbon::create(null, 1, 1, 0, 0, 0),
+                'benefit_end_time' => Carbon::create(null, 1, 1, 0, 0, 0)->addHours(1),
             ]
         );
         $createdResource = $response->getOriginalContent();
         Mail::assertQueued(BenefitDecision::class);
-        $response->assertCreated(201);
+        $response->assertCreated();
         return $createdResource;
     }
 
@@ -123,17 +123,29 @@ class BenefitUserTest extends TestCase
         Sanctum::actingAs(
             $user = User::findOrFail(1)
         );
+        Mail::fake(); 
         $response = $this->post(
             '/api/benefituser',
             [
-                'benefit_id' => '1',
-                'benefit_detail_id' => '1',
-                'user_id' => '1',
-                'benefit_begin_time' => Carbon::now(),
-                'benefit_end_time' => Carbon::now()->addHours(1),
+                'benefit_id' => 1,
+                'benefit_detail_id' => 1,
+                'user_id' => 1,
+                'benefit_begin_time' => Carbon::create(null, 1, 1, 0, 0, 0),
+                'benefit_end_time' => Carbon::create(null, 1, 1, 0, 0, 0)->addHours(1),
             ]
         );
-        $response->assertCreated(400);
+        $response->assertCreated();
+        $response = $this->post(
+            '/api/benefituser',
+            [
+                'benefit_id' => 1,
+                'benefit_detail_id' => 1,
+                'user_id' => 1,
+                'benefit_begin_time' => Carbon::create(null, 1, 1, 0, 0, 0),
+                'benefit_end_time' => Carbon::create(null, 1, 1, 0, 0, 0)->addHours(1),
+            ]
+        );
+        $response->assertStatus(400);
     }
 
     public function test_can_get_benefit_user_by_id()
@@ -141,6 +153,7 @@ class BenefitUserTest extends TestCase
         Sanctum::actingAs(
             $user = User::findOrFail(1)
         );
+        Mail::fake();
         $response = $this->post(
             '/api/benefituser',
             [
@@ -151,8 +164,8 @@ class BenefitUserTest extends TestCase
                 'benefit_end_time' => Carbon::now()->addHours(1),
             ]
         );
-        $content = $response->getOriginalContent();
-        $response = $this->get("/api/benefituser/{$content['id']}");
+        $createdResource = $response->getOriginalContent();
+        $response = $this->get("/api/benefituser/{$createdResource->id}");
         $response->assertOk();
         $response->assertJsonStructure([
             '*' => [
@@ -230,6 +243,7 @@ class BenefitUserTest extends TestCase
         Sanctum::actingAs(
             $user = User::findOrFail(1)
         );
+        Mail::fake();
         $response = $this->post(
             '/api/benefituser',
             [
@@ -240,9 +254,9 @@ class BenefitUserTest extends TestCase
                 'benefit_end_time' => Carbon::now()->addHours(1),
             ]
         );
-        $content = $response->getOriginalContent();
+        $createdResource = $response->getOriginalContent();
         $response = $this->put(
-            "/api/benefituser/{$content['id']}",
+            "/api/benefituser/{$createdResource->id}",
             [
                 'benefit_id' => 2,
                 'benefit_detail_id' => 2,
@@ -259,6 +273,7 @@ class BenefitUserTest extends TestCase
         Sanctum::actingAs(
             $user = User::findOrFail(1)
         );
+        Mail::fake();
         $response = $this->post(
             '/api/benefituser',
             [
@@ -269,8 +284,8 @@ class BenefitUserTest extends TestCase
                 'benefit_end_time' => Carbon::now()->addHours(1),
             ]
         );
-        $content = $response->getOriginalContent();
-        $response = $this->delete("/api/benefituser/{$content['id']}");
+        $createdResource = $response->getOriginalContent();
+        $response = $this->delete("/api/benefituser/{$createdResource->id}");
         $response->assertOk();
     }
 }

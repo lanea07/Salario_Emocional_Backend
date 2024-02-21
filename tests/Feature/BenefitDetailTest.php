@@ -58,7 +58,7 @@ class BenefitDetailTest extends TestCase
                 'time_hours' => 1
             ]
         );
-        $response->assertCreated(201);
+        $response->assertCreated();
     }
 
     /**
@@ -76,7 +76,15 @@ class BenefitDetailTest extends TestCase
                 'time_hours' => 1
             ]
         );
-        $response->assertCreated(400);
+        $response->assertCreated();
+        $response = $this->post(
+            '/api/benefitdetail',
+            [
+                'name' => 'test benefit detail',
+                'time_hours' => 1
+            ]
+        );
+        $response->assertStatus(400);
     }
 
     public function test_can_get_benefit_detail_by_id()
@@ -91,7 +99,7 @@ class BenefitDetailTest extends TestCase
                 'time_hours' => 1
             ]
         );
-        $response->assertCreated(201);
+        $response->assertCreated();
         $createdResource = $response->getOriginalContent();
         $response = $this->get("/api/benefitdetail/{$createdResource->id}");
         $response->assertOk();
@@ -135,7 +143,7 @@ class BenefitDetailTest extends TestCase
                 'time_hours' => 1
             ]
         );
-        $response->assertCreated(201);
+        $response->assertCreated();
         $createdResource = $response->getOriginalContent();
         $response = $this->put(
             "/api/benefitdetail/{$createdResource->id}",
@@ -159,7 +167,7 @@ class BenefitDetailTest extends TestCase
                 'time_hours' => 1
             ]
         );
-        $response->assertCreated(201);
+        $response->assertCreated();
         $createdResource = $response->getOriginalContent();
         $response = $this->delete("/api/benefitdetail/{$createdResource->id}");
         $response->assertInternalServerError();

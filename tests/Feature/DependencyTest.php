@@ -68,7 +68,7 @@ class DependencyTest extends TestCase
                 'parent_id' => 1
             ]
         );
-        $response->assertCreated(201);
+        $response->assertCreated();
     }
 
     /**
@@ -86,7 +86,15 @@ class DependencyTest extends TestCase
                 'parent_id' => 1
             ]
         );
-        $response->assertCreated(400);
+        $response->assertCreated();
+        $response = $this->post(
+            '/api/dependency',
+            [
+                'name' => 'Dependency Test',
+                'parent_id' => 1
+            ]
+        );
+        $response->assertStatus(400);
     }
 
     public function test_can_get_dependency_by_id()
@@ -101,7 +109,7 @@ class DependencyTest extends TestCase
                 'parent_id' => 1
             ]
         );
-        $response->assertCreated(201);
+        $response->assertCreated();
         $createdResource = $response->getOriginalContent();
         $response = $this->get("/api/dependency/{$createdResource->id}");
         $response->assertOk();
@@ -155,7 +163,7 @@ class DependencyTest extends TestCase
                 'parent_id' => 1
             ]
         );
-        $response->assertCreated(201);
+        $response->assertCreated();
         $createdResource = $response->getOriginalContent();
         $response = $this->put(
             "/api/dependency/{$createdResource->id}",
@@ -179,7 +187,7 @@ class DependencyTest extends TestCase
                 'parent_id' => 1
             ]
         );
-        $response->assertCreated(201);
+        $response->assertCreated();
         $createdResource = $response->getOriginalContent();
         $response = $this->delete("/api/dependency/{$createdResource->id}");
         $response->assertInternalServerError();

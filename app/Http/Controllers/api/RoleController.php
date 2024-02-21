@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\api;
 
-use App\Http\Controllers\api\Services\RoleService;
+use App\Services\RoleService;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\CreateRoleRequest;
 use App\Models\Role;
@@ -11,11 +11,8 @@ use Illuminate\Http\JsonResponse;
 class RoleController extends Controller
 {
 
-    private RoleService $roleService;
-
-    public function __construct(RoleService $roleService)
+    public function __construct(private RoleService $roleService)
     {
-        $this->roleService = $roleService;
         $this->middleware('checkroles:Admin');
     }
 

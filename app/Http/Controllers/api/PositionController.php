@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\api;
 
-use App\Http\Controllers\api\Services\PositionService;
+use App\Services\PositionService;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\CreatePositionRequest;
 use App\Models\Position;
@@ -11,11 +11,8 @@ use Illuminate\Http\JsonResponse;
 class PositionController extends Controller
 {
 
-    private PositionService $positionService;
-
-    public function __construct(PositionService $positionService)
+    public function __construct(private PositionService $positionService)
     {
-        $this->positionService = $positionService;
         $this->middleware('checkroles:Admin');
     }
 

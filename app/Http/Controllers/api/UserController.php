@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\api;
 
-use App\Http\Controllers\api\Services\UserService;
+use App\Services\UserService;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\CreateUserRequest;
 use App\Models\User;
@@ -12,11 +12,8 @@ use Illuminate\Http\JsonResponse;
 class UserController extends Controller
 {
 
-    private UserService $userService;
-
-    public function __construct(UserService $userService)
+    public function __construct(private UserService $userService)
     {
-        $this->userService = $userService;
         $this->middleware('checkroles:Admin', ['except' => ['index', 'show']]);
     }
 

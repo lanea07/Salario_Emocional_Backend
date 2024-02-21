@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\api\Services;
+namespace App\Services;
 
 use App\Models\Position;
 use Illuminate\Database\Eloquent\Collection;

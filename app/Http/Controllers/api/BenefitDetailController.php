@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\api;
 
-use App\Http\Controllers\api\Services\BenefitDetailService;
+use App\Services\BenefitDetailService;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\CreateBenefitDetailRequest;
 use App\Models\BenefitDetail;
@@ -11,11 +11,8 @@ use Illuminate\Http\JsonResponse;
 class BenefitDetailController extends Controller
 {
 
-    private BenefitDetailService $benefitDetailService;
-
-    public function __construct(BenefitDetailService $benefitDetailService)
+    public function __construct(private BenefitDetailService $benefitDetailService)
     {
-        $this->benefitDetailService = $benefitDetailService;
         $this->middleware('checkroles:Admin');
     }
 

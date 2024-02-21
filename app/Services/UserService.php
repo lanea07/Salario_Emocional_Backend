@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\api\Services;
+namespace App\Services;
 
 use App\Mail\NewUserCreated;
 use App\Models\Position;
@@ -108,6 +108,5 @@ class UserService
     public function deleteUser(User $user): void
     {
         throw new \Exception('No se puede eliminar un usuario');
-
     }
 }

@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\api;
 
-use App\Http\Controllers\api\Services\AuthService;
+use App\Services\AuthService;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
@@ -12,11 +12,8 @@ use Illuminate\Validation\ValidationException;
 class AuthController extends Controller
 {
 
-    private AuthService $authService;
-
-    public function __construct(AuthService $authService)
+    public function __construct(private AuthService $authService)
     {
-        $this->authService = $authService;
     }
 
     /**

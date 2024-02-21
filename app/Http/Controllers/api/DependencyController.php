@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\api;
 
-use App\Http\Controllers\api\Services\DependencyService;
+use App\Services\DependencyService;
 use App\Http\Controllers\Controller;
 use App\Models\Dependency;
 use App\Http\Requests\StoreDependencyRequest;
@@ -13,11 +13,8 @@ use Illuminate\Http\Request;
 class DependencyController extends Controller
 {
 
-    private DependencyService $dependencyService;
-
-    public function __construct(DependencyService $dependencyService)
+    public function __construct(private DependencyService $dependencyService)
     {
-        $this->dependencyService = $dependencyService;
         $this->middleware('checkroles:Admin', ['except' => ['index', 'show']]);
     }
 

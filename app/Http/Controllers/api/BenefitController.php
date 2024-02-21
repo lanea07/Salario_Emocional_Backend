@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\api;
 
-use App\Http\Controllers\api\Services\BenefitService;
+use App\Services\BenefitService;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\CreateBenefitRequest;
 use App\Models\Benefit;
@@ -11,11 +11,8 @@ use Illuminate\Http\JsonResponse;
 class BenefitController extends Controller
 {
 
-    private BenefitService $benefitService;
-
-    public function __construct(BenefitService $benefitService)
+    public function __construct(private BenefitService $benefitService)
     {
-        $this->benefitService = $benefitService;
         $this->middleware('checkroles:Admin', ['except' => ['index', 'indexAvailable', 'show']]);
     }
 
