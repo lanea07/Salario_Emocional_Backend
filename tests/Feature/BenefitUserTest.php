@@ -2,11 +2,11 @@
 
 namespace Tests\Feature;
 
-use App\Mail\BenefitDecision;
+use App\Events\NewBenefitUserWithoutLeaderEvent;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
-use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Event;
 use Laravel\Sanctum\Sanctum;
 use Tests\TestCase;
 
@@ -98,7 +98,7 @@ class BenefitUserTest extends TestCase
         Sanctum::actingAs(
             $user = User::findOrFail(1)
         );
-        Mail::fake();
+        Event::fake();
         $response = $this->post(
             '/api/benefituser',
             [
@@ -110,7 +110,7 @@ class BenefitUserTest extends TestCase
             ]
         );
         $createdResource = $response->getOriginalContent();
-        Mail::assertQueued(BenefitDecision::class);
+        Event::assertDispatched(NewBenefitUserWithoutLeaderEvent::class);
         $response->assertCreated();
         return $createdResource;
     }
@@ -123,7 +123,7 @@ class BenefitUserTest extends TestCase
         Sanctum::actingAs(
             $user = User::findOrFail(1)
         );
-        Mail::fake(); 
+        Event::fake(); 
         $response = $this->post(
             '/api/benefituser',
             [
@@ -153,7 +153,7 @@ class BenefitUserTest extends TestCase
         Sanctum::actingAs(
             $user = User::findOrFail(1)
         );
-        Mail::fake();
+        Event::fake();
         $response = $this->post(
             '/api/benefituser',
             [
@@ -243,7 +243,7 @@ class BenefitUserTest extends TestCase
         Sanctum::actingAs(
             $user = User::findOrFail(1)
         );
-        Mail::fake();
+        Event::fake();
         $response = $this->post(
             '/api/benefituser',
             [
@@ -273,7 +273,7 @@ class BenefitUserTest extends TestCase
         Sanctum::actingAs(
             $user = User::findOrFail(1)
         );
-        Mail::fake();
+        Event::fake();
         $response = $this->post(
             '/api/benefituser',
             [

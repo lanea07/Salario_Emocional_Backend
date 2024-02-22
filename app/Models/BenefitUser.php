@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use App\Enums\BenefitDecision;
+use App\Enums\BenefitDecisionEnum;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -24,7 +24,7 @@ class BenefitUser extends Model
     ];
 
     protected $casts = [
-        'is_approved' => BenefitDecision::class,
+        'is_approved' => BenefitDecisionEnum::class,
     ];
 
     public function user()
@@ -53,16 +53,16 @@ class BenefitUser extends Model
 
     public function scopeIs_Pending(Builder $query): void
     {
-        $query->where('is_approved', BenefitDecision::PENDING);
+        $query->where('is_approved', BenefitDecisionEnum::PENDING);
     }
 
     public function scopeIs_Approved(Builder $query): void
     {
-        $query->where('is_approved', BenefitDecision::APPROVED);
+        $query->where('is_approved', BenefitDecisionEnum::APPROVED);
     }
 
     public function scopeIs_Denied(Builder $query): void
     {
-        $query->where('is_approved', BenefitDecision::DENIED);
+        $query->where('is_approved', BenefitDecisionEnum::DENIED);
     }
 }
