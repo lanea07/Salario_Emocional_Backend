@@ -38,6 +38,7 @@ class MiBancoDeHoras extends Benefit implements IBenefitValidation
             ->where(function ($q) use ($requestedBenefitData) {
                 $q->where('user_id', $requestedBenefitData['user_id']);
                 $q->where('benefit_id', $this->id);
+            $q->is_approved();
             })
             ->get()->pluck('benefit_detail.time_hours')->sum();
         if (($total_time_hours - $actualTime) + $requestedTime > 16) {

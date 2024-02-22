@@ -31,6 +31,7 @@ class MiCumpleanos extends Benefit implements IBenefitValidation
             $q->where('benefit_id', $requestedBenefitData['benefit_id']);
             $q->where('user_id', '=', $requestedBenefitData['user_id']);
             $q->whereYear('benefit_begin_time', date("Y", strtotime($requestedBenefitData['benefit_begin_time'])));
+            $q->is_approved();
         })->get();
         if (!$isBirthdayClaimed->isEmpty()) {
             throw new Exception("El beneficio que está intentando actualizar ya fue utilizado el año que indicaste. No se puede usar más de una vez.", 1);

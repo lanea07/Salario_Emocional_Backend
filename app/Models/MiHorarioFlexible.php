@@ -36,6 +36,7 @@ class MiHorarioFlexible extends Benefit implements IBenefitValidation
             $q->where('user_id', '=', $requestedBenefitData['user_id']);
             $q->where('benefit_id', $requestedBenefitData['benefit_id']);
             $q->whereYear('benefit_begin_time', date("Y", strtotime($requestedBenefitData['benefit_begin_time'])));
+            $q->is_approved();
         })->get();
         if (!$claimedSchedule->isEmpty()) {
             $claimedSchedule->each(function ($item, $key) use ($requestedBenefitData) {

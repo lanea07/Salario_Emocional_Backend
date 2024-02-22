@@ -34,6 +34,7 @@ class MiViernes extends Benefit implements IBenefitValidation
             $q->where('user_id', $requestedBenefitData['user_id']);
             $q->whereYear('benefit_begin_time', date("Y", strtotime($requestedBenefitData['benefit_begin_time'])));
             $q->whereMonth('benefit_begin_time', date("n", strtotime($requestedBenefitData['benefit_begin_time'])));
+            $q->is_approved();
         })->get();
         if (!$claimedFriday->isEmpty()) {
             $existingFridayMonth = Carbon::parse($claimedFriday->first()->benefit_begin_time)->month;

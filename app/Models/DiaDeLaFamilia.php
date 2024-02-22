@@ -58,6 +58,7 @@ class DiaDeLaFamilia extends Benefit implements IBenefitValidation
             $q->where('benefit_id', $requestedBenefitData['benefit_id']);
             $q->where('user_id', '=', $requestedBenefitData['user_id']);
             $q->whereBetween('benefit_begin_time', [$initialDate, $finalDate]);
+            $q->is_approved();
         })->get();
         if (!$claimed->isEmpty()) {
             throw new Exception("El beneficio que está intentando registrar ya fue utilizado este semestre.", 1);
