@@ -2,7 +2,7 @@
 
 namespace App\Enums;
 
-enum BenefitDecision: int
+enum BenefitDecisionEnum: int
 {
     case PENDING = 0;
     case APPROVED = 1;

@@ -2,11 +2,11 @@
 
 namespace App\Services;
 
-use App\Enums\BenefitDecision;
-use App\Mail\BenefitDecision as MailBenefitDecision;
-use App\Mail\BenefitUserCreated;
+use App\Enums\BenefitDecisionEnum;
+use App\Events\BenefitDecisionEvent;
+use App\Events\NewBenefitUserWithLeaderEvent;
+use App\Events\NewBenefitUserWithoutLeaderEvent;
 use App\Mail\BenefitUserExcelExport;
-use App\Mail\NotifyNewBenefitRequestToLeader;
 use App\Models\Benefit;
 use App\Models\BenefitUser;
 use App\Models\User;
@@ -83,15 +83,14 @@ class BenefitUserService
             if ($leader->settings()->get('Auto Aprobar Beneficios de mis Colaboradores') === 'Sí') {
                 $this->decideBenefitUser('approve', $benefitUserData);
             } else {
-                Mail::to($benefitUserData->user->leader_user->email)->queue(new NotifyNewBenefitRequestToLeader($data));
-                Mail::to($benefitUserData->user->email)->queue(new BenefitUserCreated($data));
+                event(new NewBenefitUserWithLeaderEvent($benefitUserData->user, $data));
             }
         } else {
-            $benefitUserData->is_approved = BenefitDecision::APPROVED->value;
+            $benefitUserData->is_approved = BenefitDecisionEnum::APPROVED->value;
             $benefitUserData->approved_at = Carbon::now();
             $benefitUserData->approved_by = auth()->user()->id;
             $benefitUserData->save();
-            Mail::to($benefitUserData->user->email)->queue(new MailBenefitDecision($benefitUserData));
+            event(new NewBenefitUserWithoutLeaderEvent($benefitUserData->user, $benefitUserData));
         }
         return $benefitUserData;
     }
@@ -253,10 +252,10 @@ class BenefitUserService
     ) {
         switch ($decision) {
             case 'approve':
-                $benefitUser->is_approved = BenefitDecision::APPROVED->value;
+                $benefitUser->is_approved = BenefitDecisionEnum::APPROVED->value;
                 break;
             case 'reject':
-                $benefitUser->is_approved = BenefitDecision::DENIED->value;
+                $benefitUser->is_approved = BenefitDecisionEnum::DENIED->value;
                 break;
             default:
                 throw new Exception("No se pudo reconocer la acción. Intente más tarde", 1);
@@ -265,7 +264,7 @@ class BenefitUserService
         $benefitUser->approved_at = Carbon::now();
         $benefitUser->approved_by = auth()->user()->id;
         $benefitUser->save();
-        Mail::to($benefitUser->user->email)->queue(new MailBenefitDecision($benefitUser));
+        event(new BenefitDecisionEvent($benefitUser));
         return $benefitUser;
     }
 
