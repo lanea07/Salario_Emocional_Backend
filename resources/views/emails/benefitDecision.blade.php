@@ -155,42 +155,21 @@
                                                                                         </th>
                                                                                     </tr>
                                                                                     <tr>
-                                                                                        <th
-                                                                                            class="small-12 large-6 columns first">
-                                                                                            <table>
-                                                                                                <tr>
-                                                                                                    <th>
-                                                                                                        <p>
-                                                                                                        <p>Queremos
-                                                                                                            informarte
-                                                                                                            que tu
-                                                                                                            beneficio
-                                                                                                            solicitado
-                                                                                                            fue:</p>
-                                                                                                        <strong>{{ $benefitUser->is_approved->value === 1 ? 'Aprobado' : 'Rechazado' }}</strong><br>
-                                                                                                        </p>
-                                                                                                        @if ($benefitUser->is_approved->value === 1)
-                                                                                                            Podrás hacer
-                                                                                                            uso de él.
-                                                                                                        @endif
-                                                                                                        @if ($benefitUser->is_approved->value === 2)
-                                                                                                            Te sugerimos
-                                                                                                            hablar con
-                                                                                                            tu jefe y
-                                                                                                            validar
-                                                                                                            otras
-                                                                                                            posibilidades
-                                                                                                            de
-                                                                                                            redimirlo.
-                                                                                                            Estaremos
-                                                                                                            esperándote
-                                                                                                            nuevamente.
-                                                                                                        @endif
-                                                                                                        </p>
-                                                                                                    </th>
-                                                                                                </tr>
-                                                                                            </table>
-                                                                                        </th>
+
+                                                                                        <p>
+                                                                                        <p>
+                                                                                            Queremos
+                                                                                            informarte
+                                                                                            que tu
+                                                                                            beneficio
+                                                                                            solicitado
+                                                                                            fue:
+                                                                                        </p>
+                                                                                        <strong>{{ $benefitUser->is_approved->value === 1 ? 'Aprobado' : 'Rechazado' }}</strong><br>
+                                                                                        </p>
+                                                                                        {{ $benefitUser->decision_comment }}
+                                                                                        </p>
+
                                                                                     </tr>
 
                                                                                 </tbody>
@@ -217,16 +196,16 @@
                                     </table>
 
                                     @if ($benefitUser->is_approved === 1)
-                                      <table class="row">
-                                        <tbody>
-                                            <tr>
-                                                <th class="small-12 large-12 columns first last">
-                                                    <small>* Adjunto te enviamos también tu cita para que la
-                                                        <b>importes</b> en tu calendario</small><br>
-                                                </th>
-                                            </tr>
-                                        </tbody>
-                                    </table>                                      
+                                        <table class="row">
+                                            <tbody>
+                                                <tr>
+                                                    <th class="small-12 large-12 columns first last">
+                                                        <small>* Adjunto te enviamos también tu cita para que la
+                                                            <b>importes</b> en tu calendario</small><br>
+                                                    </th>
+                                                </tr>
+                                            </tbody>
+                                        </table>
                                     @endif
 
                                     <table class="row footer text-center">
