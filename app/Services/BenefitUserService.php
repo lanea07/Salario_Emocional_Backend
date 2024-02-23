@@ -189,6 +189,9 @@ class BenefitUserService
             },
         )
             ->with(['benefits', 'benefit_detail'])
+            ->whereRelation('user', function ($q) use ($user) {
+                $q->where('leader', '=', $user->id);
+            })
             ->is_pending()
             ->get();
     }
@@ -243,12 +246,14 @@ class BenefitUserService
      * Decides if a benefit is approved or rejected
      * 
      * @param string $decision
+     * @param string $decision_comment
      * @param BenefitUser $benefitUser
      * @return BenefitUser
      */
     public function decideBenefitUser(
         string $decision,
-        BenefitUser $benefitUser
+        string $decision_comment = null,
+        BenefitUser $benefitUser,
     ) {
         switch ($decision) {
             case 'approve':
@@ -263,6 +268,7 @@ class BenefitUserService
         }
         $benefitUser->approved_at = Carbon::now();
         $benefitUser->approved_by = auth()->user()->id;
+        $benefitUser->decision_comment = $decision_comment;
         $benefitUser->save();
         event(new BenefitDecisionEvent($benefitUser));
         return $benefitUser;
