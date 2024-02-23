@@ -26,7 +26,9 @@ class CreateBenefitUserRequest extends FormRequest
             'benefit_detail_id' => 'required',
             'user_id' => 'required',
             'benefit_begin_time' => 'required',
-            'benefit_end_time' => 'required'
+            'benefit_end_time' => 'required',
+            'request_comment' => 'nullable',
+            'decision_comment' => 'nullable',
         ];
     }
 }

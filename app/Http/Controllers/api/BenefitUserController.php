@@ -152,7 +152,7 @@ class BenefitUserController extends Controller
         try {
             $benefitUser = BenefitUser::find($request->data['id']);
             $this->authorize('decideBenefitUser', $benefitUser);
-            return response()->json($this->benefitUserService->decideBenefitUser($request->cmd, $benefitUser), 200);
+            return response()->json($this->benefitUserService->decideBenefitUser($request->cmd, $request->decision_comment, $benefitUser), 200);
         } catch (Throwable $th) {
             return response()->json(['message' => $th->getMessage()], 400);
         }
