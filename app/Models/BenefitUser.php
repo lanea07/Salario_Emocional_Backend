@@ -21,6 +21,8 @@ class BenefitUser extends Model
         'benefit_end_time',
         'is_approved',
         'approved_at',
+        'request_comment',
+        'decision_comment',
     ];
 
     protected $casts = [
