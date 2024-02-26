@@ -45,8 +45,11 @@ class PreferencesController extends Controller
      */
     public function store(Request $request): JsonResponse
     {
-        $user = User::find($request->id);
-        $user->setSettings($request->all());
-        return response()->json(['message' => 'Preferences actualizadas'], 200);
+        try {
+            $user = User::find($request->id);
+            return response()->json($this->preferencesService->savePreferences($user, $request->all()), 200);
+        } catch (\Throwable $th) {
+            return response()->json(['message' => 'Error al guardar las preferencias'], 500);
+        }
     }
 }

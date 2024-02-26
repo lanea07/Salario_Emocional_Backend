@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\Dependency;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class DependencyService
 {
@@ -46,7 +47,10 @@ class DependencyService
      */
     public function saveDependency(array $dependencyData): Dependency
     {
-        return Dependency::create($dependencyData);
+        $created = DB::transaction(function () use ($dependencyData) {
+            return Dependency::create($dependencyData);
+        });
+        return $created;
     }
 
     /**
@@ -70,8 +74,10 @@ class DependencyService
      */
     public function updateDependency(array $dependencyData, Dependency $dependency): Dependency
     {
-        $dependency->update($dependencyData);
-        return $dependency;
+        $updated = DB::transaction(function () use ($dependencyData, $dependency) {
+            return tap($dependency)->update($dependencyData);
+        });
+        return $updated;
     }
 
     /**

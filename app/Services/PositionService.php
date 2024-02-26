@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\Position;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Facades\DB;
 
 class PositionService
 {
@@ -26,7 +27,10 @@ class PositionService
      */
     public function savePosition(array $positionData): Position
     {
-        return Position::create($positionData);
+        $created = DB::transaction(function () use ($positionData) {
+            return Position::create($positionData);
+        });
+        return $created;
     }
 
     /**
@@ -49,8 +53,10 @@ class PositionService
      */
     public function updatePosition(array $positionData, Position $position): Position
     {
-        $position->update($positionData);
-        return $position;
+        $updated = DB::transaction(function () use ($positionData, $position) {
+            return tap($position)->update($positionData);
+        });
+        return $updated;
     }
 
     /**
