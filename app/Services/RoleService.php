@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\Role;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Facades\DB;
 
 class RoleService
 {
@@ -26,7 +27,10 @@ class RoleService
      */
     public function saveRole(array $roleData): Role
     {
-        return Role::create($roleData);
+        $created = DB::transaction(function () use ($roleData) {
+            return Role::create($roleData);
+        });
+        return $created;
     }
 
     /**
@@ -49,8 +53,10 @@ class RoleService
      */
     public function updateRole(array $roleData, Role $role): Role
     {
-        $role->update($roleData);
-        return $role;
+        $updated = DB::transaction(function () use ($roleData, $role) {
+            return tap($role)->update($roleData);
+        });
+        return $updated;
     }
 
     /**

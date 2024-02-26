@@ -7,6 +7,7 @@ use App\Models\Position;
 use App\Models\Role;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 
@@ -31,24 +32,27 @@ class UserService
      */
     public function saveUser(array $userData): User
     {
-        if (!$userData['password']) {
-            $password = Str::password(10, true, true, false, false);
-            $userData['password'] = $password;
-        }
-        $rolesToAsign = array_filter($userData['rolesFormGroup'], function ($role) {
-            return $role === true;
+        $created = DB::transaction(function () use ($userData) {
+            if (!$userData['password']) {
+                $password = Str::password(10, true, true, false, false);
+                $userData['password'] = $password;
+            }
+            $rolesToAsign = array_filter($userData['rolesFormGroup'], function ($role) {
+                return $role === true;
+            });
+            $rolesToAsign = array_keys($rolesToAsign);
+            $rolesToAsign = Role::whereIn('name', $rolesToAsign)->get();
+            $userData['requirePassChange'] = true;
+            $user = User::create($userData);
+            $user->roles()->sync($rolesToAsign);
+            $data = [
+                $user,
+                $password
+            ];
+            Mail::to($user->email)->queue(new NewUserCreated($data));
+            return $user;
         });
-        $rolesToAsign = array_keys($rolesToAsign);
-        $rolesToAsign = Role::whereIn('name', $rolesToAsign)->get();
-        $userData['requirePassChange'] = true;
-        $user = User::create($userData);
-        $user->roles()->sync($rolesToAsign);
-        $data = [
-            $user,
-            $password
-        ];
-        Mail::to($user->email)->queue(new NewUserCreated($data));
-        return $user;
+        return $created;
     }
 
     /**
@@ -72,20 +76,23 @@ class UserService
      */
     public function updateUser(array $userData, User $user): User
     {
-        if (!$userData['password']) {
-            $userData['password'] = $user->password;
-        }
-        $rolesToAsign = array_filter($userData['rolesFormGroup'], function ($role) {
-            return $role === true;
-        });
-        $rolesToAsign = array_keys($rolesToAsign);
-        $rolesToAsign = Role::whereIn('name', $rolesToAsign)->get();
+        $updated = DB::transaction(function () use ($userData, $user) {
+            if (!$userData['password']) {
+                $userData['password'] = $user->password;
+            }
+            $rolesToAsign = array_filter($userData['rolesFormGroup'], function ($role) {
+                return $role === true;
+            });
+            $rolesToAsign = array_keys($rolesToAsign);
+            $rolesToAsign = Role::whereIn('name', $rolesToAsign)->get();
 
-        $positionsToAsign = Position::where('id', $userData['position_id'])->first();
-        $user->update($userData);
-        $user->roles()->sync($rolesToAsign);
-        $user->update(['position_id' => $positionsToAsign->id]);
-        return $user;
+            $positionsToAsign = Position::where('id', $userData['position_id'])->first();
+            $user->update($userData);
+            $user->roles()->sync($rolesToAsign);
+            $user->update(['position_id' => $positionsToAsign->id]);
+            return $user;
+        });
+        return $updated;
     }
 
     /**

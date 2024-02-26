@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\Benefit;
 use App\Models\BenefitDetail;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 
 class BenefitService
@@ -29,25 +30,28 @@ class BenefitService
      */
     public function saveBenefit(array $benefitData): Benefit
     {
-        // Convert BenefitDetailFormGroup to array
-        $benefitData['benefitDetailFormGroup'] = json_decode($benefitData['benefitDetailFormGroup'], true);
-        $benefitsToAsign = array_filter($benefitData['benefitDetailFormGroup'], function ($benefit) {
-            return $benefit === true;
-        });
-        $benefitsToAsign = array_keys($benefitsToAsign);
+        $created = DB::transaction(function () use ($benefitData) {
+            // Convert BenefitDetailFormGroup to array
+            $benefitData['benefitDetailFormGroup'] = json_decode($benefitData['benefitDetailFormGroup'], true);
+            $benefitsToAsign = array_filter($benefitData['benefitDetailFormGroup'], function ($benefit) {
+                return $benefit === true;
+            });
+            $benefitsToAsign = array_keys($benefitsToAsign);
 
-        // Save request File
-        if (request()->file('filePoliticas')) {
-            $path = request()->file('filePoliticas')->store('politics', 'google');
-            $benefitData['politicas_path'] = $path;
-        }
-        $benefitsToAsign = BenefitDetail::whereIn('id', $benefitsToAsign)->get();
-        $benefit = Benefit::create([
-            'name' => $benefitData['name'],
-            'politicas_path' => isset($benefitData['politicas_path']) ?  $benefitData['politicas_path'] : null,
-        ]);
-        $benefit->benefit_detail()->attach($benefitsToAsign);
-        return $benefit;
+            // Save request File
+            if (request()->file('filePoliticas')) {
+                $path = request()->file('filePoliticas')->store('politics', 'google');
+                $benefitData['politicas_path'] = $path;
+            }
+            $benefitsToAsign = BenefitDetail::whereIn('id', $benefitsToAsign)->get();
+            $benefit = Benefit::create([
+                'name' => $benefitData['name'],
+                'politicas_path' => isset($benefitData['politicas_path']) ?  $benefitData['politicas_path'] : null,
+            ]);
+            $benefit->benefit_detail()->attach($benefitsToAsign);
+            return $benefit;
+        });
+        return $created;
     }
 
     /**
@@ -70,25 +74,28 @@ class BenefitService
      */
     public function updateBenefit(array $benefitData, Benefit $benefit): Benefit
     {
-        // Convert BenefitDetailFormGroup to array
-        $benefitData['benefitDetailFormGroup'] = json_decode($benefitData['benefitDetailFormGroup'], true);
-        $benefitsToAsign = array_filter($benefitData['benefitDetailFormGroup'], function ($benefit) {
-            return $benefit === true;
-        });
-        $benefitsToAsign = array_keys($benefitsToAsign);
-        $benefitsToAsign = BenefitDetail::whereIn('id', $benefitsToAsign)->get();
+        $updated = DB::transaction(function () use ($benefitData, $benefit) {
+            // Convert BenefitDetailFormGroup to array
+            $benefitData['benefitDetailFormGroup'] = json_decode($benefitData['benefitDetailFormGroup'], true);
+            $benefitsToAsign = array_filter($benefitData['benefitDetailFormGroup'], function ($benefit) {
+                return $benefit === true;
+            });
+            $benefitsToAsign = array_keys($benefitsToAsign);
+            $benefitsToAsign = BenefitDetail::whereIn('id', $benefitsToAsign)->get();
 
-        // Save request File
-        if (request()->file('filePoliticas')) {
-            if ($benefit->politicas_path) {
-                $deleted = Storage::disk('google')->delete($benefit->getAttributes()['politicas_path']);
+            // Save request File
+            if (request()->file('filePoliticas')) {
+                if ($benefit->politicas_path) {
+                    $deleted = Storage::disk('google')->delete($benefit->getAttributes()['politicas_path']);
+                }
+                $path = request()->file('filePoliticas')->store('politics', 'google');
+                $benefitData['politicas_path'] = $path;
             }
-            $path = request()->file('filePoliticas')->store('politics', 'google');
-            $benefitData['politicas_path'] = $path;
-        }
-        $benefit->update($benefitData);
-        $benefit->benefit_detail()->sync($benefitsToAsign);
-        return $benefit;
+            $benefit->update($benefitData);
+            $benefit->benefit_detail()->sync($benefitsToAsign);
+            return $benefit;
+        });
+        return $updated;
     }
 
     /**

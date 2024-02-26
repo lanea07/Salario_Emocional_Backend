@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\BenefitDetail;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Facades\DB;
 
 class BenefitDetailService
 {
@@ -26,7 +27,10 @@ class BenefitDetailService
      */
     public function saveBenefitDetail(array $benefitDetailData): BenefitDetail
     {
-        return BenefitDetail::create($benefitDetailData);
+        $created = DB::transaction(function () use ($benefitDetailData) {
+            return BenefitDetail::create($benefitDetailData);
+        });
+        return $created;
     }
 
     /**
@@ -49,8 +53,10 @@ class BenefitDetailService
      */
     public function updateBenefitDetail(array $benefitDetailData, BenefitDetail $benefitdetail): BenefitDetail
     {
-        $benefitdetail->update($benefitDetailData);
-        return $benefitdetail;
+        $updated = DB::transaction(function () use ($benefitDetailData, $benefitdetail) {
+            return tap($benefitdetail)->update($benefitDetailData);
+        });
+        return $updated;
     }
 
     /**
