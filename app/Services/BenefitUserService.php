@@ -10,6 +10,7 @@ use App\Mail\BenefitUserExcelExport;
 use App\Models\Benefit;
 use App\Models\BenefitUser;
 use App\Models\User;
+use App\Models\ViernesCorto;
 use Carbon\Carbon;
 use DateTime;
 use DateTimeZone;
@@ -64,10 +65,7 @@ class BenefitUserService
             $miViernes = new Collection();
 
             // Get the class name of the requested benefit
-            $className = str_replace([' ', 'ñ', 'Ñ'], ['', 'n', 'N'], ucwords($requestedBenefit->name));
-            $className = '\\App\\Models\\' . remove_accents($className);
-
-            $requestedBenefit = (new $className)->first();
+            $requestedBenefit = $this->getSpecificBenefitModel($requestedBenefit->name);
             $requestedBenefit->canCreate($benefitUserData);
             $benefitUserData = BenefitUser::create($benefitUserData);
             $benefitUserData = $benefitUserData->load(['user', 'benefits', 'benefit_detail', 'user.leader_user']);
@@ -137,9 +135,7 @@ class BenefitUserService
             $requestedBenefit = Benefit::find($benefitUserData['benefit_id']);
 
             // Get the class name of the requested benefit
-            $className = str_replace([' ', 'ñ', 'Ñ'], ['', 'n', 'N'], ucwords($requestedBenefit->name));
-            $className = '\\App\\Models\\' . remove_accents($className);
-            $requestedBenefit = (new $className)->first();
+            $requestedBenefit = $this->getSpecificBenefitModel($requestedBenefit->name);
             $requestedBenefit->canUpdate($benefitUserData, $benefitUser);
             $benefitUser->update($benefitUserData);
             return $benefitUser;
@@ -280,6 +276,34 @@ class BenefitUserService
             $benefitUser->approved_at = Carbon::now();
             $benefitUser->approved_by = auth()->user()->id;
             $benefitUser->decision_comment = $decision_comment;
+
+            if ($this->getSpecificBenefitModel($benefitUser->benefits->name) instanceof ViernesCorto && $decision === 'approve') {
+                $month = date("M", strtotime($benefitUser['benefit_begin_time']));
+                $year = date("Y", strtotime($benefitUser['benefit_begin_time']));
+                $firstFridayMonth = new Carbon("first friday of {$month} {$year}");
+                $firstFridayMonth = $firstFridayMonth->addHours(13)->addMinute(30);
+                $benefitUser->benefit_begin_time = $firstFridayMonth->format('Y-m-d H:i:s');
+                $benefitUser->benefit_end_time = $firstFridayMonth->addHours(3)->addMinutes(30)->format('Y-m-d H:i:s');
+
+                $secondBenefit = new BenefitUser();
+                $secondBenefit->forceFill($benefitUser->only([
+                    'benefit_id',
+                    'benefit_detail_id',
+                    'user_id',
+                    'is_approved',
+                    'approved_at',
+                    'request_comment',
+                    'decision_comment',
+                ]));
+                $secondBenefit->created_at = $benefitUser->created_at;
+                $secondBenefit->approved_at = Carbon::now();
+                $lastFridayMonth = new Carbon("last friday of {$month} {$year}");
+                $lastFridayMonth = $lastFridayMonth->addHours(13)->addMinute(30);
+                $secondBenefit->benefit_begin_time = $lastFridayMonth->format('Y-m-d H:i:s');
+                $secondBenefit->benefit_end_time = $lastFridayMonth->addHours(3)->addMinutes(30)->format('Y-m-d H:i:s');
+                $secondBenefit->save();
+            }   
+            
             $benefitUser->save();
             event(new BenefitDecisionEvent($benefitUser));
             return $benefitUser;
@@ -341,5 +365,22 @@ class BenefitUserService
         )
             ->orderBy('benefit_begin_time')
             ->get();
+    }
+
+    /**
+     * Returns the class of a specific benefit
+     * 
+     * @param string $benefitName
+     * @return mixed
+     */
+    public function getSpecificBenefitModel(string $benefitName): mixed
+    {
+        try {
+            $className = str_replace([' ', 'ñ', 'Ñ'], ['', 'n', 'N'], ucwords($benefitName));
+            $className = '\\App\\Models\\' . remove_accents($className);
+            return (new $className)->first();
+        } catch (\Throwable $th) {
+            throw new Exception("No se pudo encontrar la clase del beneficio");
+        }
     }
 }
