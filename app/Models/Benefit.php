@@ -6,10 +6,14 @@ use App\Casts\GooglePath;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use LaravelPropertyBag\Settings\HasSettings;
 use Throwable;
 
 class Benefit extends Model
 {
+
+    use HasSettings;
+
     public $table = 'benefits';
 
     protected $fillable = [

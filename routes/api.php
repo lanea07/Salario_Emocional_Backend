@@ -45,6 +45,9 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/benefit', 'store')->name('benefit.store');
         Route::put('/benefit/{benefit}', 'update')->name('benefit.update');
         Route::patch('/benefit/{benefit}', 'update')->name('benefit.update');
+        Route::get('/benefit-settings', 'indexPreferences')->name('benefit-settings.index');
+        Route::get('/benefit-settings/{benefit}', 'showPreferences')->name('benefit-settings.show');
+        Route::put('/benefit-preferences/{benefit}', 'storePreferences')->name('preferences.store');
     });
 
     Route::controller(BenefitDetailController::class)->group(function () {
@@ -127,8 +130,8 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::controller(PreferencesController::class)->group(function () {
         Route::get('/user-preferences', 'index')->name('preferences.index');
-        Route::get('/user-preferences/{id}', 'show')->name('preferences.show');
-        Route::put('/user-preferences/{id}', 'store')->name('preferences.store');
+        Route::get('/user-preferences/{user}', 'show')->name('preferences.show');
+        Route::put('/user-preferences/{user}', 'store')->name('preferences.store');
     });
 
 });

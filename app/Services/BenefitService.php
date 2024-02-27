@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\Benefit;
 use App\Models\BenefitDetail;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Collection as SupportCollection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 
@@ -17,7 +18,7 @@ class BenefitService
      */
     public function getAllBenefits(): Collection
     {
-        return Benefit::with('benefit_detail')
+        return Benefit::with(['benefit_detail'])
             ->orderBy('name', 'asc')
             ->get();
     }
@@ -121,5 +122,42 @@ class BenefitService
             ->is_valid()
             ->orderBy('name', 'asc')
             ->get();
+    }
+
+    /**
+     * Returns all available preferences for a default Benefit model
+     * 
+     * @return Illuminate\Support\Collection
+     */
+    public function getAllAvailablePreferences(): SupportCollection
+    {
+        return collect([(new Benefit)->allowedSetting()]);;
+    }
+
+    /**
+     * Returns all preferences for the authenticated Benefit
+     * 
+     * @param Benefit $benefit
+     * @return Illuminate\Support\Collection
+     */
+    public function benefitPreferences(Benefit $benefit): SupportCollection
+    {
+        return collect([$benefit->allSettings()]);
+    }
+
+    /**
+     * Store a set of settings for a benefit
+     *
+     * @param  Benefit  $benefit
+     * @param  array  $preferences
+     * @return void
+     */
+    public function savePreferences(Benefit $benefit, array $preferences): array
+    {
+        $updated = DB::transaction(function () use ($benefit, $preferences) {
+            $benefit->setSettings($preferences);
+            return ['message' => 'Preferencias actualizadas'];
+        });
+        return $updated;
     }
 }

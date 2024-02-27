@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\CreateBenefitRequest;
 use App\Models\Benefit;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Throwable;
 
 class BenefitController extends Controller
@@ -96,5 +97,43 @@ class BenefitController extends Controller
     public function indexAvailable(): JsonResponse
     {
         return response()->json($this->benefitService->getAllEnabledBenefits(), 200);
+    }
+
+    /**
+     * Returns all available preferences for User model
+     * 
+     * @return JsonResponse
+     */
+    public function indexPreferences(): JsonResponse
+    {
+        return response()->json($this->benefitService->getAllAvailablePreferences(), 200);
+    }
+
+    /**
+     * Returns all preferences for the requested benefit
+     * 
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function showPreferences(Benefit $benefit): JsonResponse
+    {
+        // $user = Benefit::find($request->id);
+        return response()->json($this->benefitService->benefitPreferences($benefit), 200);
+    }
+
+    /**
+     * Store a set of settings for a benefit
+     *
+     * @param  Request  $request
+     * @return JsonResponse
+     */
+    public function storePreferences(Benefit $benefit): JsonResponse
+    {
+        try {
+            $request = request();
+            return response()->json($this->benefitService->savePreferences($benefit, $request->all()), 200);
+        } catch (\Throwable $th) {
+            return response()->json(['message' => 'Error al guardar las preferencias'], 500);
+        }
     }
 }
