@@ -81,7 +81,7 @@ class BenefitUserService
             $data = [$benefitUserData, $bancoHoras, $miViernes];
             if ($benefitUserData->user->leader_user !== null) {
                 $leader = $benefitUserData->user->leader_user;
-                if ($leader->settings()->get('Auto Aprobar Beneficios de mis Colaboradores') === 'Sí') {
+                if ($leader->settings()->get('Auto Aprobar Beneficios de mis Colaboradores') === 'Sí' || $benefitUserData->benefits->name === 'Viernes Corto') {
                     $this->decideBenefitUser('approve', "Aprobado automáticamente", $benefitUserData);
                 } else {
                     event(new NewBenefitUserWithLeaderEvent($benefitUserData->user, $data));
