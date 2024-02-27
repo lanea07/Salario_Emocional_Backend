@@ -47,7 +47,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::patch('/benefit/{benefit}', 'update')->name('benefit.update');
         Route::get('/benefit-settings', 'indexPreferences')->name('benefit-settings.index');
         Route::get('/benefit-settings/{benefit}', 'showPreferences')->name('benefit-settings.show');
-        Route::put('/benefit-preferences/{benefit}', 'storePreferences')->name('preferences.store');
+        Route::put('/benefit-settings/{benefit}', 'storePreferences')->name('preferences.store');
     });
 
     Route::controller(BenefitDetailController::class)->group(function () {

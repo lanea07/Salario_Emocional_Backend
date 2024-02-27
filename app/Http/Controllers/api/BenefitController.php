@@ -117,7 +117,6 @@ class BenefitController extends Controller
      */
     public function showPreferences(Benefit $benefit): JsonResponse
     {
-        // $user = Benefit::find($request->id);
         return response()->json($this->benefitService->benefitPreferences($benefit), 200);
     }
 
@@ -133,7 +132,7 @@ class BenefitController extends Controller
             $request = request();
             return response()->json($this->benefitService->savePreferences($benefit, $request->all()), 200);
         } catch (\Throwable $th) {
-            return response()->json(['message' => 'Error al guardar las preferencias'], 500);
+            return response()->json(['message' => $th->getMessage()], 500);
         }
     }
 }
