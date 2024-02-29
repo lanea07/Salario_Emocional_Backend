@@ -4,6 +4,12 @@
     "description": "The Laravel Framework.",
     "keywords": ["framework", "laravel"],
     "license": "MIT",
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/lanea07/laravel-property-bag"
+        }
+    ],
     "require": {
         "php": "^8.1",
         "doctrine/dbal": "^3.7",
@@ -17,7 +23,7 @@
         "psr/simple-cache": "1.0",
         "spatie/icalendar-generator": "^2.5",
         "staudenmeir/laravel-adjacency-list": "^1.0",
-        "zachleigh/laravel-property-bag": "^1.4"
+        "zachleigh/laravel-property-bag": "dev-master"
     },
     "require-dev": {
         "fakerphp/faker": "^1.9.1",

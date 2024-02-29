@@ -31,9 +31,8 @@ class PreferencesController extends Controller
      * @param Request $request
      * @return JsonResponse
      */
-    public function show(Request $request): JsonResponse
+    public function show(User $user): JsonResponse
     {
-        $user = User::find($request->id);
         return response()->json($this->preferencesService->userPreferences($user), 200);
     }
 
@@ -43,10 +42,10 @@ class PreferencesController extends Controller
      * @param  Request  $request
      * @return JsonResponse
      */
-    public function store(Request $request): JsonResponse
+    public function store(User $user): JsonResponse
     {
         try {
-            $user = User::find($request->id);
+            $request = request();
             return response()->json($this->preferencesService->savePreferences($user, $request->all()), 200);
         } catch (\Throwable $th) {
             return response()->json(['message' => 'Error al guardar las preferencias'], 500);
