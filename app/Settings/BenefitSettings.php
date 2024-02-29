@@ -15,10 +15,30 @@ class BenefitSettings extends ResourceConfig
      */
     public function registeredSettings()
     {
-        $allBenefits = Benefit::pluck('name')->all();
-        array_push($allBenefits, '');
+        $allBenefits = [];
+        array_push($allBenefits, 'Ninguno');
+        $allBenefits = array_merge($allBenefits, Benefit::pluck('name')->all());
 
-        return collect([
+        /**
+         * The settings that are allowed to be set for this resource.
+         * If new settings are added, make sure to also include settings validation in Benefit model canCreate and canUpdate methods.
+         */
+        return collect(['allowed_repeat_frecuency' => [
+                'allowed' => ['no aplica', 'mensual', 'trimestral', 'cuatrimestral', 'semestral', 'anual'],
+                'default' => 'no aplica'
+            ],
+            'allowed_repeat_interval' => [
+                'allowed' => [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31],
+                'default' => 0
+            ],
+            'allowed_to_update_approved_benefits' => [
+                'allowed' => [true, false],
+                'default' => false
+            ],
+            'cant_combine_with' => [
+                'allowed' => $allBenefits,
+                'default' => 'ninguno'
+            ],
             'is_auto_approve_new' => [
                 'allowed' => [true, false],
                 'default' => false
@@ -27,17 +47,9 @@ class BenefitSettings extends ResourceConfig
                 'allowed' => [true, false],
                 'default' => false
             ],
-            'allowed_repeat_frecuency' => [
-                'allowed' => ['Diario', 'Semanal', 'Mensual', 'Trimestral', 'Cuatrimestral', 'Semestral', 'Anual'],
-                'default' => 'Diario'
-            ],
-            'allowed_repeat_interval' => [
-                'allowed' => [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31],
-                'default' => 1
-            ],
-            'cant_combine_with' => [
-                'allowed' => $allBenefits,
-                'default' => ''
+            'max_allowed_hours' => [
+                'allowed' => [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24],
+                'default' => 0
             ],
             'uses_barchart' => [
                 'allowed' => [true, false],

@@ -2,15 +2,16 @@
 
 namespace App\Services;
 
+use App\Enums\BenefitActionIsEnum;
 use App\Enums\BenefitDecisionEnum;
 use App\Events\BenefitDecisionEvent;
 use App\Events\NewBenefitUserWithLeaderEvent;
 use App\Events\NewBenefitUserWithoutLeaderEvent;
 use App\Mail\BenefitUserExcelExport;
 use App\Models\Benefit;
+use App\Models\BenefitDetail;
 use App\Models\BenefitUser;
 use App\Models\User;
-use App\Models\ViernesCorto;
 use Carbon\Carbon;
 use DateTime;
 use DateTimeZone;
@@ -35,20 +36,20 @@ class BenefitUserService
      */
     public function getAllBenefitUser(int $userId, int $year): Collection
     {
-        return User::with(
-            [
-                'benefit_user' => function ($q) use ($year) {
-                    $q->is_approved();
-                    $q->whereYear('benefit_begin_time', $year);
-                    $q->orderBy('benefit_begin_time');
-                },
-                'benefit_user.benefits',
-                'benefit_user.benefit_detail',
-                'benefit_user.user.dependency'
-            ]
-        )
-            ->where('id', $userId)
-            ->get();
+        // TODO: Setting uses_barchart
+        // TODO: Setting uses_doughnutchart
+        return User::with([
+            'benefit_user' => function ($q) use ($year) {
+                $q->is_approved();
+                $q->whereYear('benefit_begin_time', $year);
+                $q->orderBy('benefit_begin_time');
+            },
+            'benefit_user.benefits',
+            'benefit_user.benefit_detail',
+            'benefit_user.user.dependency'
+        ])
+        ->where('id', $userId)
+        ->get();
     }
 
     /**
@@ -64,9 +65,7 @@ class BenefitUserService
             $bancoHoras = new Collection();
             $miViernes = new Collection();
 
-            // Get the class name of the requested benefit
-            $requestedBenefit = $this->getSpecificBenefitModel($requestedBenefit->name);
-            $requestedBenefit->canCreate($benefitUserData);
+            $this->validateBenefitRules($benefitUserData, $requestedBenefit, BenefitActionIsEnum::CREATE);
             $benefitUserData = BenefitUser::create($benefitUserData);
             $benefitUserData = $benefitUserData->load(['user', 'benefits', 'benefit_detail', 'user.leader_user']);
 
@@ -79,9 +78,13 @@ class BenefitUserService
             }
 
             $data = [$benefitUserData, $bancoHoras, $miViernes];
+            if ($benefitUserData->benefits->settings()->get('is_auto_approve_new')) {
+                $this->decideBenefitUser('approve', "Aprobado automáticamente", $benefitUserData);
+                return $benefitUserData;
+            }
             if ($benefitUserData->user->leader_user !== null) {
                 $leader = $benefitUserData->user->leader_user;
-                if ($leader->settings()->get('Auto Aprobar Beneficios de mis Colaboradores') === 'Sí' || $benefitUserData->benefits->name === 'Viernes Corto') {
+                if ($leader->settings()->get('Auto Aprobar Beneficios de mis Colaboradores') === 'Sí') {
                     $this->decideBenefitUser('approve', "Aprobado automáticamente", $benefitUserData);
                 } else {
                     event(new NewBenefitUserWithLeaderEvent($benefitUserData->user, $data));
@@ -134,9 +137,7 @@ class BenefitUserService
         $updated = DB::transaction(function () use ($benefitUserData, $benefitUser) {
             $requestedBenefit = Benefit::find($benefitUserData['benefit_id']);
 
-            // Get the class name of the requested benefit
-            $requestedBenefit = $this->getSpecificBenefitModel($requestedBenefit->name);
-            $requestedBenefit->canUpdate($benefitUserData, $benefitUser);
+            $this->validateBenefitRules($benefitUserData, $requestedBenefit, BenefitActionIsEnum::UPDATE);
             $benefitUser->update($benefitUserData);
             return $benefitUser;
         });
@@ -277,7 +278,7 @@ class BenefitUserService
             $benefitUser->approved_by = auth()->user()->id;
             $benefitUser->decision_comment = $decision_comment;
 
-            if ($this->getSpecificBenefitModel($benefitUser->benefits->name) instanceof ViernesCorto && $decision === 'approve') {
+            if ($benefitUser->benefits->name === "Viernes Corto" && $decision === 'approve') {
                 $month = date("M", strtotime($benefitUser['benefit_begin_time']));
                 $year = date("Y", strtotime($benefitUser['benefit_begin_time']));
                 $firstFridayMonth = new Carbon("first friday of {$month} {$year}");
@@ -302,8 +303,8 @@ class BenefitUserService
                 $secondBenefit->benefit_begin_time = $lastFridayMonth->format('Y-m-d H:i:s');
                 $secondBenefit->benefit_end_time = $lastFridayMonth->addHours(3)->addMinutes(30)->format('Y-m-d H:i:s');
                 $secondBenefit->save();
-            }   
-            
+            }
+
             $benefitUser->save();
             event(new BenefitDecisionEvent($benefitUser));
             return $benefitUser;
@@ -368,19 +369,142 @@ class BenefitUserService
     }
 
     /**
-     * Returns the class of a specific benefit
+     * Validates Benefit rules settings and throws an exception if the benefit can't be created or updated
      * 
-     * @param string $benefitName
-     * @return mixed
+     * @param array $requestedBenefitData
+     * @param Benefit|null $benefit
+     * @param BenefitActionIs $action
+     * @return bool
+     * @throws Exception
      */
-    public function getSpecificBenefitModel(string $benefitName): mixed
+    public function validateBenefitRules(array $requestedBenefitData, Benefit $benefit, BenefitActionIsEnum $action)
     {
-        try {
-            $className = str_replace([' ', 'ñ', 'Ñ'], ['', 'n', 'N'], ucwords($benefitName));
-            $className = '\\App\\Models\\' . remove_accents($className);
-            return (new $className)->first();
-        } catch (\Throwable $th) {
-            throw new Exception("No se pudo encontrar la clase del beneficio");
+        // Benefit settings that must be evaluated according to benefits rules
+        $allowedRepeatFrecuency = $benefit->settings()->get('allowed_repeat_frecuency');
+        $allowedRepeatInterval = $benefit->settings()->get('allowed_repeat_interval');
+        $allowedUpdateApprovedBenefits = $benefit->settings()->get('allowed_to_update_approved_benefits');
+        $cantCombineWith = $benefit->settings()->get('cant_combine_with');
+        $maxAllowedHours = $benefit->settings()->get('max_allowed_hours');
+        $month = Carbon::create($requestedBenefitData['benefit_begin_time'])->month;
+        $year = Carbon::create($requestedBenefitData['benefit_begin_time'])->year;
+        $initialDate = null;
+        $finalDate = null;
+
+        // Setting cant_combine_with
+        if ($cantCombineWith !== $benefit->settings()->getDefault('cant_combine_with') || (is_array($cantCombineWith) && !array_search('no aplica', $cantCombineWith, true))) {
+            $forbiddenBenefits = BenefitUser::with(['benefits'])
+            ->where(function ($q) use ($month, $year, $cantCombineWith, $requestedBenefitData) {
+                $q->where('user_id', $requestedBenefitData['user_id']);
+                $q->whereYear('benefit_begin_time', $year);
+                $q->whereMonth('benefit_begin_time', $month);
+                $q->whereRelation('benefits', function ($q) use ($cantCombineWith) {
+                    $q->whereIn('name', $cantCombineWith);
+                })->get();
+                $q->is_approved();
+            })->get();
+            $imploded = implode(', ', $cantCombineWith);
+            if (!$forbiddenBenefits->isEmpty()) {
+                throw new Exception("El beneficio \"$benefit->name\" que está intentando solicitar no se puede combinar con el/los beneficios \"$imploded\". Ya has solicitado uno de estos beneficios en este periodo.");
+            }
         }
+
+        // Setting allowed_repeat_frecuency
+        switch ($allowedRepeatFrecuency) {
+            case 'mensual':
+                $initialDate = Carbon::create($year, $month, '01', '00', '00', '00')->startOfMonth()->startOfDay()->format('Y-m-d H:i:s');
+                $finalDate =  Carbon::create($year, $month, '01', '00', '00', '00')->endOfMonth()->endOfDay()->format('Y-m-d H:i:s');
+                break;
+            case 'trimestral':
+                switch (true) {
+                    case ($month >= 1 && $month <= 3):
+                        $initialDate = Carbon::create($year, '01', '01', '00', '00', '00')->format('Y-m-d H:i:s');
+                        $finalDate =  Carbon::create($year, '03', '31', '23', '59', '59')->format('Y-m-d H:i:s');
+                        break;
+                    case ($month >= 4 && $month <= 6):
+                        $initialDate = Carbon::create($year, '04', '01', '00', '00', '00')->format('Y-m-d H:i:s');
+                        $finalDate =  Carbon::create($year, '06', '30', '23', '59', '59')->format('Y-m-d H:i:s');
+                        break;
+                    case ($month >= 7 && $month <= 9):
+                        $initialDate = Carbon::create($year, '07', '01', '00', '00', '00')->format('Y-m-d H:i:s');
+                        $finalDate =  Carbon::create($year, '09', '30', '23', '59', '59')->format('Y-m-d H:i:s');
+                        break;
+                    case ($month >= 10 && $month <= 12):
+                        $initialDate = Carbon::create($year, '10', '01', '00', '00', '00')->format('Y-m-d H:i:s');
+                        $finalDate =  Carbon::create($year, '12', '31', '23', '59', '59')->format('Y-m-d H:i:s');
+                        break;
+                }
+                break;
+            case 'cuatrimestral':
+                switch (true) {
+                    case ($month >= 1 && $month <= 4):
+                        $initialDate = Carbon::create($year, '01', '01', '00', '00', '00')->format('Y-m-d H:i:s');
+                        $finalDate =  Carbon::create($year, '04', '30', '23', '59', '59')->format('Y-m-d H:i:s');
+                        break;
+                    case ($month >= 5 && $month <= 8):
+                        $initialDate = Carbon::create($year, '05', '01', '00', '00', '00')->format('Y-m-d H:i:s');
+                        $finalDate =  Carbon::create($year, '08', '31', '23', '59', '59')->format('Y-m-d H:i:s');
+                        break;
+                    case ($month >= 9 && $month <= 12):
+                        $initialDate = Carbon::create($year, '09', '01', '00', '00', '00')->format('Y-m-d H:i:s');
+                        $finalDate =  Carbon::create($year, '12', '31', '23', '59', '59')->format('Y-m-d H:i:s');
+                        break;
+                }
+                break;
+            case 'semestral':
+                switch (true) {
+                    case ($month >= 1 && $month <= 6):
+                        $initialDate = Carbon::create($year, '01', '01', '00', '00', '00')->format('Y-m-d H:i:s');
+                        $finalDate =  Carbon::create($year, '06', '30', '23', '59', '59')->format('Y-m-d H:i:s');
+                        break;
+                    case ($month >= 7 && $month <= 12):
+                        $initialDate = Carbon::create($year, '07', '01', '00', '00', '00')->format('Y-m-d H:i:s');
+                        $finalDate =  Carbon::create($year, '12', '31', '23', '59', '59')->format('Y-m-d H:i:s');
+                        break;
+                }
+                break;
+            case 'anual':
+                $initialDate = Carbon::create($year, '01', '01', '00', '00', '00')->format('Y-m-d H:i:s');
+                $finalDate =  Carbon::create($year, '12', '31', '23', '59', '59')->format('Y-m-d H:i:s');
+                break;
+            default:
+                return true;
+                break;
+        }
+
+        $claimed = BenefitUser::with(['benefit_detail'])
+        ->where(function ($q) use ($requestedBenefitData, $initialDate, $finalDate, $allowedRepeatFrecuency, $month, $year) {
+            $q->where('benefit_id', '=', $requestedBenefitData['benefit_id']);
+            $q->where('user_id', '=', $requestedBenefitData['user_id']);
+            $q->whereBetween('benefit_begin_time', [$initialDate, $finalDate]);
+            $q->is_approved();
+        })
+            ->withSum('benefit_detail', 'time_hours')
+            ->get();
+
+        // Setting max_allowed_hours
+        if ($maxAllowedHours) {
+            $requestedTime = BenefitDetail::find($requestedBenefitData['benefit_detail_id'])->time_hours;
+            $total_time_hours = $claimed->sum('benefit_detail.time_hours');
+            if ($total_time_hours >= $maxAllowedHours) {
+                throw new Exception("El beneficio que estás intentando registrar ya tiene utilizado todas las horas disponibles.");
+            }
+            if ($total_time_hours + $requestedTime > $maxAllowedHours) {
+                throw new Exception("El beneficio que estás intentando registrar supera las horas disponibles.");
+            }
+        }
+
+        // Setting allowed_repeat_interval
+        if ($allowedRepeatInterval) {
+            if ($action === BenefitActionIsEnum::UPDATE) {
+                if (!$claimed->isEmpty() && $claimed->count() >= $allowedRepeatInterval && !$allowedUpdateApprovedBenefits) {
+                    throw new Exception("El beneficio \"$benefit->name\" que está intentando solicitar se puede redimir máximo $allowedRepeatFrecuency $allowedRepeatInterval veces. Ya has solicitado este beneficio {$claimed->count()} veces en este periodo.");
+                }
+            } else {
+                if (!$claimed->isEmpty() && $claimed->count() >= $allowedRepeatInterval) {
+                    throw new Exception("El beneficio \"$benefit->name\" que está intentando solicitar se puede redimir máximo $allowedRepeatFrecuency $allowedRepeatInterval veces. Ya has solicitado este beneficio {$claimed->count()} veces en este periodo.");
+                }
+            }
+        }
+        return true;
     }
 }

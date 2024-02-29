@@ -63,7 +63,11 @@ class BenefitService
      */
     public function getBenefitByID(Benefit $benefit): Collection
     {
-        return $benefit->with(['benefit_detail'])->where('id', $benefit->id)->get();
+        return $benefit->with([
+            'benefit_detail' => function ($query) {
+                $query->oldest('name');
+            }
+        ])->where('id', $benefit->id)->get();
     }
 
     /**
