@@ -298,6 +298,7 @@ class BenefitUserService
                 ]));
                 $secondBenefit->created_at = $benefitUser->created_at;
                 $secondBenefit->approved_at = Carbon::now();
+                $secondBenefit->approved_by = auth()->user()->id;
                 $lastFridayMonth = new Carbon("last friday of {$month} {$year}");
                 $lastFridayMonth = $lastFridayMonth->addHours(13)->addMinute(30);
                 $secondBenefit->benefit_begin_time = $lastFridayMonth->format('Y-m-d H:i:s');
