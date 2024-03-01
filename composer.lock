@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "fabe8bceae6799b1a5e0cf9dc9477852",
+    "content-hash": "280a585e00f8b9fa75403c3daf1640f3",
     "packages": [
         {
             "name": "brick/math",
@@ -1767,16 +1767,16 @@
         },
         {
             "name": "lanea07/laravel-property-bag",
-            "version": "dev-lanea07-updates",
+            "version": "v2.0.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/lanea07/laravel-property-bag.git",
-                "reference": "f99819bff9a1dbc632d153c81c627e3e6ddcfcb8"
+                "reference": "245ad5b259f9aa80ebf85d0020af8fdfe79933ba"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/lanea07/laravel-property-bag/zipball/f99819bff9a1dbc632d153c81c627e3e6ddcfcb8",
-                "reference": "f99819bff9a1dbc632d153c81c627e3e6ddcfcb8",
+                "url": "https://api.github.com/repos/lanea07/laravel-property-bag/zipball/245ad5b259f9aa80ebf85d0020af8fdfe79933ba",
+                "reference": "245ad5b259f9aa80ebf85d0020af8fdfe79933ba",
                 "shasum": ""
             },
             "require": {
@@ -1854,10 +1854,10 @@
                 "user settings"
             ],
             "support": {
-                "source": "https://github.com/lanea07/laravel-property-bag/tree/lanea07-updates",
+                "source": "https://github.com/lanea07/laravel-property-bag/tree/v2.0.1",
                 "issues": "https://github.com/lanea07/laravel-property-bag/issues"
             },
-            "time": "2024-03-01T17:05:06+00:00"
+            "time": "2024-03-01T19:27:38+00:00"
         },
         {
             "name": "laravel/framework",
@@ -9946,14 +9946,12 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": {
-        "lanea07/laravel-property-bag": 20
-    },
+    "stability-flags": [],
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {
         "php": "^8.1"
     },
     "platform-dev": [],
-    "plugin-api-version": "2.6.0"
+    "plugin-api-version": "2.3.0"
 }

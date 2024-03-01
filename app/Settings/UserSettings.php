@@ -17,7 +17,9 @@ class UserSettings extends ResourceConfig
     protected $registeredSettings = [
         'Auto Aprobar Beneficios de mis Colaboradores' => [
             'allowed' => ['Sí', 'No'],
-            'default' => 'No'
+            'default' => 'No',
+            'title' => 'Auto Aprobar Beneficios de mis Colaboradores',
+            'description' => 'Aprueba automáticamente los beneficios de los colaboradores a cargo.'
         ],
     ];
 }
