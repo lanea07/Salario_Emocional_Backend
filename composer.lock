@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "ae4c26d4dc06a1e934ce8b37cfdd0296",
+    "content-hash": "280a585e00f8b9fa75403c3daf1640f3",
     "packages": [
         {
             "name": "brick/math",
@@ -1764,6 +1764,100 @@
                 }
             ],
             "time": "2023-12-03T19:50:20+00:00"
+        },
+        {
+            "name": "lanea07/laravel-property-bag",
+            "version": "v2.0.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/lanea07/laravel-property-bag.git",
+                "reference": "245ad5b259f9aa80ebf85d0020af8fdfe79933ba"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/lanea07/laravel-property-bag/zipball/245ad5b259f9aa80ebf85d0020af8fdfe79933ba",
+                "reference": "245ad5b259f9aa80ebf85d0020af8fdfe79933ba",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^8.1"
+            },
+            "require-dev": {
+                "laravel/laravel": "^10.3",
+                "orchestra/testbench": "^8.21",
+                "phpunit/phpunit": "^10.1"
+            },
+            "type": "project",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "LaravelPropertyBag\\ServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "LaravelPropertyBag\\": "src/"
+                }
+            },
+            "autoload-dev": {
+                "psr-4": {
+                    "LaravelPropertyBag\\tests\\": "tests/",
+                    "Workbench\\App\\": "workbench/app/",
+                    "Workbench\\Database\\Factories\\": "workbench/database/factories/",
+                    "Workbench\\Database\\Seeders\\": "workbench/database/seeders/"
+                }
+            },
+            "scripts": {
+                "post-autoload-dump": [
+                    "@clear",
+                    "@prepare"
+                ],
+                "clear": [
+                    "@php vendor/bin/testbench package:purge-skeleton --ansi"
+                ],
+                "prepare": [
+                    "@php vendor/bin/testbench package:discover --ansi"
+                ],
+                "build": [
+                    "@php vendor/bin/testbench workbench:build --ansi"
+                ],
+                "serve": [
+                    "Composer\\Config::disableProcessTimeout",
+                    "@build",
+                    "@php vendor/bin/testbench serve"
+                ],
+                "lint": [
+                    "@php vendor/bin/phpstan analyse"
+                ],
+                "test": [
+                    "@php vendor/bin/phpunit"
+                ]
+            },
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "lanea07",
+                    "email": "lanea07@outlook.com"
+                }
+            ],
+            "description": "Easy Laravel user settings using a property bag. Fork from original project by zachleigh (https://github.com/zachleigh/laravel-property-bag)",
+            "homepage": "https://github.com/lanea07/laravel-property-bag",
+            "keywords": [
+                "laravel",
+                "property",
+                "propety bag",
+                "settings",
+                "user",
+                "user settings"
+            ],
+            "support": {
+                "source": "https://github.com/lanea07/laravel-property-bag/tree/v2.0.1",
+                "issues": "https://github.com/lanea07/laravel-property-bag/issues"
+            },
+            "time": "2024-03-01T19:27:38+00:00"
         },
         {
             "name": "laravel/framework",
@@ -7419,71 +7513,6 @@
                 "source": "https://github.com/webmozarts/assert/tree/1.11.0"
             },
             "time": "2022-06-03T18:03:27+00:00"
-        },
-        {
-            "name": "zachleigh/laravel-property-bag",
-            "version": "dev-master",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/lanea07/laravel-property-bag.git",
-                "reference": "b5139f806ffd535ac7cb577cd01e3dd1dcd1f39c"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/lanea07/laravel-property-bag/zipball/b5139f806ffd535ac7cb577cd01e3dd1dcd1f39c",
-                "reference": "b5139f806ffd535ac7cb577cd01e3dd1dcd1f39c",
-                "shasum": ""
-            },
-            "require": {
-                "php": ">=7.1"
-            },
-            "require-dev": {
-                "laravel/browser-kit-testing": "~1.0",
-                "laravel/laravel": "^6.0",
-                "phpunit/phpunit": "~4.0"
-            },
-            "default-branch": true,
-            "type": "project",
-            "extra": {
-                "laravel": {
-                    "providers": [
-                        "LaravelPropertyBag\\ServiceProvider"
-                    ]
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "LaravelPropertyBag\\": "src/"
-                }
-            },
-            "autoload-dev": {
-                "psr-4": {
-                    "LaravelPropertyBag\\tests\\": "tests/"
-                }
-            },
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Zach Leigh",
-                    "email": "zachleigh@fastmail.jp"
-                }
-            ],
-            "description": "Easy Laravel user settings using a property bag",
-            "homepage": "https://github.com/zachleigh/laravel-property-bag",
-            "keywords": [
-                "laravel",
-                "property",
-                "propety bag",
-                "settings",
-                "user",
-                "user settings"
-            ],
-            "support": {
-                "source": "https://github.com/lanea07/laravel-property-bag/tree/v1.0.0"
-            },
-            "time": "2024-02-27T21:35:00+00:00"
         }
     ],
     "packages-dev": [
@@ -9917,14 +9946,12 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": {
-        "zachleigh/laravel-property-bag": 20
-    },
+    "stability-flags": [],
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {
         "php": "^8.1"
     },
     "platform-dev": [],
-    "plugin-api-version": "2.6.0"
+    "plugin-api-version": "2.3.0"
 }
