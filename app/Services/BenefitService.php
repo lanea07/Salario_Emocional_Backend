@@ -20,7 +20,7 @@ class BenefitService
     {
         return Benefit::with(['benefit_detail'])
             ->orderBy('name', 'asc')
-            ->get();
+        ->get();
     }
 
     /**
@@ -44,10 +44,21 @@ class BenefitService
                 $path = request()->file('filePoliticas')->store('politics', 'google');
                 $benefitData['politicas_path'] = $path;
             }
+
+            // logo_path
+            if (request()->file('logo_file')) {
+                $logo_path = request()->file('logo_file')->storeAs(
+                    "{$benefitData['name']}",
+                    request()->file('logo_file')->getClientOriginalName(),
+                    'google'
+                );
+            }
+
             $benefitsToAsign = BenefitDetail::whereIn('id', $benefitsToAsign)->get();
             $benefit = Benefit::create([
                 'name' => $benefitData['name'],
                 'politicas_path' => isset($benefitData['politicas_path']) ?  $benefitData['politicas_path'] : null,
+                'logo_file' => isset($logo_path) ? $logo_path : null,
             ]);
             $benefit->benefit_detail()->attach($benefitsToAsign);
             return $benefit;
@@ -88,14 +99,38 @@ class BenefitService
             $benefitsToAsign = array_keys($benefitsToAsign);
             $benefitsToAsign = BenefitDetail::whereIn('id', $benefitsToAsign)->get();
 
-            // Save request File
+            // Save politicas File
             if (request()->file('filePoliticas')) {
-                if ($benefit->politicas_path) {
-                    $deleted = Storage::disk('google')->delete($benefit->getAttributes()['politicas_path']);
+                try {
+                    if ($benefit->politicas_path) {
+                        $deleted = Storage::disk('google')->delete($benefit->getAttributes()['politicas_path']);
+                    }
+                } catch (\Throwable $th) {
                 }
-                $path = request()->file('filePoliticas')->store('politics', 'google');
+                $path = request()->file('filePoliticas')->storeAs(
+                    "{$benefitData['name']}",
+                    $benefitData['name'] . "." . request()->file('filePoliticas')->getClientOriginalExtension(),
+                    'google'
+                );
                 $benefitData['politicas_path'] = $path;
             }
+
+            // logo_path
+            if (request()->file('logo_file')) {
+                try {
+                    if ($benefit->logo_file) {
+                        $deleted = Storage::disk('google')->delete("{$benefitData['name']}/" . $benefitData['name'] . "." . request()->file('logo_file')->getClientOriginalExtension());
+                    }
+                } catch (\Throwable $th) {
+                }
+                $logo_path = request()->file('logo_file')->storeAs(
+                    "{$benefitData['name']}",
+                    $benefitData['name'] . "." . request()->file('logo_file')->getClientOriginalExtension(),
+                    'google'
+                );
+                $benefitData['logo_file'] = $logo_path;
+            }
+
             $benefit->update($benefitData);
             $benefit->benefit_detail()->sync($benefitsToAsign);
             return $benefit;

@@ -15,7 +15,11 @@ class GooglePath implements CastsAttributes
      */
     public function get(Model $model, string $key, mixed $value, array $attributes): mixed
     {
-        return $value ? Storage::disk('google')->url($value) : $value;
+        try {
+            return $value ? Storage::disk('google')->url($value) : $value;
+        } catch (\Throwable $th) {
+            return null;
+        }
     }
 
     /**

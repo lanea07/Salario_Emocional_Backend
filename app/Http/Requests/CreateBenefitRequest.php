@@ -25,6 +25,7 @@ class CreateBenefitRequest extends FormRequest
             'name' => 'required',
             'benefitDetailFormGroup' => 'required',
             'filePoliticas' => 'required_unless:filePoliticas,null',
+            'logo_file' => 'required_unless:logo_file,null',
             'valid_id' => 'required'
         ];
     }
