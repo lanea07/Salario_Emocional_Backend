@@ -116,16 +116,16 @@ class BenefitService
             }
 
             // logo_path
-            if (request()->file('logo_file')) {
+            if (request()->file('fileLogo')) {
                 try {
                     if ($benefit->logo_file) {
                         $deleted = Storage::disk('google')->delete("{$benefitData['name']}/" . $benefitData['name'] . "." . request()->file('logo_file')->getClientOriginalExtension());
                     }
                 } catch (\Throwable $th) {
                 }
-                $logo_path = request()->file('logo_file')->storeAs(
+                $logo_path = request()->file('fileLogo')->storeAs(
                     "{$benefitData['name']}",
-                    $benefitData['name'] . "." . request()->file('logo_file')->getClientOriginalExtension(),
+                    $benefitData['name'] . "." . request()->file('fileLogo')->getClientOriginalExtension(),
                     'google'
                 );
                 $benefitData['logo_file'] = $logo_path;
