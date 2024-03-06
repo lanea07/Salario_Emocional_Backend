@@ -58,4 +58,9 @@ class Benefit extends Model
         $base64 = $this->logo_file ? Storage::disk('google')->get($this->getRawOriginal('logo_file')) : null;
         return $base64;
     }
+
+    public function scopeExclude($array)
+    {
+        return $this->makeHidden($array);
+    }
 }

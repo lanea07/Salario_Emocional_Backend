@@ -16,7 +16,23 @@ class AdminService
      */
     public function getAllBenefits(Request $request): Collection
     {
-        return BenefitUser::with(['user', 'user.dependency', 'benefits', 'benefit_detail'])
+        return BenefitUser::with(
+            [
+                'user' => function ($q) {
+                    $q->select('id', 'name', 'dependency_id');
+                },
+                'user.dependency' => function ($q) {
+                    $q->select('id', 'name');
+                },
+                'benefits' => function ($q) {
+                    $q->select('id', 'name');
+                    $q->exclude(['encoded_logo']);
+                },
+                'benefit_detail' => function ($q) {
+                    $q->select('id', 'name');
+                },
+            ]
+        )
             ->when(isset($request->year), function ($q) use ($request) {
                 return $q->whereYear('created_at', '=', $request->year);
             })
