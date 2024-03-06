@@ -14,7 +14,7 @@ class UserController extends Controller
 
     public function __construct(private UserService $userService)
     {
-        $this->middleware('checkroles:Admin', ['except' => ['index', 'show']]);
+        $this->middleware('checkroles:Admin', ['except' => ['index', 'show', 'indexDescendants']]);
     }
 
     /**
