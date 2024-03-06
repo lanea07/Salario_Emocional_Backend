@@ -197,7 +197,7 @@ class BenefitUserService
         )
             ->with(['benefits', 'benefit_detail'])
             ->whereRelation('user', function ($q) use ($user) {
-                $q->where('leader', '=', $user->id);
+            $q->whereIn('id', $user->descendants()->pluck('id'));
             })
             ->is_pending()
             ->get();
@@ -220,7 +220,9 @@ class BenefitUserService
                         $q->is_approved();
                     },
                     'descendantsAndSelf.benefit_user.benefits',
-                    'descendantsAndSelf.benefit_user.user',
+                'descendantsAndSelf.benefit_user.user' => function ($q) {
+                    $q->with('dependency');
+                },
                     'descendantsAndSelf.benefit_user.benefit_detail',
                 ]
             )
@@ -394,15 +396,15 @@ class BenefitUserService
         // Setting cant_combine_with
         if ($cantCombineWith !== $benefit->settings()->getDefault('cant_combine_with') || (is_array($cantCombineWith) && !array_search('no aplica', $cantCombineWith, true))) {
             $forbiddenBenefits = BenefitUser::with(['benefits'])
-            ->where(function ($q) use ($month, $year, $cantCombineWith, $requestedBenefitData) {
-                $q->where('user_id', $requestedBenefitData['user_id']);
-                $q->whereYear('benefit_begin_time', $year);
-                $q->whereMonth('benefit_begin_time', $month);
-                $q->whereRelation('benefits', function ($q) use ($cantCombineWith) {
-                    $q->whereIn('name', $cantCombineWith);
+                ->where(function ($q) use ($month, $year, $cantCombineWith, $requestedBenefitData) {
+                    $q->where('user_id', $requestedBenefitData['user_id']);
+                    $q->whereYear('benefit_begin_time', $year);
+                    $q->whereMonth('benefit_begin_time', $month);
+                    $q->whereRelation('benefits', function ($q) use ($cantCombineWith) {
+                        $q->whereIn('name', $cantCombineWith);
+                    })->get();
+                    $q->is_approved();
                 })->get();
-                $q->is_approved();
-            })->get();
             $imploded = implode(', ', $cantCombineWith);
             if (!$forbiddenBenefits->isEmpty()) {
                 throw new Exception("El beneficio \"$benefit->name\" que está intentando solicitar no se puede combinar con el/los beneficios \"$imploded\". Ya has solicitado uno de estos beneficios en este periodo.");
@@ -473,12 +475,12 @@ class BenefitUserService
         }
 
         $claimed = BenefitUser::with(['benefit_detail'])
-        ->where(function ($q) use ($requestedBenefitData, $initialDate, $finalDate, $allowedRepeatFrecuency, $month, $year) {
-            $q->where('benefit_id', '=', $requestedBenefitData['benefit_id']);
-            $q->where('user_id', '=', $requestedBenefitData['user_id']);
-            $q->whereBetween('benefit_begin_time', [$initialDate, $finalDate]);
-            $q->is_approved();
-        })
+            ->where(function ($q) use ($requestedBenefitData, $initialDate, $finalDate, $allowedRepeatFrecuency, $month, $year) {
+                $q->where('benefit_id', '=', $requestedBenefitData['benefit_id']);
+                $q->where('user_id', '=', $requestedBenefitData['user_id']);
+                $q->whereBetween('benefit_begin_time', [$initialDate, $finalDate]);
+                $q->is_approved();
+            })
             ->withSum('benefit_detail', 'time_hours')
             ->get();
 
