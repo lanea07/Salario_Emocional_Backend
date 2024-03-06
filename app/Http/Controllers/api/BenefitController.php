@@ -15,7 +15,7 @@ class BenefitController extends Controller
 
     public function __construct(private BenefitService $benefitService)
     {
-        $this->middleware('checkroles:Admin', ['except' => ['index', 'indexAvailable', 'show']]);
+        $this->middleware('checkroles:Admin', ['except' => ['index', 'indexAvailable', 'show', 'indexPreferences', 'showPreferences']]);
     }
 
     /**
