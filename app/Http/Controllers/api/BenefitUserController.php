@@ -6,6 +6,7 @@ use App\Services\BenefitUserService;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\CreateBenefitUserRequest;
 use App\Models\BenefitUser;
+use App\Models\User;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -156,5 +157,10 @@ class BenefitUserController extends Controller
         } catch (Throwable $th) {
             return response()->json(['message' => $th->getMessage()], 400);
         }
+    }
+
+    public function showByUserID(User $user, int $year): JsonResponse
+    {
+        return response()->json($this->benefitUserService->getBenefitUserByUserID($user, $year), 200);
     }
 }

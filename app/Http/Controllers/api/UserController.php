@@ -117,4 +117,14 @@ class UserController extends Controller
             return response()->json($th, 500);
         }
     }
+
+    /**
+     * Return all descendants of a user
+     * 
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function indexDescendants(): JsonResponse
+    {
+        return response()->json($this->userService->getAllDescendants(), 200);
+    }
 }
