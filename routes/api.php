@@ -43,11 +43,11 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/benefit/{benefit}/edit', 'edit')->name('benefit.edit');
         Route::get('/benefit/{benefit}', 'show')->name('benefit.show');
         Route::post('/benefit', 'store')->name('benefit.store');
-        Route::put('/benefit/{benefit}', 'update')->name('benefit.update');
-        Route::patch('/benefit/{benefit}', 'update')->name('benefit.update');
+        Route::put('/benefit/{benefit}', 'update')->name('benefit.updateWithPut');
+        Route::patch('/benefit/{benefit}', 'update')->name('benefit.updateWithPatch');
         Route::get('/benefit-settings', 'indexPreferences')->name('benefit-settings.index');
         Route::get('/benefit-settings/{benefit}', 'showPreferences')->name('benefit-settings.show');
-        Route::put('/benefit-settings/{benefit}', 'storePreferences')->name('preferences.store');
+        Route::put('/benefit-settings/{benefit}', 'storePreferences')->name('benefit-settings.store');
     });
 
     Route::controller(BenefitDetailController::class)->group(function () {
@@ -57,8 +57,8 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/benefitdetail', 'index')->name('benefitdetail.index');
         Route::get('/benefitdetail/{benefitdetail}', 'show')->name('benefitdetail.show');
         Route::post('/benefitdetail', 'store')->name('benefitdetail.store');
-        Route::put('/benefitdetail/{benefitdetail}', 'update')->name('benefitdetail.update');
-        Route::patch('/benefitdetail/{benefitdetail}', 'update')->name('benefitdetail.update');
+        Route::put('/benefitdetail/{benefitdetail}', 'update')->name('benefitdetail.updateWithPut');
+        Route::patch('/benefitdetail/{benefitdetail}', 'update')->name('benefitdetail.updateWithPatch');
     });
 
     Route::controller(BenefitUserController::class)->group(function () {
@@ -71,8 +71,8 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/benefituser/{benefituser}/edit', 'edit')->name('benefituser.edit');
         Route::get('/benefituser/{benefituser}', 'show')->name('benefituser.show');
         Route::post('/benefituser', 'store')->name('benefituser.store');
-        Route::put('/benefituser/{benefituser}', 'update')->name('benefituser.update');
-        Route::patch('/benefituser/{benefituser}', 'update')->name('benefituser.update');
+        Route::put('/benefituser/{benefituser}', 'update')->name('benefituser.updateWithPut');
+        Route::patch('/benefituser/{benefituser}', 'update')->name('benefituser.updateWithPatch');
         Route::post('/benefituser/decidebenefituser', 'decideBenefitUser')->name('benefituser.decidebenefituser');
         Route::post('/exportbenefits', 'exportDetail');
     });
@@ -84,8 +84,8 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/position', 'index')->name('position.index');
         Route::get('/position/{position}', 'show')->name('position.show');
         Route::post('/position', 'store')->name('position.store');
-        Route::put('/position/{position}', 'update')->name('position.update');
-        Route::patch('/position/{position}', 'update')->name('position.update');
+        Route::put('/position/{position}', 'update')->name('position.updateWithPut');
+        Route::patch('/position/{position}', 'update')->name('position.updateWithPatch');
     });
 
     Route::controller(RoleController::class)->group(function () {
@@ -95,8 +95,8 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/role', 'index')->name('role.index');
         Route::get('/role/{role}', 'show')->name('role.show');
         Route::post('/role', 'store')->name('role.store');
-        Route::put('/role/{role}', 'update')->name('role.update');
-        Route::patch('/role/{role}', 'update')->name('role.update');
+        Route::put('/role/{role}', 'update')->name('role.updateWithPut');
+        Route::patch('/role/{role}', 'update')->name('role.updateWithPatch');
     });
 
     Route::controller(UserController::class)->group(function () {
@@ -106,8 +106,8 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/user', 'index')->name('user.index');
         Route::get('/user/{user}', 'show')->name('user.show');
         Route::post('/user', 'store')->name('user.store');
-        Route::put('/user/{user}', 'update')->name('user.update');
-        Route::patch('/user/{user}', 'update')->name('user.update');
+        Route::put('/user/{user}', 'update')->name('user.updateWithPut');
+        Route::patch('/user/{user}', 'update')->name('user.updateWithPatch');
     });
 
     Route::controller(DependencyController::class)->group(function () {
@@ -119,8 +119,8 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/dependency/{dependency}/edit', 'edit')->name('dependency.edit');
         Route::get('/dependency/{dependency}', 'show')->name('dependency.show');
         Route::post('/dependency', 'store')->name('dependency.store');
-        Route::put('/dependency/{dependency}', 'update')->name('dependency.update');
-        Route::patch('/dependency/{dependency}', 'update')->name('dependency.update');
+        Route::put('/dependency/{dependency}', 'update')->name('dependency.updateWithPut');
+        Route::patch('/dependency/{dependency}', 'update')->name('dependency.updateWithPatch');
     });
 
     Route::controller(AdminController::class)->group(function () {
