@@ -212,20 +212,23 @@ class BenefitUserService
     public function getAllBenefitCollaborators(Request $request)
     {
         $user = $request->user();
-        return User::where('id', '=', $user->id)
-            ->with(
-                [
-                    'descendantsAndSelf.benefit_user' => function ($q) use ($request) {
-                        $q->whereYear('benefit_begin_time', $request->year);
-                        $q->is_approved();
-                    },
-                    'descendantsAndSelf.benefit_user.benefits',
-                'descendantsAndSelf.benefit_user.user' => function ($q) {
-                    $q->with('dependency');
+        return User::where('id', '=', $user->id)->with(
+            [
+                'descendantsAndSelf.benefit_user' => function ($q) use ($request) {
+                    $q->whereYear('benefit_begin_time', $request->year);
+                    $q->is_approved();
                 },
-                    'descendantsAndSelf.benefit_user.benefit_detail',
-                ]
-            )
+                'descendantsAndSelf.benefit_user.benefits' => function ($q) {
+                    $q->select('id', 'name', 'politicas_path', 'logo_file');
+                },
+                'descendantsAndSelf.benefit_user.benefit_detail' => function ($q) {
+                    $q->select('id', 'name', 'time_hours', 'valid_id');
+                },
+                'descendantsAndSelf.benefit_user.user' => function ($q) {
+                    $q->select('id', 'name',);
+                },
+            ]
+        )
             ->oldest('name')
             ->get();
     }
@@ -509,5 +512,29 @@ class BenefitUserService
             }
         }
         return true;
+    }
+
+    public function getBenefitUserByUserID(User $user, int $year)
+    {
+        return User::where('id', '=', $user->id)->with(
+            [
+                'benefit_user' => function ($q) use ($year) {
+                    $q->whereYear('benefit_begin_time', $year);
+                    $q->is_approved();
+                },
+                'benefit_user.benefits' => function ($q) {
+                    $q->select('id', 'name', 'politicas_path', 'logo_file');
+                },
+                'benefit_user.benefit_detail' => function ($q) {
+                    $q->select('id', 'name', 'time_hours', 'valid_id');
+                },
+                'benefit_user.user' => function ($q) {
+                    $q->select('id', 'name',);
+                },
+            ]
+        )
+            ->oldest('name')
+            ->get();
+        // return $user->benefit_user()->with(['benefits', 'benefit_detail'])->get();
     }
 }

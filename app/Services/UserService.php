@@ -106,4 +106,15 @@ class UserService
     {
         throw new \Exception('No se puede eliminar un usuario');
     }
+
+    /**
+     * Return all users descendants
+     * 
+     * @return \Illuminate\Database\Eloquent\Collection
+     */
+    public function getAllDescendants(): Collection
+    {
+        $user = request()->user();
+        return User::where('id', '=', $user->id)->with(['descendants'])->get();
+    }
 }

@@ -65,6 +65,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/benefituser/indexcollaboratorsnonapproved', 'indexCollaboratorsNonApproved')->name('benefituser.indexcollaboratorsnonapproved');
         Route::get('/benefituser/indexnonapproved', 'indexNonApproved')->name('benefituser.indexnonapproved');
         Route::get('/benefituser/indexcollaborators', 'indexCollaborators')->name('benefituser.indexCollaborators');
+        Route::get('/benefituser/{user}/{year}', 'showByUserID')->name('benefituser.showByUserID');
         Route::get('/benefituser', 'index')->name('benefituser.index');
         Route::get('/benefituser/create', 'create')->name('benefituser.create');
         Route::delete('/benefituser/{benefituser}', 'destroy')->name('benefituser.destroy');
@@ -104,6 +105,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::delete('/user/{user}', 'destroy')->name('user.destroy');
         Route::get('/user/{user}/edit', 'edit')->name('user.edit');
         Route::get('/user', 'index')->name('user.index');
+        Route::get('/user-descendants', 'indexDescendants')->name('user.indexDescendants');
         Route::get('/user/{user}', 'show')->name('user.show');
         Route::post('/user', 'store')->name('user.store');
         Route::put('/user/{user}', 'update')->name('user.updateWithPut');
