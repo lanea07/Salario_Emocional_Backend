@@ -3,7 +3,6 @@
 namespace Tests\Feature;
 
 use App\Events\NewBenefitUserWithoutLeaderEvent;
-use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Support\Facades\Event;
@@ -17,9 +16,7 @@ class BenefitUserTest extends TestCase
 
     public function test_can_get_all_benefit_user()
     {
-        Sanctum::actingAs(
-            $user = User::findOrFail(1)
-        );
+        Sanctum::actingAs($this->rootUser);
         $response = $this->get('/api/benefituser?userId=2&year=2010');
         $response->assertOk();
         $response->assertJsonStructure([
@@ -95,9 +92,7 @@ class BenefitUserTest extends TestCase
 
     public function test_can_create_benefit_user()
     {
-        Sanctum::actingAs(
-            $user = User::findOrFail(1)
-        );
+        Sanctum::actingAs($this->rootUser);
         Event::fake();
         $response = $this->post(
             '/api/benefituser',
@@ -120,9 +115,7 @@ class BenefitUserTest extends TestCase
      */
     public function test_cant_create_duplicated_benefit_by_name()
     {
-        Sanctum::actingAs(
-            $user = User::findOrFail(1)
-        );
+        Sanctum::actingAs($this->rootUser);
         Event::fake(); 
         $response = $this->post(
             '/api/benefituser',
@@ -150,9 +143,7 @@ class BenefitUserTest extends TestCase
 
     public function test_can_get_benefit_user_by_id()
     {
-        Sanctum::actingAs(
-            $user = User::findOrFail(1)
-        );
+        Sanctum::actingAs($this->rootUser);
         Event::fake();
         $response = $this->post(
             '/api/benefituser',
@@ -240,9 +231,7 @@ class BenefitUserTest extends TestCase
 
     public function test_can_update_benefit_user()
     {
-        Sanctum::actingAs(
-            $user = User::findOrFail(1)
-        );
+        Sanctum::actingAs($this->rootUser);
         Event::fake();
         $response = $this->post(
             '/api/benefituser',
@@ -258,8 +247,8 @@ class BenefitUserTest extends TestCase
         $response = $this->put(
             "/api/benefituser/{$createdResource->id}",
             [
-                'benefit_id' => 2,
-                'benefit_detail_id' => 2,
+                'benefit_id' => 1,
+                'benefit_detail_id' => 1,
                 'user_id' => 1,
                 'benefit_begin_time' => Carbon::now(),
                 'benefit_end_time' => Carbon::now()->addHours(2),
@@ -270,9 +259,7 @@ class BenefitUserTest extends TestCase
 
     public function test_can_delete_benefit()
     {
-        Sanctum::actingAs(
-            $user = User::findOrFail(1)
-        );
+        Sanctum::actingAs($this->rootUser);
         Event::fake();
         $response = $this->post(
             '/api/benefituser',

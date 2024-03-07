@@ -2,7 +2,6 @@
 
 namespace Tests\Feature;
 
-use App\Models\User;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Laravel\Sanctum\Sanctum;
 use Tests\TestCase;
@@ -14,9 +13,7 @@ class RoleTest extends TestCase
 
     public function test_can_get_all_role()
     {
-        Sanctum::actingAs(
-            $user = User::findOrFail(1)
-        );
+        Sanctum::actingAs($this->rootUser);
         $response = $this->get('/api/role');
         $response->assertOk();
         $response->assertJsonStructure([
@@ -32,9 +29,7 @@ class RoleTest extends TestCase
 
     public function test_can_create_role()
     {
-        Sanctum::actingAs(
-            $user = User::findOrFail(1)
-        );
+        Sanctum::actingAs($this->rootUser);
         $response = $this->post(
             '/api/role',
             [
@@ -49,9 +44,7 @@ class RoleTest extends TestCase
      */
     public function test_cant_create_duplicated_role_by_name()
     {
-        Sanctum::actingAs(
-            $user = User::findOrFail(1)
-        );
+        Sanctum::actingAs($this->rootUser);
         $response = $this->post(
             '/api/role',
             [
@@ -70,9 +63,7 @@ class RoleTest extends TestCase
 
     public function test_can_get_role_by_id()
     {
-        Sanctum::actingAs(
-            $user = User::findOrFail(1)
-        );
+        Sanctum::actingAs($this->rootUser);
         $response = $this->post(
             '/api/role',
             [
@@ -94,9 +85,7 @@ class RoleTest extends TestCase
 
     public function test_can_update_role()
     {
-        Sanctum::actingAs(
-            $user = User::findOrFail(1)
-        );
+        Sanctum::actingAs($this->rootUser);
         $response = $this->post(
             '/api/role',
             [
@@ -116,9 +105,7 @@ class RoleTest extends TestCase
 
     public function test_can_delete_role()
     {
-        Sanctum::actingAs(
-            $user = User::findOrFail(1)
-        );
+        Sanctum::actingAs($this->rootUser);
         $response = $this->post(
             '/api/role',
             [

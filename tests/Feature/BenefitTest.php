@@ -2,7 +2,6 @@
 
 namespace Tests\Feature;
 
-use App\Models\User;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Laravel\Sanctum\Sanctum;
 use Tests\TestCase;
@@ -13,9 +12,7 @@ class BenefitTest extends TestCase
 
     public function test_can_get_all_benefits()
     {
-        Sanctum::actingAs(
-            $user = User::findOrFail(1)
-        );
+        Sanctum::actingAs($this->rootUser);
         $response = $this->get('/api/benefit');
         $response->assertOk();
         $response->assertJsonStructure([
@@ -48,9 +45,7 @@ class BenefitTest extends TestCase
 
     public function test_can_create_benefit()
     {
-        Sanctum::actingAs(
-            $user = User::findOrFail(1)
-        );
+        Sanctum::actingAs($this->rootUser);
         $response = $this->post(
             '/api/benefit',
             [
@@ -68,9 +63,7 @@ class BenefitTest extends TestCase
      */
     public function test_cant_create_duplicated_benefit_by_name()
     {
-        Sanctum::actingAs(
-            $user = User::findOrFail(1)
-        );
+        Sanctum::actingAs($this->rootUser);
         $response = $this->post(
             '/api/benefit',
             [
@@ -95,9 +88,7 @@ class BenefitTest extends TestCase
 
     public function test_can_get_benefit_by_id()
     {
-        Sanctum::actingAs(
-            $user = User::findOrFail(1)
-        );
+        Sanctum::actingAs($this->rootUser);
         $response = $this->post(
             '/api/benefit',
             [
@@ -141,9 +132,7 @@ class BenefitTest extends TestCase
 
     public function test_can_update_benefit()
     {
-        Sanctum::actingAs(
-            $user = User::findOrFail(1)
-        );
+        Sanctum::actingAs($this->rootUser);
         $response = $this->post(
             '/api/benefit',
             [
@@ -169,9 +158,7 @@ class BenefitTest extends TestCase
 
     public function test_can_delete_benefit()
     {
-        Sanctum::actingAs(
-            $user = User::findOrFail(1)
-        );
+        Sanctum::actingAs($this->rootUser);
         $response = $this->post(
             '/api/benefit',
             [

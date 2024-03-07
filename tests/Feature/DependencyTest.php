@@ -2,7 +2,6 @@
 
 namespace Tests\Feature;
 
-use App\Models\User;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Laravel\Sanctum\Sanctum;
 use Tests\TestCase;
@@ -13,9 +12,7 @@ class DependencyTest extends TestCase
 
     public function test_can_get_all_dependency()
     {
-        Sanctum::actingAs(
-            $user = User::findOrFail(1)
-        );
+        Sanctum::actingAs($this->rootUser);
         $response = $this->get('/api/dependency');
         $response->assertOk();
         $response->assertJsonStructure([
@@ -58,9 +55,7 @@ class DependencyTest extends TestCase
 
     public function test_can_create_dependency()
     {
-        Sanctum::actingAs(
-            $user = User::findOrFail(1)
-        );
+        Sanctum::actingAs($this->rootUser);
         $response = $this->post(
             '/api/dependency',
             [
@@ -76,9 +71,7 @@ class DependencyTest extends TestCase
      */
     public function test_cant_create_duplicated_dependency_by_name()
     {
-        Sanctum::actingAs(
-            $user = User::findOrFail(1)
-        );
+        Sanctum::actingAs($this->rootUser);
         $response = $this->post(
             '/api/dependency',
             [
@@ -99,9 +92,7 @@ class DependencyTest extends TestCase
 
     public function test_can_get_dependency_by_id()
     {
-        Sanctum::actingAs(
-            $user = User::findOrFail(1)
-        );
+        Sanctum::actingAs($this->rootUser);
         $response = $this->post(
             '/api/dependency',
             [
@@ -153,9 +144,7 @@ class DependencyTest extends TestCase
 
     public function test_can_update_dependency()
     {
-        Sanctum::actingAs(
-            $user = User::findOrFail(1)
-        );
+        Sanctum::actingAs($this->rootUser);
         $response = $this->post(
             '/api/dependency',
             [
@@ -177,9 +166,7 @@ class DependencyTest extends TestCase
 
     public function test_can_delete_dependency()
     {
-        Sanctum::actingAs(
-            $user = User::findOrFail(1)
-        );
+        Sanctum::actingAs($this->rootUser);
         $response = $this->post(
             '/api/dependency',
             [
