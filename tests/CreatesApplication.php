@@ -37,7 +37,7 @@ trait CreatesApplication
 
         $this->app = $app;
 
-        $this->app['config']->set('database.default', 'sqlite_testing');
+        $this->app['config']->set('database.default', 'sqlite');
 
         $this->app['config']->set(
             'database.connections.sqlite.database',
