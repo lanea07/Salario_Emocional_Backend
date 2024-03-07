@@ -66,9 +66,7 @@
         ],
         "post-install-cmd": [
             "@php artisan migrate --force",
-            "@php artisan cache:clear",
-            "@php artisan config:clear",
-            "@php artisan view:clear",
+            "@php artisan optimize",
             "@php artisan queue:restart"
         ]
     },

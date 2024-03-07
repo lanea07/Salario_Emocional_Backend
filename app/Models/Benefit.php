@@ -55,8 +55,10 @@ class Benefit extends Model
 
     public function getEncodedLogoAttribute()
     {
-        $base64 = $this->logo_file ? Storage::disk('google')->get($this->getRawOriginal('logo_file')) : null;
-        return $base64;
+        if (Storage::disk('google')->exists($this->getRawOriginal('logo_file'))) {
+            $base64 = Storage::disk('google')->get($this->getRawOriginal('logo_file'));
+        }
+        return $base64 ?? null;
     }
 
     public function scopeExclude($array)
