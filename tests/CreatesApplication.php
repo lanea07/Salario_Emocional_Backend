@@ -25,6 +25,7 @@ use Tests\migrations\CreateUsersTable;
 trait CreatesApplication
 {
 
+    protected $app;
     /**
      * Creates the application.
      */
@@ -34,13 +35,22 @@ trait CreatesApplication
 
         $app->make(Kernel::class)->bootstrap();
 
+        $this->app = $app;
+
+        $this->app['config']->set('database.default', 'sqlite_testing');
+
+        $this->app['config']->set(
+            'database.connections.sqlite.database',
+            ':memory:'
+        );
+
         $this->migrate();
 
         $this->seedDB();
 
         $this->rootUser = $this->getRootUser();
 
-        return $app;
+        return $this->app;
     }
 
     /**
