@@ -15,15 +15,10 @@ class BenefitsSeeder extends Seeder
     {
 
         // Benefits
-        $firstBenefit = Benefit::create([
-            'name' => 'First Benefit'
-        ]);
+        $firstBenefit = Benefit::create(['name' => 'First Benefit']);
 
         // Benefit Details
-        $firstBenefitDetail = BenefitDetail::create([
-                'name' => '2 Hours',
-            'time_hours' => 2
-        ]);
+        $firstBenefitDetail = BenefitDetail::create(['name' => '2 Hours', 'time_hours' => 2]);
 
         // Benefit Relationship
         $firstBenefit->benefit_detail()->attach($firstBenefitDetail);

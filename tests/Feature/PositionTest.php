@@ -2,21 +2,17 @@
 
 namespace Tests\Feature;
 
-use App\Models\User;
-use Illuminate\Foundation\Testing\DatabaseTransactions;
+
 use Laravel\Sanctum\Sanctum;
 use Tests\TestCase;
 
 class PositionTest extends TestCase
 {
 
-    use DatabaseTransactions;
 
     public function test_can_get_all_position()
     {
-        Sanctum::actingAs(
-            $user = User::findOrFail(1)
-        );
+        Sanctum::actingAs($this->rootUser);
         $response = $this->get('/api/position');
         $response->assertOk();
         $response->assertJsonStructure([
@@ -32,9 +28,7 @@ class PositionTest extends TestCase
 
     public function test_can_create_position()
     {
-        Sanctum::actingAs(
-            $user = User::findOrFail(1)
-        );
+        Sanctum::actingAs($this->rootUser);
         $response = $this->post(
             '/api/position',
             [
@@ -49,9 +43,7 @@ class PositionTest extends TestCase
      */
     public function test_cant_create_duplicated_position_by_name()
     {
-        Sanctum::actingAs(
-            $user = User::findOrFail(1)
-        );
+        Sanctum::actingAs($this->rootUser);
         $response = $this->post(
             '/api/position',
             [
@@ -70,9 +62,7 @@ class PositionTest extends TestCase
 
     public function test_can_get_position_by_id()
     {
-        Sanctum::actingAs(
-            $user = User::findOrFail(1)
-        );
+        Sanctum::actingAs($this->rootUser);
         $response = $this->post(
             '/api/position',
             [
@@ -94,9 +84,7 @@ class PositionTest extends TestCase
 
     public function test_can_update_position()
     {
-        Sanctum::actingAs(
-            $user = User::findOrFail(1)
-        );
+        Sanctum::actingAs($this->rootUser);
         $response = $this->post(
             '/api/position',
             [
@@ -116,9 +104,7 @@ class PositionTest extends TestCase
 
     public function test_can_delete_position()
     {
-        Sanctum::actingAs(
-            $user = User::findOrFail(1)
-        );
+        Sanctum::actingAs($this->rootUser);
         $response = $this->post(
             '/api/position',
             [

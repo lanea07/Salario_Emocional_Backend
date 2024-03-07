@@ -3,8 +3,7 @@
 namespace Tests\Feature;
 
 use App\Mail\NewUserCreated;
-use App\Models\User;
-use Illuminate\Foundation\Testing\DatabaseTransactions;
+
 use Illuminate\Support\Facades\Mail;
 use Laravel\Sanctum\Sanctum;
 use Tests\TestCase;
@@ -12,13 +11,10 @@ use Tests\TestCase;
 class UserTest extends TestCase
 {
 
-    use DatabaseTransactions;
 
     public function test_can_get_all_users()
     {
-        Sanctum::actingAs(
-            $user = User::findOrFail(1)
-        );
+        Sanctum::actingAs($this->rootUser);
         $response = $this->get('/api/user');
         $response->assertOk();
         $response->assertJsonStructure([
@@ -45,9 +41,7 @@ class UserTest extends TestCase
 
     public function test_can_create_user()
     {
-        Sanctum::actingAs(
-            $user = User::findOrFail(1)
-        );
+        Sanctum::actingAs($this->rootUser);
         Mail::fake();
         $response = $this->post(
             '/api/user',
@@ -70,9 +64,7 @@ class UserTest extends TestCase
      */
     public function test_cant_create_duplicated_user_by_email()
     {
-        Sanctum::actingAs(
-            $user = User::findOrFail(1)
-        );
+        Sanctum::actingAs($this->rootUser);
         Mail::fake();
         $response = $this->post(
             '/api/user',
@@ -104,9 +96,7 @@ class UserTest extends TestCase
 
     public function test_can_get_user_by_id()
     {
-        Sanctum::actingAs(
-            $user = User::findOrFail(1)
-        );
+        Sanctum::actingAs($this->rootUser);
         $response = $this->post(
             '/api/user',
             [
@@ -147,9 +137,7 @@ class UserTest extends TestCase
 
     public function test_can_update_user()
     {
-        Sanctum::actingAs(
-            $user = User::findOrFail(1)
-        );
+        Sanctum::actingAs($this->rootUser);
         $response = $this->post(
             '/api/user',
             [
@@ -181,9 +169,7 @@ class UserTest extends TestCase
 
     public function test_can_delete_user()
     {
-        Sanctum::actingAs(
-            $user = User::findOrFail(1)
-        );
+        Sanctum::actingAs($this->rootUser);
         $response = $this->post(
             '/api/user',
             [
