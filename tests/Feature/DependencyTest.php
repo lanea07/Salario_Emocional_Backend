@@ -2,13 +2,12 @@
 
 namespace Tests\Feature;
 
-use Illuminate\Foundation\Testing\DatabaseMigrations;
+
 use Laravel\Sanctum\Sanctum;
 use Tests\TestCase;
 
 class DependencyTest extends TestCase
 {
-    use DatabaseMigrations;
 
     public function test_can_get_all_dependency()
     {

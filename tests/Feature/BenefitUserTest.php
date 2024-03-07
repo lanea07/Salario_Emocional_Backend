@@ -4,7 +4,7 @@ namespace Tests\Feature;
 
 use App\Events\NewBenefitUserWithoutLeaderEvent;
 use Carbon\Carbon;
-use Illuminate\Foundation\Testing\DatabaseMigrations;
+
 use Illuminate\Support\Facades\Event;
 use Laravel\Sanctum\Sanctum;
 use Tests\TestCase;
@@ -12,7 +12,6 @@ use Tests\TestCase;
 class BenefitUserTest extends TestCase
 {
 
-    use DatabaseMigrations;
 
     public function test_can_get_all_benefit_user()
     {

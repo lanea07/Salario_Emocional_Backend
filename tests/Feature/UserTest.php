@@ -3,7 +3,7 @@
 namespace Tests\Feature;
 
 use App\Mail\NewUserCreated;
-use Illuminate\Foundation\Testing\DatabaseMigrations;
+
 use Illuminate\Support\Facades\Mail;
 use Laravel\Sanctum\Sanctum;
 use Tests\TestCase;
@@ -11,7 +11,6 @@ use Tests\TestCase;
 class UserTest extends TestCase
 {
 
-    use DatabaseMigrations;
 
     public function test_can_get_all_users()
     {
