@@ -14,7 +14,6 @@ use App\Models\BenefitUser;
 use App\Models\User;
 use Carbon\Carbon;
 use DateTime;
-use DateTimeZone;
 use Exception;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
@@ -245,8 +244,8 @@ class BenefitUserService
             Event::create()
                 ->name($benefitUser->benefits->name)
                 ->createdAt(new DateTime(Carbon::now()))
-                ->startsAt(new DateTime($benefitUser->benefit_begin_time, new DateTimeZone('America/Bogota')))
-                ->endsAt(new DateTime($benefitUser->benefit_end_time, new DateTimeZone('America/Bogota')))
+                ->startsAt(new DateTime($benefitUser->benefit_begin_time))
+                ->endsAt(new DateTime($benefitUser->benefit_end_time))
                 ->appendProperty(
                     TextProperty::create('X-MICROSOFT-CDO-BUSYSTATUS', 'OOF')
                 )

@@ -27,6 +27,9 @@ class BenefitUser extends Model
 
     protected $casts = [
         'is_approved' => BenefitDecisionEnum::class,
+        'benefit_begin_time' => 'datetime',
+        'benefit_end_time' => 'datetime',
+        'approved_at' => 'datetime',
     ];
 
     public function user()

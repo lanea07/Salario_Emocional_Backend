@@ -2,6 +2,7 @@
 
 namespace App\Mail;
 
+use App\Enums\BenefitDecisionEnum;
 use App\Services\BenefitUserService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -53,7 +54,7 @@ class BenefitDecision extends Mailable implements ShouldQueue
      */
     public function attachments(): array
     {
-        return $this->benefitUser->is_approved->value === 1
+        return $this->benefitUser->is_approved === BenefitDecisionEnum::APPROVED
             ? [
             Attachment::fromData(
                 fn () =>
