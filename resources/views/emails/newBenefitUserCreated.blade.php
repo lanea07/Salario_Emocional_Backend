@@ -38,56 +38,8 @@
                                             <tr>
                                                 <td height="16px" style="font-size:16px;line-height:16px;">
 
-                                                    @switch($newBenefitUser->benefits->name)
-                                                        @case('Mi Cumpleaños')
-                                                            <img height="150"
-                                                                src={{ $message->embed(realpath(public_path() . '/images/cumpleaños.svg')) }}
-                                                                alt="Benefit_Logo">
-                                                        @break
-
-                                                        @case('Mi Banco de Horas')
-                                                            <img height="150"
-                                                                src={{ $message->embed(realpath(public_path() . '/images/banco_horas.svg')) }}
-                                                                al="Benefit_Logo">
-                                                        @break
-
-                                                        @case('Mi Horario Flexible')
-                                                            <img height="150"
-                                                                src={{ $message->embed(realpath(public_path() . '/images/horario_flexible.svg')) }}
-                                                                alt ="Benefit_Logo">
-                                                        @break
-
-                                                        @case('Mi Viernes')
-                                                            <img height="150"
-                                                                src={{ $message->embed(realpath(public_path() . '/images/mi_viernes.svg')) }}
-                                                                alt="Benefit_Logo">
-                                                        @break
-
-                                                        @case('Mis Vacaciones')
-                                                            <img height="150"
-                                                                src={{ $message->embed(realpath(public_path() . '/images/vacaciones.svg')) }}
-                                                                alt="Benefit_Logo">
-                                                        @break
-
-                                                        @case('Trabajo Híbrido')
-                                                            <img height="150"
-                                                                src={{ $message->embed(realpath(public_path() . '/images/trabajo_hibrido.svg')) }}
-                                                                alt="Benefit_Logo">
-                                                        @break
-
-                                                        @case('Día de la Familia')
-                                                            <img height="150"
-                                                                src={{ $message->embed(realpath(public_path() . '/images/dia_familia.svg')) }}
-                                                                alt="Benefit_Logo">
-                                                        @break
-
-                                                        @case('Permiso Especial')
-                                                            <img height="150"
-                                                                src={{ $message->embed(realpath(public_path() . '/images/permiso_especial.svg')) }}
-                                                                alt="Benefit_Logo">
-                                                        @break
-                                                    @endswitch
-
+                                                    <img height="150" src="data:image/svg+xml;base64, {{ base64_encode( $newBenefitUser->benefits->encoded_logo )}}" alt="Benefit_Logo">
+                                                    
                                                 </td>
                                             </tr>
                                         </tbody>
@@ -101,8 +53,7 @@
                                                         <tr>
                                                             <th>
                                                                 <h1>{{ $newBenefitUser->user->name }}</h1>
-                                                                <p>Tu nuevo beneficio fue registrado. A continuación
-                                                                    detallamos tu nuevo registro:</p>
+                                                                <p>Tu nuevo beneficio fue registrado</p>
                                                                 <table class="spacer">
                                                                     <tbody>
                                                                         <tr>

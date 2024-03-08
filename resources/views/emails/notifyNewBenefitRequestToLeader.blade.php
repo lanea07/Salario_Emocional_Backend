@@ -38,42 +38,7 @@
                       <tr>
                         <td height="16px" style="font-size:16px;line-height:16px;">
 
-                          @switch($benefitUser->benefits->name)
-                            @case("Mi Cumpleaños")
-                              <img height="150" src={{ $message->embed(realpath(public_path() . '/images/cumpleaños.svg'))
-                              }} alt="Benefit_Logo">
-                            @break
-                            @case("Mi Banco de Horas")
-                              <img height="150" src={{ $message->embed(realpath(public_path() . '/images/banco_horas.svg'))
-                              }} al="Benefit_Logo">
-                            @break
-                            @case("Mi Horario Flexible")
-                              <img height="150" src={{ $message->embed(realpath(public_path() .
-                              '/images/horario_flexible.svg')) }} alt ="Benefit_Logo">
-                            @break
-                            @case("Mi Viernes")
-                              <img height="150" src={{ $message->embed(realpath(public_path() . '/images/mi_viernes.svg'))
-                              }} alt="Benefit_Logo">
-                            @break
-                            @case("Mis Vacaciones")
-                              <img height="150" src={{ $message->embed(realpath(public_path() . '/images/vacaciones.svg'))
-                              }} alt="Benefit_Logo">
-                            @break
-                            @case("Trabajo Híbrido")
-                              <img height="150" src={{ $message->embed(realpath(public_path() . '/images/trabajo_hibrido.svg'))
-                              }} alt="Benefit_Logo">
-                            @break
-                            @case("Día de la Familia")
-                              <img height="150" src={{ $message->embed(realpath(public_path() . '/images/dia_familia.svg'))
-                              }} alt="Benefit_Logo">
-                            @break
-
-                            @case('Permiso Especial')
-                              <img height="150"
-                                src={{ $message->embed(realpath(public_path() . '/images/permiso_especial.svg')) }}
-                                alt="Benefit_Logo">
-                            @break
-                          @endswitch
+                          <img height="150" src="data:image/svg+xml;base64, {{ base64_encode( $benefitUser->benefits->encoded_logo )}}" alt="Benefit_Logo">
 
                         </td>
                       </tr>
@@ -102,6 +67,9 @@
                                     <th class="callout-inner secondary">
                                       <table class="row">
                                         <tbody>
+                                          <tr>
+                                            {{ $benefitUser->user->name }} ha solicitado:
+                                          </tr>
                                           <tr>
                                             <th class="small-12 large-6 columns first">
                                               <table>
@@ -170,7 +138,7 @@
                     <tbody>
                       <tr>
                         <th class="small-12 large-12 columns first last">
-                          Puedes aprobar o rechazar esta solicitud en el siguiente <a href="{{ env('APP_URL') }}/basic/benefit-employee/index">enlace</a>, en la pestaña de "Mi Equipo" > "Aprobaciones Pendientes"
+                          Puedes aprobar o rechazar esta solicitud en el siguiente <a href="{{ env('APP_FRONT_URL') }}/basic/benefit-employee/dashboard/my-team-request">enlace</a>, en la pestaña Solicitudes de Mi Equipo.
                         </th>
                       </tr>
                     </tbody>

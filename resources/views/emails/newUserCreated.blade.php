@@ -82,7 +82,7 @@
                                                     </p>
                                                     <br>
                                                     <p>
-                                                        <a href="{{ env('APP_URL') }}" style="color: #C8102E;">
+                                                        <a href="{{ env('APP_FRONT_URL') }}" style="color: #C8102E;">
                                                           Descúbrelo aquí</a>
                                                     </p>
                                                   </th>
