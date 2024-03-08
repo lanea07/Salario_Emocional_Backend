@@ -126,14 +126,14 @@ middleware: 'auth:sanctum'
 > ```php
 > Controlador: RoleController::class
 > Rutas: [
->    '/role/create'........=>get
->    '/role/{role}'........=>delete
->    '/role/{role}/edit'...=>get
->    '/role'...............=>get
->    '/role/{role}'........=>get
->    '/role'...............=>post
->    '/role/{role}'........=>put
->    '/role/{role}'........=>patch
+>    '/role/create'........=> get
+>    '/role/{role}'........=> delete
+>    '/role/{role}/edit'...=> get
+>    '/role'...............=> get
+>    '/role/{role}'........=> get
+>    '/role'...............=> post
+>    '/role/{role}'........=> put
+>    '/role/{role}'........=> patch
 > ]
 > ```
 
@@ -155,16 +155,16 @@ middleware: 'auth:sanctum'
 > ```php
 > Controlador: DependencyController::class
 > Rutas: [
->    '/dependency/dependencyAncestors/{id}'......=>get
->    '/dependency'...............................=>get
->    '/dependency/getNonTreeValidDependencies'...=>get
->    '/dependency/create'........................=>get
->    '/dependency/{dependency}'..................=>delete
->    '/dependency/{dependency}/edit'.............=>get
->    '/dependency/{dependency}'..................=>get
->    '/dependency'...............................=>post
->    '/dependency/{dependency}'..................=>put
->    '/dependency/{dependency}'..................=>patch
+>    '/dependency/dependencyAncestors/{id}'......=> get
+>    '/dependency'...............................=> get
+>    '/dependency/getNonTreeValidDependencies'...=> get
+>    '/dependency/create'........................=> get
+>    '/dependency/{dependency}'..................=> delete
+>    '/dependency/{dependency}/edit'.............=> get
+>    '/dependency/{dependency}'..................=> get
+>    '/dependency'...............................=> post
+>    '/dependency/{dependency}'..................=> put
+>    '/dependency/{dependency}'..................=> patch
 > ]
 > ```
 
