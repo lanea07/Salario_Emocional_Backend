@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\BenefitDetail;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\DB;
+use Yajra\DataTables\Facades\DataTables;
 
 class BenefitDetailService
 {
@@ -69,5 +70,16 @@ class BenefitDetailService
     public function deleteBenefitDetail(BenefitDetail $benefitDetail): void
     {
         throw new \Exception('No se puede eliminar una configuración de beneficio');
+    }
+
+    /**
+     * Return a datatable of benefit details
+     * 
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function getDatatable()
+    {
+        $model = BenefitDetail::with(['benefit']);
+        return DataTables::of($model)->toJson();
     }
 }

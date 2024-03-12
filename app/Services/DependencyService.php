@@ -6,6 +6,7 @@ use App\Models\Dependency;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Yajra\DataTables\Facades\DataTables;
 
 class DependencyService
 {
@@ -99,5 +100,16 @@ class DependencyService
     public function getNonTreeValidDependencies(): Collection
     {
         return Dependency::is_valid()->oldest('name')->get();
+    }
+
+    /**
+     * Get datatable response format
+     *
+     * @return mixed
+     */
+    public function getDatatable()
+    {
+        $model = Dependency::query();
+        return DataTables::of($model)->toJson();
     }
 }

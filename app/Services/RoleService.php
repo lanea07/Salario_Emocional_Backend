@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\Role;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\DB;
+use Yajra\DataTables\Facades\DataTables;
 
 class RoleService
 {
@@ -69,5 +70,11 @@ class RoleService
     public function deleteRole(Role $role): void
     {
         throw new \Exception('No se puede eliminar un rol');
+    }
+
+    public function getDatatable()
+    {
+        $model = Role::query();
+        return DataTables::of($model)->toJson();
     }
 }

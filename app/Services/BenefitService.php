@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Collection as SupportCollection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use Yajra\DataTables\Facades\DataTables;
 
 class BenefitService
 {
@@ -198,5 +199,16 @@ class BenefitService
             return ['message' => 'Preferencias actualizadas'];
         });
         return $updated;
+    }
+
+    /**
+     * Get datatable response format
+     * 
+     * @return mixed
+     */
+    public function getDataTable()
+    {
+        $model = Benefit::with(['benefit_detail']);
+        return DataTables::of($model)->toJson();
     }
 }

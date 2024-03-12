@@ -48,6 +48,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/benefit-settings', 'indexPreferences')->name('benefit-settings.index');
         Route::get('/benefit-settings/{benefit}', 'showPreferences')->name('benefit-settings.show');
         Route::put('/benefit-settings/{benefit}', 'storePreferences')->name('benefit-settings.store');
+        Route::post('benefit/datatable', 'datatable')->name('benefit.datatable');
     });
 
     Route::controller(BenefitDetailController::class)->group(function () {
@@ -59,6 +60,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/benefitdetail', 'store')->name('benefitdetail.store');
         Route::put('/benefitdetail/{benefitdetail}', 'update')->name('benefitdetail.updateWithPut');
         Route::patch('/benefitdetail/{benefitdetail}', 'update')->name('benefitdetail.updateWithPatch');
+        Route::post('/benefitdetail/datatable', 'datatable')->name('benefitdetail.datatable');
     });
 
     Route::controller(BenefitUserController::class)->group(function () {
@@ -87,6 +89,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/position', 'store')->name('position.store');
         Route::put('/position/{position}', 'update')->name('position.updateWithPut');
         Route::patch('/position/{position}', 'update')->name('position.updateWithPatch');
+        Route::post('/position/datatable', 'datatable')->name('position.datatable');
     });
 
     Route::controller(RoleController::class)->group(function () {
@@ -98,6 +101,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/role', 'store')->name('role.store');
         Route::put('/role/{role}', 'update')->name('role.updateWithPut');
         Route::patch('/role/{role}', 'update')->name('role.updateWithPatch');
+        Route::post('/role/datatable', 'datatable')->name('role.datatable');
     });
 
     Route::controller(UserController::class)->group(function () {
@@ -110,6 +114,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/user', 'store')->name('user.store');
         Route::put('/user/{user}', 'update')->name('user.updateWithPut');
         Route::patch('/user/{user}', 'update')->name('user.updateWithPatch');
+        Route::post('/user/datatable', 'datatable')->name('user.datatable');
     });
 
     Route::controller(DependencyController::class)->group(function () {
@@ -123,6 +128,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/dependency', 'store')->name('dependency.store');
         Route::put('/dependency/{dependency}', 'update')->name('dependency.updateWithPut');
         Route::patch('/dependency/{dependency}', 'update')->name('dependency.updateWithPatch');
+        Route::post('/dependency/datatable', 'datatable')->name('dependency.datatable');
     });
 
     Route::controller(AdminController::class)->group(function () {
