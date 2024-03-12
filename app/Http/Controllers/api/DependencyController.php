@@ -109,4 +109,18 @@ class DependencyController extends Controller
     {
         return response()->json($this->dependencyService->getNonTreeValidDependencies(), 200);
     }
+
+    /**
+     * Return all dependencies in a datatable formmated response
+     * 
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function datatable()
+    {
+        try {
+            return response()->json($this->dependencyService->getDatatable(), 200);
+        } catch (\Throwable $th) {
+            return response()->json(['message' => $th->getMessage()], 500);
+        }
+    }
 }

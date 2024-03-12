@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\Position;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\DB;
+use Yajra\DataTables\Facades\DataTables;
 
 class PositionService
 {
@@ -69,5 +70,11 @@ class PositionService
     public function deletePosition(Position $position): void
     {
         throw new \Exception('No se puede eliminar un cargo');
+    }
+
+    public function getDatatable()
+    {
+        $model = Position::where('id', '<>', 1);
+        return DataTables::of($model)->toJson();
     }
 }

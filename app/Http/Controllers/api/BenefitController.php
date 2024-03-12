@@ -135,4 +135,18 @@ class BenefitController extends Controller
             return response()->json(['message' => $th->getMessage()], 500);
         }
     }
+
+    /**
+     * Return all benefits in a datatable formmated response
+     * 
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function datatable(): JsonResponse
+    {
+        try {
+            return response()->json($this->benefitService->getDatatable(), 200);
+        } catch (\Throwable $th) {
+            return response()->json(['message' => $th->getMessage()], 500);
+        }
+    }
 }

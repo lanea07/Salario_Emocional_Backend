@@ -88,4 +88,13 @@ class RoleController extends Controller
             return response()->json(['message' => $th->getMessage()], 500);
         }
     }
+
+    public function datatable()
+    {
+        try {
+            return response()->json($this->roleService->getDatatable(), 200);
+        } catch (\Throwable $th) {
+            return response()->json(['message' => $th->getMessage()], 500);
+        }
+    }
 }

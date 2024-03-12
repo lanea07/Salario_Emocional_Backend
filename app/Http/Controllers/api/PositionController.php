@@ -81,4 +81,18 @@ class PositionController extends Controller
             return response()->json($th, 500);
         }
     }
+
+    /**
+     * Return all dependencies in a datatable formmated response
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function datatable()
+    {
+        try {
+            return response()->json($this->positionService->getDatatable(), 200);
+        } catch (\Throwable $th) {
+            return response()->json(['message' => $th->getMessage()], 500);
+        }
+    }
 }

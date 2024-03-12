@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
+use Yajra\DataTables\Facades\DataTables;
 
 class UserService
 {
@@ -116,5 +117,11 @@ class UserService
     {
         $user = request()->user();
         return User::where('id', '=', $user->id)->with(['descendants'])->get();
+    }
+
+    public function getDatatable()
+    {
+        $model = User::with(['dependency', 'parent', 'positions', 'roles'])->select('users.*');
+        return DataTables::of($model)->toJson();
     }
 }
