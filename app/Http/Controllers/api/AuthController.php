@@ -46,6 +46,7 @@ class AuthController extends Controller
                 'token' => $user->createToken(request()->device_name, ['*'], now()->addDay())->plainTextToken,
                 'id' => $user->id,
                 'user' => $user->only('name', 'email', 'id'),
+                'admin' => (bool)$user->isAdmin(),
             ],
             200
         );
