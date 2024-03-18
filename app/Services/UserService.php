@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
+use Staudenmeir\LaravelAdjacencyList\Eloquent\Builder;
 use Yajra\DataTables\Facades\DataTables;
 
 class UserService
@@ -113,10 +114,16 @@ class UserService
      * 
      * @return \Illuminate\Database\Eloquent\Collection
      */
-    public function getAllDescendants(): Collection
+    public function getAllDescendants(): mixed
     {
         $user = request()->user();
-        return User::where('id', '=', $user->id)->with(['descendants'])->get();
+        return User::where('id', '=', $user->id)
+            ->with([
+                'descendants' => function ($query) use ($user) {
+                    $query->whereIn('id', $user->descendants->pluck('id'));
+                    $query->where('valid_id', '=', true);
+                }
+            ])->get();
     }
 
     public function getDatatable()
