@@ -21,7 +21,10 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use Spatie\IcalendarGenerator\Components\Calendar;
 use Spatie\IcalendarGenerator\Components\Event;
+use Spatie\IcalendarGenerator\Enums\RecurrenceDay;
+use Spatie\IcalendarGenerator\Enums\RecurrenceFrequency;
 use Spatie\IcalendarGenerator\Properties\TextProperty;
+use Spatie\IcalendarGenerator\ValueObjects\RRule;
 
 class BenefitUserService
 {
@@ -240,17 +243,40 @@ class BenefitUserService
      */
     static function generateICS(BenefitUser $benefitUser)
     {
-        $event = Calendar::create($benefitUser->user->email)->event([
-            Event::create()
+        $event = self::generateCalendarEvent($benefitUser);
+        $icsAttachment = Calendar::create($benefitUser->user->email)->event([$event]);
+        return $icsAttachment->get();
+    }
+
+    static private function generateCalendarEvent(BenefitUser $benefitUser): Event
+    {
+        $newEvent = null;
+        if ($benefitUser->benefits->name === "Viernes Corto") {
+            $month = date("M", strtotime($benefitUser['benefit_begin_time']));
+            $year = date("Y", strtotime($benefitUser['benefit_begin_time']));
+            $lastFridayMonth = new Carbon("third friday of {$month} {$year}");
+            $lastFridayMonth = $lastFridayMonth->addHours(13)->addMinute(30);
+            $newEvent = Event::create()
                 ->name($benefitUser->benefits->name)
                 ->createdAt(new DateTime(Carbon::now()))
                 ->startsAt(new DateTime($benefitUser->benefit_begin_time))
                 ->endsAt(new DateTime($benefitUser->benefit_end_time))
-                ->appendProperty(
-                    TextProperty::create('X-MICROSOFT-CDO-BUSYSTATUS', 'OOF')
-                )
-        ]);
-        return $event->get();
+                ->appendProperty(TextProperty::create('X-MICROSOFT-CDO-BUSYSTATUS', 'OOF'))
+                ->rrule(
+                    RRule::frequency(RecurrenceFrequency::monthly())->onWeekDay(
+                        RecurrenceDay::friday(),
+                        3
+                    )->until($lastFridayMonth)
+                );
+        } else {
+            $newEvent = Event::create()
+                ->name($benefitUser->benefits->name)
+                ->createdAt(new DateTime(Carbon::now()))
+                ->startsAt(new DateTime($benefitUser->benefit_begin_time))
+                ->endsAt(new DateTime($benefitUser->benefit_end_time))
+                ->appendProperty(TextProperty::create('X-MICROSOFT-CDO-BUSYSTATUS', 'OOF'));
+        }
+        return $newEvent;
     }
 
     /**
@@ -303,7 +329,7 @@ class BenefitUserService
                 $secondBenefit->created_at = $benefitUser->created_at;
                 $secondBenefit->approved_at = Carbon::now();
                 $secondBenefit->approved_by = auth()->user()->id;
-                $lastFridayMonth = new Carbon("last friday of {$month} {$year}");
+                $lastFridayMonth = new Carbon("third friday of {$month} {$year}");
                 $lastFridayMonth = $lastFridayMonth->addHours(13)->addMinute(30);
                 $secondBenefit->benefit_begin_time = $lastFridayMonth->format('Y-m-d H:i:s');
                 $secondBenefit->benefit_end_time = $lastFridayMonth->addHours(3)->addMinutes(30)->format('Y-m-d H:i:s');
@@ -534,6 +560,5 @@ class BenefitUserService
         )
             ->oldest('name')
             ->get();
-        // return $user->benefit_user()->with(['benefits', 'benefit_detail'])->get();
     }
 }
