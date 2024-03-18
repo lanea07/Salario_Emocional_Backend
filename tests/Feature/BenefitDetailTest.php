@@ -22,22 +22,6 @@ class BenefitDetailTest extends TestCase
                 'valid_id',
                 'created_at',
                 'updated_at',
-                'benefit' => [
-                    '*' => [
-                        'id',
-                        'name',
-                        'politicas_path',
-                        'valid_id',
-                        'created_at',
-                        'updated_at',
-                        'pivot' => [
-                            'benefit_detail_id',
-                            'benefit_id',
-                            'created_at',
-                            'updated_at'
-                        ]
-                    ]
-                ]
             ]
         ]);
     }
@@ -101,22 +85,6 @@ class BenefitDetailTest extends TestCase
                 'valid_id',
                 'created_at',
                 'updated_at',
-                'benefit' => [
-                    '*' => [
-                        'id',
-                        'name',
-                        'politicas_path',
-                        'valid_id',
-                        'created_at',
-                        'updated_at',
-                        'pivot' => [
-                            'benefit_detail_id',
-                            'benefit_id',
-                            'created_at',
-                            'updated_at'
-                        ]
-                    ]
-                ]
             ]
         ]);
     }
