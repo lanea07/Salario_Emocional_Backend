@@ -409,6 +409,9 @@ class BenefitUserService
 
         $this->tryCanCombineWith($cantCombineWith, $benefit, $month, $year, $requestedBenefitData);
         $claimed = $this->tryAllowedRepeatFrecuency($allowedRepeatFrecuency, $month, $year, $requestedBenefitData);
+        if ($claimed === true) {
+            return $claimed;
+        } 
         $this->tryMaxAllowedHours($maxAllowedHours, $requestedBenefitData, $claimed);
         $this->tryAllowedRepeatInterval($allowedRepeatInterval, $allowedRepeatFrecuency, $action, $benefit, $claimed, $allowedUpdateApprovedBenefits);
         return true;
@@ -478,7 +481,7 @@ class BenefitUserService
      * @param array $requestedBenefitData
      * @return \Illuminate\Database\Eloquent\Collection
      */
-    public function tryAllowedRepeatFrecuency($allowedRepeatFrecuency, $month, $year, $requestedBenefitData): Collection
+    public function tryAllowedRepeatFrecuency($allowedRepeatFrecuency, $month, $year, $requestedBenefitData): Collection | bool
     {
         $initialDate = null;
         $finalDate = null;
