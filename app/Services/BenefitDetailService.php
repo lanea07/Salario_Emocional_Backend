@@ -17,7 +17,7 @@ class BenefitDetailService
      */
     public function getAllBenefitDetail(): Collection
     {
-        return BenefitDetail::with(['benefit'])->oldest('name')->get();
+        return BenefitDetail::oldest('name')->get();
     }
 
     /**

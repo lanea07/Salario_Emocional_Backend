@@ -38,8 +38,6 @@ class BenefitUserService
      */
     public function getAllBenefitUser(int $userId, int $year): Collection
     {
-        // TODO: Setting uses_barchart
-        // TODO: Setting uses_doughnutchart
         return User::with([
             'benefit_user' => function ($q) use ($year) {
                 $q->is_approved();
@@ -51,7 +49,12 @@ class BenefitUserService
             'benefit_user.user.dependency'
         ])
         ->where('id', $userId)
-        ->get();
+        ->get()
+        ->each(function ($model) {
+            return $model->benefit_user->each(function ($related) {
+                $related->benefits->setAppends(['encoded_logo']);
+            });
+        });
     }
 
     /**

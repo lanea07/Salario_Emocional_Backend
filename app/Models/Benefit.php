@@ -30,9 +30,9 @@ class Benefit extends Model
         'valid_id' => 'boolean',
     ];
 
-    protected $appends = [
-        'encoded_logo',
-    ];
+    // protected $appends = [
+    //     'encoded_logo',
+    // ];
 
     public function benefit_detail()
     {

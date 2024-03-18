@@ -71,15 +71,24 @@ class BenefitService
      * Return a benefit by ID
      * 
      * @param Benefit $benefit
-     * @return \Illuminate\Database\Eloquent\Collection
+     * @return \Illuminate\Support\Collection
      */
-    public function getBenefitByID(Benefit $benefit): Collection
+    public function getBenefitByID(Benefit $benefit): SupportCollection
     {
-        return $benefit->with([
+        return collect([
+            $benefit->load([
             'benefit_detail' => function ($query) {
                 $query->oldest('name');
             }
-        ])->where('id', $benefit->id)->get();
+            ])
+                ->setAppends(['encoded_logo'])
+                ->toArray()
+        ]);
+        // ->where('id', $benefit->id)
+        // ->get()
+        // ->each(function ($model) {
+        // return $model->setAppends(['encoded_logo'])->toArray();
+        // });
     }
 
     /**
