@@ -48,13 +48,13 @@ class BenefitUserService
             'benefit_user.benefit_detail',
             'benefit_user.user.dependency'
         ])
-        ->where('id', $userId)
-        ->get()
-        ->each(function ($model) {
-            return $model->benefit_user->each(function ($related) {
-                $related->benefits->setAppends(['encoded_logo']);
+            ->where('id', $userId)
+            ->get()
+            ->each(function ($model) {
+                return $model->benefit_user->each(function ($related) {
+                    $related->benefits->setAppends(['encoded_logo']);
+                });
             });
-        });
     }
 
     /**
@@ -82,16 +82,18 @@ class BenefitUserService
                 $miViernes = $this->getAdditionalMiViernes($benefitUserData);
             }
 
-            $data = [$benefitUserData, $bancoHoras, $miViernes];
+            // Auto approve new benefits
             if ($benefitUserData->benefits->settings()->get('is_auto_approve_new')) {
                 $this->decideBenefitUser('approve', "Aprobado automáticamente", $benefitUserData);
                 return $benefitUserData;
             }
+
             if ($benefitUserData->user->leader_user !== null) {
                 $leader = $benefitUserData->user->leader_user;
                 if ($leader->settings()->get('Auto Aprobar Beneficios de mis Colaboradores') === 'Sí') {
                     $this->decideBenefitUser('approve', "Aprobado automáticamente", $benefitUserData);
                 } else {
+                    $data = [$benefitUserData, $bancoHoras, $miViernes];
                     event(new NewBenefitUserWithLeaderEvent($benefitUserData->user, $data));
                 }
             } else {
@@ -114,17 +116,15 @@ class BenefitUserService
      */
     public function getBenefitUserByID(BenefitUser $benefitUser): Collection
     {
-        return User::with(
-            [
-                'benefit_user' => function ($q) use ($benefitUser) {
-                    $q->where('id', $benefitUser->id);
-                    $q->orderBy('benefit_begin_time');
-                },
-                'benefit_user.benefits',
-                'benefit_user.benefit_detail',
-                'benefit_user.user.dependency'
-            ]
-        )->wherehas('benefit_user', function ($q) use ($benefitUser) {
+        return User::with([
+            'benefit_user' => function ($q) use ($benefitUser) {
+                $q->where('id', $benefitUser->id);
+                $q->orderBy('benefit_begin_time');
+            },
+            'benefit_user.benefits',
+            'benefit_user.benefit_detail',
+            'benefit_user.user.dependency'
+        ])->wherehas('benefit_user', function ($q) use ($benefitUser) {
             $q->where('id', '=', $benefitUser->id);
             $q->orderBy('benefit_begin_time');
         })->get();
@@ -141,7 +141,6 @@ class BenefitUserService
     {
         $updated = DB::transaction(function () use ($benefitUserData, $benefitUser) {
             $requestedBenefit = Benefit::find($benefitUserData['benefit_id']);
-
             $this->validateBenefitRules($benefitUserData, $requestedBenefit, BenefitActionIsEnum::UPDATE);
             $benefitUser->update($benefitUserData);
             return $benefitUser;
@@ -170,18 +169,15 @@ class BenefitUserService
      */
     public function getAllBenefitUserNonApproved(int $userId): Collection
     {
-        return User::with(
-            [
-                'benefit_user' => function ($q) {
-                    $q->where('is_approved', false);
-                    $q->orderBy('benefit_begin_time');
-                },
-                'benefit_user.benefits',
-                'benefit_user.benefit_detail',
-                'benefit_user.user.dependency'
-            ]
-        )
-            ->where('id', $userId)
+        return User::with([
+            'benefit_user' => function ($q) {
+                $q->where('is_approved', false);
+                $q->orderBy('benefit_begin_time');
+            },
+            'benefit_user.benefits',
+            'benefit_user.benefit_detail',
+            'benefit_user.user.dependency'
+        ])->where('id', $userId)
             ->get();
     }
 
@@ -198,13 +194,12 @@ class BenefitUserService
             'user',
             function ($q) use ($user) {
                 $q->with('descendantsAndSelf');
-            },
+            }
         )
             ->with(['benefits', 'benefit_detail'])
             ->whereRelation('user', function ($q) use ($user) {
             $q->whereIn('id', $user->descendants()->pluck('id'));
-            })
-            ->is_pending()
+            })->is_pending()
             ->get();
     }
 
@@ -217,24 +212,21 @@ class BenefitUserService
     public function getAllBenefitCollaborators(Request $request)
     {
         $user = $request->user();
-        return User::where('id', '=', $user->id)->with(
-            [
-                'descendantsAndSelf.benefit_user' => function ($q) use ($request) {
-                    $q->whereYear('benefit_begin_time', $request->year);
-                    $q->is_approved();
-                },
-                'descendantsAndSelf.benefit_user.benefits' => function ($q) {
-                    $q->select('id', 'name', 'politicas_path', 'logo_file');
-                },
-                'descendantsAndSelf.benefit_user.benefit_detail' => function ($q) {
-                    $q->select('id', 'name', 'time_hours', 'valid_id');
-                },
-                'descendantsAndSelf.benefit_user.user' => function ($q) {
-                    $q->select('id', 'name',);
-                },
-            ]
-        )
-            ->oldest('name')
+        return User::where('id', '=', $user->id)->with([
+            'descendantsAndSelf.benefit_user' => function ($q) use ($request) {
+                $q->whereYear('benefit_begin_time', $request->year);
+                $q->is_approved();
+            },
+            'descendantsAndSelf.benefit_user.benefits' => function ($q) {
+                $q->select('id', 'name', 'politicas_path', 'logo_file');
+            },
+            'descendantsAndSelf.benefit_user.benefit_detail' => function ($q) {
+                $q->select('id', 'name', 'time_hours', 'valid_id');
+            },
+            'descendantsAndSelf.benefit_user.user' => function ($q) {
+                $q->select('id', 'name',);
+            },
+        ])->oldest('name')
             ->get();
     }
 
@@ -290,11 +282,8 @@ class BenefitUserService
      * @param BenefitUser $benefitUser
      * @return BenefitUser
      */
-    public function decideBenefitUser(
-        string $decision,
-        string $decision_comment = null,
-        BenefitUser $benefitUser,
-    ) {
+    public function decideBenefitUser(string $decision, string $decision_comment = null, BenefitUser $benefitUser)
+    {
         $decision = DB::transaction(function () use ($decision, $decision_comment, $benefitUser) {
             switch ($decision) {
                 case 'approve':
@@ -338,7 +327,6 @@ class BenefitUserService
                 $secondBenefit->benefit_end_time = $lastFridayMonth->addHours(3)->addMinutes(30)->format('Y-m-d H:i:s');
                 $secondBenefit->save();
             }
-
             $benefitUser->save();
             event(new BenefitDecisionEvent($benefitUser));
             return $benefitUser;
@@ -376,9 +364,8 @@ class BenefitUserService
                 $q->whereYear('benefit_begin_time', date("Y", strtotime($benefitUserData['benefit_begin_time'])));
                 $q->is_Approved();
             }
-        )
-            ->orderBy('benefit_begin_time')
-            ->get();
+        )->orderBy('benefit_begin_time')
+        ->get();
     }
 
     /**
@@ -397,19 +384,17 @@ class BenefitUserService
                 $q->whereYear('benefit_begin_time', date("Y", strtotime($benefitUserData['benefit_begin_time'])));
                 $q->is_Approved();
             }
-        )
-            ->orderBy('benefit_begin_time')
-            ->get();
+        )->orderBy('benefit_begin_time')
+        ->get();
     }
 
     /**
-     * Validates Benefit rules settings and throws an exception if the benefit can't be created or updated
+     * Validates Benefit rules settings, if any of the validations fail an exception is thrown, otherwise it returns true
      * 
      * @param array $requestedBenefitData
      * @param Benefit|null $benefit
      * @param BenefitActionIs $action
      * @return bool
-     * @throws Exception
      */
     public function validateBenefitRules(array $requestedBenefitData, Benefit $benefit, BenefitActionIsEnum $action)
     {
@@ -421,27 +406,82 @@ class BenefitUserService
         $maxAllowedHours = $benefit->settings()->get('max_allowed_hours');
         $month = Carbon::create($requestedBenefitData['benefit_begin_time'])->month;
         $year = Carbon::create($requestedBenefitData['benefit_begin_time'])->year;
-        $initialDate = null;
-        $finalDate = null;
 
+        $this->tryCanCombineWith($cantCombineWith, $benefit, $month, $year, $requestedBenefitData);
+        $claimed = $this->tryAllowedRepeatFrecuency($allowedRepeatFrecuency, $month, $year, $requestedBenefitData);
+        $this->tryMaxAllowedHours($maxAllowedHours, $requestedBenefitData, $claimed);
+        $this->tryAllowedRepeatInterval($allowedRepeatInterval, $allowedRepeatFrecuency, $action, $benefit, $claimed, $allowedUpdateApprovedBenefits);
+        return true;
+    }
+
+    /**
+     * Returns all the benefits of a user by its ID
+     * 
+     * @param User $user
+     * @param int $year
+     * @return \Illuminate\Database\Eloquent\Collection
+     */
+    public function getBenefitUserByUserID(User $user, int $year): Collection
+    {
+        return User::where('id', '=', $user->id)->with([
+            'benefit_user' => function ($q) use ($year) {
+                $q->whereYear('benefit_begin_time', $year);
+                $q->is_approved();
+            },
+            'benefit_user.benefits' => function ($q) {
+                $q->select('id', 'name', 'politicas_path', 'logo_file');
+            },
+            'benefit_user.benefit_detail' => function ($q) {
+                $q->select('id', 'name', 'time_hours', 'valid_id');
+            },
+            'benefit_user.user' => function ($q) {
+                $q->select('id', 'name',);
+            },
+        ])->oldest('name')
+        ->get();
+    }
+
+    /**
+     * Validates if requested benefit can be combined with other benefits
+     * 
+     * @param User $user
+     * @param int $year
+     * @return \Illuminate\Database\Eloquent\Collection
+     */
+    public function tryCanCombineWith($cantCombineWith, $benefit, $month, $year, $requestedBenefitData)
+    {
         // Setting cant_combine_with
         if ($cantCombineWith !== $benefit->settings()->getDefault('cant_combine_with') || (is_array($cantCombineWith) && !array_search('no aplica', $cantCombineWith, true))) {
             $forbiddenBenefits = BenefitUser::with(['benefits'])
-                ->where(function ($q) use ($month, $year, $cantCombineWith, $requestedBenefitData) {
-                    $q->where('user_id', $requestedBenefitData['user_id']);
-                    $q->whereYear('benefit_begin_time', $year);
-                    $q->whereMonth('benefit_begin_time', $month);
-                    $q->whereRelation('benefits', function ($q) use ($cantCombineWith) {
-                        $q->whereIn('name', $cantCombineWith);
-                    })->get();
-                    $q->is_approved();
+            ->where(function ($q) use ($month, $year, $cantCombineWith, $requestedBenefitData) {
+                $q->where('user_id', $requestedBenefitData['user_id']);
+                $q->whereYear('benefit_begin_time', $year);
+                $q->whereMonth('benefit_begin_time', $month);
+                $q->whereRelation('benefits', function ($q) use ($cantCombineWith) {
+                    $q->whereIn('name', $cantCombineWith);
                 })->get();
+                $q->is_approved();
+            })->get();
             $imploded = implode(', ', $cantCombineWith);
             if (!$forbiddenBenefits->isEmpty()) {
                 throw new Exception("El beneficio \"$benefit->name\" que está intentando solicitar no se puede combinar con el/los beneficios \"$imploded\". Ya has solicitado uno de estos beneficios en este periodo.");
             }
         }
+    }
 
+    /**
+     * Returns another instances of the requested benefit and its sum of time_hours used
+     * 
+     * @param string $allowedRepeatFrecuency
+     * @param int $month
+     * @param int $year
+     * @param array $requestedBenefitData
+     * @return \Illuminate\Database\Eloquent\Collection
+     */
+    public function tryAllowedRepeatFrecuency($allowedRepeatFrecuency, $month, $year, $requestedBenefitData): Collection
+    {
+        $initialDate = null;
+        $finalDate = null;
         // Setting allowed_repeat_frecuency
         switch ($allowedRepeatFrecuency) {
             case 'mensual':
@@ -506,7 +546,7 @@ class BenefitUserService
         }
 
         $claimed = BenefitUser::with(['benefit_detail'])
-            ->where(function ($q) use ($requestedBenefitData, $initialDate, $finalDate, $allowedRepeatFrecuency, $month, $year) {
+            ->where(function ($q) use ($requestedBenefitData, $initialDate, $finalDate) {
                 $q->where('benefit_id', '=', $requestedBenefitData['benefit_id']);
                 $q->where('user_id', '=', $requestedBenefitData['user_id']);
                 $q->whereBetween('benefit_begin_time', [$initialDate, $finalDate]);
@@ -514,7 +554,20 @@ class BenefitUserService
             })
             ->withSum('benefit_detail', 'time_hours')
             ->get();
+        return $claimed;
+    }
 
+    /**
+     * Validates if requested benefit exceeds the max_allowed_hours
+     * 
+     * @param int $maxAllowedHours
+     * @param array $requestedBenefitData
+     * @param \Illuminate\Database\Eloquent\Collection $claimed
+     * @return void
+     * @throws Exception
+     */
+    public function tryMaxAllowedHours($maxAllowedHours, $requestedBenefitData, $claimed)
+    {
         // Setting max_allowed_hours
         if ($maxAllowedHours) {
             $requestedTime = BenefitDetail::find($requestedBenefitData['benefit_detail_id'])->time_hours;
@@ -526,7 +579,22 @@ class BenefitUserService
                 throw new Exception("El beneficio que estás intentando registrar supera las horas disponibles.");
             }
         }
+    }
 
+    /**
+     * Validates if requested benefit exceeds the allowed_repeat_interval
+     * 
+     * @param int $allowedRepeatInterval
+     * @param string $allowedRepeatFrecuency
+     * @param BenefitActionIs $action
+     * @param Benefit $benefit
+     * @param \Illuminate\Database\Eloquent\Collection $claimed
+     * @param bool $allowedUpdateApprovedBenefits
+     * @return void
+     * @throws Exception
+     */
+    public function tryAllowedRepeatInterval($allowedRepeatInterval, $allowedRepeatFrecuency, $action, $benefit, $claimed, $allowedUpdateApprovedBenefits)
+    {
         // Setting allowed_repeat_interval
         if ($allowedRepeatInterval) {
             if ($action === BenefitActionIsEnum::UPDATE) {
@@ -539,29 +607,5 @@ class BenefitUserService
                 }
             }
         }
-        return true;
-    }
-
-    public function getBenefitUserByUserID(User $user, int $year)
-    {
-        return User::where('id', '=', $user->id)->with(
-            [
-                'benefit_user' => function ($q) use ($year) {
-                    $q->whereYear('benefit_begin_time', $year);
-                    $q->is_approved();
-                },
-                'benefit_user.benefits' => function ($q) {
-                    $q->select('id', 'name', 'politicas_path', 'logo_file');
-                },
-                'benefit_user.benefit_detail' => function ($q) {
-                    $q->select('id', 'name', 'time_hours', 'valid_id');
-                },
-                'benefit_user.user' => function ($q) {
-                    $q->select('id', 'name',);
-                },
-            ]
-        )
-            ->oldest('name')
-            ->get();
     }
 }
