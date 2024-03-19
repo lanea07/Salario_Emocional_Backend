@@ -216,8 +216,11 @@ class BenefitUserService
             'descendantsAndSelf.benefit_user' => function ($q) use ($request) {
                 $q->whereYear('benefit_begin_time', $request->year);
                 $q->is_approved();
+                $q->when(request()->has('benefit_id'), function ($q) use ($request) {
+                    $q->where('benefit_id', '=', $request->benefit_id);
+                });
             },
-            'descendantsAndSelf.benefit_user.benefits' => function ($q) {
+            'descendantsAndSelf.benefit_user.benefits' => function ($q) use ($request) {
                 $q->select('id', 'name', 'politicas_path', 'logo_file');
             },
             'descendantsAndSelf.benefit_user.benefit_detail' => function ($q) {
@@ -227,7 +230,7 @@ class BenefitUserService
                 $q->select('id', 'name',);
             },
         ])->oldest('name')
-            ->get();
+        ->get();
     }
 
     /**
