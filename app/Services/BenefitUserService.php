@@ -444,7 +444,12 @@ class BenefitUserService
                 $q->select('id', 'name',);
             },
         ])->oldest('name')
-        ->get();
+        ->get()
+        ->each(function ($model) {
+            return $model->benefit_user->each(function ($related) {
+                $related->benefits->setAppends(['encoded_logo']);
+            });
+        });
     }
 
     /**
